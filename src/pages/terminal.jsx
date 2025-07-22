@@ -1,149 +1,14 @@
-// import React, { useState, useRef, useEffect } from 'react';
-
-// const UserPrompt = () => (
-//     <div className="flex items-center">
-//         <span className="text-amber-300">user@portfolio</span>
-//         <span className="text-white">:</span>
-//         <span className="text-blue-400">~$</span>
-//     </div>
-// );
-
-// const Cursor = () => <span className="bg-lime-300 w-2 h-5 inline-block animate-pulse ml-1" />;
-
-// const createCommandProcessor = (data, switchToGui) => {
-//     if (!data) return async () => "Portfolio data not loaded. Please switch to GUI mode and check connection.";
-
-//     const process = async (command) => {
-//         const [cmd, ...args] = command.toLowerCase().trim().split(' ');
-//         const id = args[0] ? parseInt(args[0]) : null;
-
-//         switch (cmd) {
-//             case 'help':
-//                 return `Available commands: whoami, skills, experience [id], projects [id], contact, gui, clear`;
-//             case 'whoami':
-//                 return data.bio;
-//             case 'skills':
-//                 return data.skills.map(s => `<span class="text-amber-300">${s.category}:</span> ${s.values.join(', ')}`).join('\n');
-//             case 'experience':
-//                 if (id) {
-//                     const item = data.experience.find(e => e.id === id);
-//                     return item ? item.description_points.join('\n') : `Experience ID ${id} not found.`;
-//                 }
-//                 return data.experience.map(e => `${e.id}. ${e.title} @ ${e.company}`).join('\n');
-//             case 'projects':
-//                 if (id) {
-//                     const item = data.projects.find(p => p.id === id);
-//                     return item ? item.description : `Project ID ${id} not found.`;
-//                 }
-//                 return data.projects.map(p => `${p.id}. ${p.name}`).join('\n');
-//             case 'contact':
-//                 return Object.entries(data.contact).map(([key, value]) => `${key}: ${value}`).join('\n');
-//             case 'gui':
-//                 switchToGui();
-//                 return 'Switching to GUI mode...';
-//             case '':
-//                 return '';
-//             default:
-//                 return `sh: command not found: ${command}`;
-//         }
-//     };
-//     return process;
-// };
-
-// export default function TerminalPage({ portfolioData, switchToGui }) {
-//     const [history, setHistory] = useState([{ type: 'output', text: "Terminal mode active. Type 'help' or 'gui' to switch back." }]);
-//     const [input, setInput] = useState('');
-//     const [isProcessing, setIsProcessing] = useState(false);
-//     const terminalEndRef = useRef(null);
-//     const inputRef = useRef(null);
-//     const processCommand = createCommandProcessor(portfolioData, switchToGui);
-
-//     useEffect(() => {
-//         terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-//     }, [history]);
-
-//     useEffect(() => {
-//         const focusInput = () => inputRef.current?.focus();
-//         window.addEventListener('click', focusInput);
-//         focusInput();
-//         return () => window.removeEventListener('click', focusInput);
-//     }, []);
-
-//     const handleKeyDown = async (e) => {
-//         if (e.key === 'Enter' && !isProcessing) {
-//             e.preventDefault();
-//             const command = input.trim();
-//             const newHistory = [...history, { type: 'input', text: command }];
-
-//             if (command.toLowerCase() === 'clear') {
-//                 setHistory([]);
-//                 setInput('');
-//                 return;
-//             }
-
-//             setIsProcessing(true);
-//             const output = await processCommand(command);
-//             if (output) {
-//                 newHistory.push({ type: 'output', text: output });
-//             }
-//             setHistory(newHistory);
-//             setIsProcessing(false);
-//             setInput('');
-//         }
-//     };
-
-//     const renderOutput = (item) => {
-//         const content = { __html: item.text.replace(/\n/g, '<br />') };
-//         return <pre className="whitespace-pre-wrap" dangerouslySetInnerHTML={content} />;
-//     };
-
-//     return (
-//         <div className="p-4 h-screen overflow-y-auto font-mono bg-[#0D1117]" onClick={() => inputRef.current?.focus()}>
-//             <div className="max-w-4xl mx-auto text-base">
-//                 {history.map((item, index) => (
-//                     <div key={index} className="mb-2 leading-relaxed">
-//                         {item.type === 'input' ? (
-//                             <div className="flex items-center gap-2">
-//                                 <UserPrompt />
-//                                 <span className="flex-1 text-gray-300">{item.text}</span>
-//                             </div>
-//                         ) : renderOutput(item)}
-//                     </div>
-//                 ))}
-//                 {!isProcessing && (
-//                     <div className="flex items-center gap-2">
-//                         <UserPrompt />
-//                         <input
-//                             ref={inputRef}
-//                             type="text"
-//                             value={input}
-//                             onChange={(e) => setInput(e.target.value)}
-//                             onKeyDown={handleKeyDown}
-//                             className="bg-transparent border-none outline-none text-lime-300 flex-1 w-full"
-//                             autoComplete="off" autoFocus
-//                         />
-//                         <Cursor />
-//                     </div>
-//                 )}
-//             </div>
-//             <div ref={terminalEndRef} />
-//         </div>
-//     );
-// }
-
-
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { X, Send, Mail, Phone, MapPin, Calendar, Award, ExternalLink } from 'lucide-react';
+import {  X,Mail, Phone, MapPin, Calendar, Award, ExternalLink
+} from 'lucide-react';
+import ContactForm from './contactform';
 
 const UserPrompt = () => (
     <div className="flex items-center">
-        <span className="text-amber-300">user@portfolio</span>
+        <span className="text-amber-300">barack.ouma~/dev/null@portfolio</span>
         <span className="text-white">:</span>
         <span className="text-blue-400">~$</span>
     </div>
@@ -151,172 +16,271 @@ const UserPrompt = () => (
 
 const Cursor = () => <span className="bg-lime-300 w-2 h-5 inline-block animate-pulse ml-1" />;
 
-// Sample portfolio data for demo
+
 const samplePortfolioData = {
-    name: "John Doe",
-    title: "Full Stack Developer",
-    bio: "Passionate full-stack developer with 5+ years of experience building scalable web applications.",
-    contact: {
-        email: "john@example.com",
-        phone: "+1 (555) 123-4567",
-        location: "San Francisco, CA",
-        linkedin: "linkedin.com/in/johndoe",
-        github: "github.com/johndoe"
+    "name": "Barack Ouma",
+    "title": "Software Engineer | Backend | AWS Certified",
+    "profile_picture_url": "",
+    "bio": "Passionate full-stack developer with expertise in modern web technologies",
+    "about_me": "I'm a dedicated developer who loves creating efficient, scalable solutions and learning new technologies.",
+    "contact": {
+      "email": "barack.ouma@example.com",
+      "twitter": "https://twitter.com/BarackOuma7",
+      "github": "https://github.com/IsoDevMate",
+      "linkedin": "https://www.linkedin.com/in/barack-ouma-b37089212/",
+      "location": "Nairobi County, Kenya",
+      "website": "https://barackoumasite.netlify.app/"
     },
-    about_me: "I'm a dedicated software engineer who loves creating efficient, user-friendly applications. With a strong foundation in both frontend and backend technologies, I enjoy tackling complex problems and delivering high-quality solutions that make a difference.",
-    skills: [
-        { category: "Frontend", values: ["React", "JavaScript", "TypeScript", "Tailwind CSS"] },
-        { category: "Backend", values: ["Node.js", "Python", "PostgreSQL", "MongoDB"] },
-        { category: "Tools", values: ["Git", "Docker", "AWS", "Figma"] }
+    "experience": [
+
+      {
+        "id": 1,
+        "title": "Technical Writer",
+        "company": "Kodaschool",
+        "dates": "Oct 2024 - Present · 10 mos",
+        "location": "Nairobi County, Kenya · Remote",
+        "description_points": [
+          "Write technical blogs that contribute to educational and beginner-friendly content focused on programming",
+          "Write clear, beginner-friendly guides on backend technologies such as TypeScript, Node.js, Java, and AWS services"
+        ],
+        "tags": ["Technical Documentation", "TypeScript", "Node.js", "Java", "AWS"]
+      },
+      {
+        "id": 2,
+        "title": "Software Engineering Trainee",
+        "company": "Power Learn Project",
+        "dates": "Feb 2025 - Present · 6 mos",
+        "location": "Nairobi County, Kenya · On-site",
+        "description_points": [
+          "Participated in an intensive software development training program focusing on web technologies (HTML, CSS), Python, and JavaScript",
+          "Currently advancing to specialized mobile development with Dart and Flutter modules",
+          "Web development fundamentals (HTML, CSS, responsive design)",
+          "Python programming and Django framework",
+          "JavaScript fundamentals and application",
+          "Currently focusing on Dart programming language and Flutter for cross-platform mobile development",
+          "Data structures and algorithms"
+        ],
+        "tags": ["HTML", "CSS", "Python", "JavaScript", "Dart", "Flutter", "Django"]
+      },
+      {
+        "id": 3,
+        "title": "Full Stack Engineer",
+        "company": "Bee Multiscents",
+        "dates": "Nov 2024 - Feb 2025 · 4 mos",
+        "location": "Nairobi, Kenya · Hybrid",
+        "description_points": [
+          "Developed and managed the full-stack architecture of a dynamic, IoT-integrated fragrance system",
+          "Built a responsive UI and admin dashboard using React.js, Firebase, and Node.js",
+          "Developed a backend system to support dynamic pages, content management, and seamless IoT device interactions",
+          "Integrated Cloudflare for enhanced security, performance, and DDoS protection",
+          "Engineered a backend solution enabling remote control of smart diffusers via a secure dashboard",
+          "Worked with the IoT team to develop APIs for real-time scent customization and automation",
+          "Ensured smooth data synchronization between the dashboard, backend, and IoT devices"
+        ],
+        "tags": ["React", "Firebase", "Node.js", "IoT", "Cloudflare", "API Development"]
+      },
+      {
+        "id": 4,
+        "title": "Full Stack Engineer",
+        "company": "Yafreeka",
+        "dates": "Oct 2023 - Feb 2024 · 5 mos",
+        "location": "Nairobi County, Kenya · Remote",
+        "description_points": [
+          "Implemented the payments page and Y Studio using React",
+          "Led the migration from MongoDB to Firebase to address video fetching challenges",
+          "Gained hands-on experience writing cloud functions in Firebase",
+          "Contributed to both frontend and backend development, improving system performance",
+          "Collaborated with cross-functional teams to deliver features on time"
+        ],
+        "tags": ["React", "Firebase", "MongoDB", "Cloud Functions"]
+      }
     ],
-    experience: [
-        {
-            id: 1,
-            title: "Senior Frontend Developer",
-            company: "Tech Corp",
-            dates: "2022 - Present",
-            description_points: [
-                "Led development of React-based dashboard serving 10k+ users",
-                "Improved application performance by 40% through optimization",
-                "Mentored 3 junior developers and conducted code reviews"
-            ],
-            tags: ["React", "TypeScript", "AWS"]
-        },
-        {
-            id: 2,
-            title: "Full Stack Developer",
-            company: "StartupXYZ",
-            dates: "2020 - 2022",
-            description_points: [
-                "Built MVP from scratch using MERN stack",
-                "Implemented real-time features using WebSocket",
-                "Managed database design and API architecture"
-            ],
-            tags: ["MERN", "WebSocket", "MongoDB"]
-        }
+    "projects": [
+      {
+        "id": 3,
+        "name": "AVIATOR",
+        "description": "Aviator Game Client - A real-time online betting game built with React, TypeScript, and Redux. Players bet on a virtual airplane's flight duration, aiming to cash out before it flies away",
+        "website_link": "",
+        "details_link": "https://github.com/IsoDevMate/AVIATOR",
+        "tags": ["TypeScript", "React", "Redux", "Game Development","Distributed Systems", "Backend","green-blue deployments"]
+      },
+      {
+        "id": 4,
+        "name": "MPESA-DARAJA-WITH-TRPC",
+        "description": "Seamlessly integrate M-Pesa payments into web applications with type-safe APIs and zero guesswork. From checkout to confirmation in seconds — because your customers deserve payments that just work",
+        "website_link": "",
+        "details_link": "https://github.com/IsoDevMate/MPESA-DARAJA-WITH-TRPC",
+        "tags": ["TypeScript", "MPesa", "tRPC", "Payment Integration"]
+      },
+      {
+        "id": 3,
+        "name": "Portfolio Terminal",
+        "description": "Interactive terminal-style portfolio with GUI/CLI modes",
+        "website_link": "https://barackdev.com",
+        "details_link": "https://github.com/IsoDevMate/better-portfolio",
+        "tags": ["React", "Terminal", "Animation", "Portfolio","ssh"]
+      }
     ],
-    projects: [
-        {
-            id: 1,
-            name: "E-commerce Platform",
-            description: "Full-stack e-commerce solution with payment integration",
-            tags: ["React", "Node.js", "Stripe"],
-            website_link: "#",
-            details_link: "#"
-        },
-        {
-            id: 2,
-            name: "Task Management App",
-            description: "Real-time collaborative task management application",
-            tags: ["Vue.js", "Firebase", "WebSocket"],
-            website_link: "#",
-            details_link: "#"
-        }
+    "skills": [
+      {
+        "category": "Frontend",
+        "values": ["React", "HTML", "CSS", "JavaScript", "Dart", "Flutter"]
+      },
+      {
+        "category": "Backend",
+        "values": ["Node.js", "Python", "Django", "Firebase", "GraphQL", "MongoDB"]
+      },
+      {
+        "category": "Cloud & DevOps",
+        "values": ["AWS", "Cloudflare", "CI/CD", "Linux", "Docker"]
+      },
+      {
+        "category": "Other",
+        "values": ["Technical Documentation", "IoT", "API Development"]
+      }
     ],
-    education: {
-        degree: "Bachelor of Science in Computer Science",
-        university: "University of Technology",
-        dates: "2016 - 2020",
-        description: "Focused on software engineering and data structures",
-        tags: ["Computer Science", "Software Engineering"]
+    "education": {
+      "degree": "Bachelor's degree, Information Technology",
+      "university": "Kenyatta University",
+      "dates": null,
+      "description": "Cascading Style Sheets (CSS), Python (Programming Language) and related technologies",
+      "tags": ["Information Technology", "Computer Science"]
     },
-    certifications: [
-        {
-            id: 1,
-            name: "AWS Certified Developer",
-            issuer: "Amazon Web Services",
-            date: "2023",
-            credential_id: "AWS-123456",
-            tags: ["AWS", "Cloud"]
-        },
-        {
-            id: 2,
-            name: "React Professional Certificate",
-            issuer: "Meta",
-            date: "2022",
-            credential_id: "META-789012",
-            tags: ["React", "Frontend"]
-        }
+    "certifications": [
+      {
+        "name": "AWS Database Migration Service",
+        "issuer": "Amazon Web Services (AWS)",
+        "date": "May 2025",
+        "skills": ["Amazon Relational Database Service (RDS)", "Amazon Database Migration Service"]
+      },
+      {
+        "name": "Configuring and Deploying VPCs with Multiple Subnets",
+        "issuer": "Amazon Web Services (AWS)",
+        "date": "May 2025",
+        "skills": ["AWS Networking"]
+      },
+      {
+        "name": "Graph Developer - Associate",
+        "issuer": "Apollo GraphQL",
+        "date": "Feb 2025",
+        "skills": ["Apollo GraphQL", "GraphQL", "Node.js"]
+      },
+      {
+        "name": "Google Cloud Skills Badges",
+        "issuer": "Google Cloud Skills Boost",
+        "date": "2024",
+        "skills": ["PostgreSQL", "Databases", "Load Balancing", "Cloud Infrastructure", "Cloud Storage"]
+      },
+      {
+        "name": "AWS re/Start Graduate",
+        "issuer": "Amazon Web Services (AWS)",
+        "date": "Aug 2024",
+        "skills": ["Amazon Web Services (AWS)"]
+      }
+    ],
+    "honors": [
+      {
+        "name": "GDSC-Core Team Member-(Android) - KU",
+        "issuer": "GDSC - KU",
+        "date": "Jul 2024",
+        "description": "As a GDSC Core Member and Android Lead at Kenyatta University, played a crucial role in fostering a vibrant community of student developers."
+      }
+    ],
+    "recommendations": [
+      {
+        "name": "Mr. Kibet",
+        "position": "CEO at REDOLENCE LIVING LIMITED (BEE MULTISCENTS)",
+        "date": "March 4, 2025",
+        "content": "Highly recommend Barrack Ouma for his exceptional contributions at Bee Multiscent. As a key member of our development team, Barrack played a crucial role in designing and managing the full-stack architecture of our IoT-integrated fragrance system. His expertise in React.js, Firebase, Node.js, and Cloudflare security ensured a seamless and secure user experience."
+      }
+    ],
+    "interests": [
+      "Web Development",
+      "Cloud Computing",
+      "IoT",
+      "Technical Writing",
+      "Mobile Development"
     ]
-};
+  }
 
-const ContactForm = () => {
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        subject: '',
-        message: ''
-    });
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Form submitted:', formData);
-        alert('Message sent! (This is a demo)');
-        setFormData({ name: '', email: '', subject: '', message: '' });
-    };
+// const ContactForm = () => {
+//     const [formData, setFormData] = useState({
+//         name: '',
+//         email: '',
+//         subject: '',
+//         message: ''
+//     });
 
-    const handleChange = (e) => {
-        setFormData(prev => ({
-            ...prev,
-            [e.target.name]: e.target.value
-        }));
-    };
+//     const handleSubmit = (e) => {
+//         e.preventDefault();
+//         console.log('Form submitted:', formData);
+//         alert('Message sent! (This is a demo)');
+//         setFormData({ name: '', email: '', subject: '', message: '' });
+//     };
 
-    return (
-        <Card className="bg-gray-800 border-gray-700 mt-4">
-            <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2 text-base">
-                    <Mail className="w-4 h-4" />
-                    Send Message
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-3">
-                    <div className="grid grid-cols-2 gap-3">
-                        <Input
-                            name="name"
-                            placeholder="Name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 text-sm"
-                            required
-                        />
-                        <Input
-                            name="email"
-                            type="email"
-                            placeholder="Email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 text-sm"
-                            required
-                        />
-                    </div>
-                    <Input
-                        name="subject"
-                        placeholder="Subject"
-                        value={formData.subject}
-                        onChange={handleChange}
-                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 text-sm"
-                        required
-                    />
-                    <Textarea
-                        name="message"
-                        placeholder="Message..."
-                        rows={3}
-                        value={formData.message}
-                        onChange={handleChange}
-                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 text-sm"
-                        required
-                    />
-                    <Button type="submit" size="sm" className="w-full bg-amber-500 hover:bg-amber-600 text-black">
-                        <Send className="w-3 h-3 mr-1" />
-                        Send
-                    </Button>
-                </form>
-            </CardContent>
-        </Card>
-    );
-};
+//     const handleChange = (e) => {
+//         setFormData(prev => ({
+//             ...prev,
+//             [e.target.name]: e.target.value
+//         }));
+//     };
+
+//     return (
+//         <Card className="bg-gray-800 border-gray-700 mt-4">
+//             <CardHeader>
+//                 <CardTitle className="text-white flex items-center gap-2 text-base">
+//                     <Mail className="w-4 h-4" />
+//                     Send Message
+//                 </CardTitle>
+//             </CardHeader>
+//             <CardContent>
+//                 <form onSubmit={handleSubmit} className="space-y-3">
+//                     <div className="grid grid-cols-2 gap-3">
+//                         <Input
+//                             name="name"
+//                             placeholder="Name"
+//                             value={formData.name}
+//                             onChange={handleChange}
+//                             className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 text-sm"
+//                             required
+//                         />
+//                         <Input
+//                             name="email"
+//                             type="email"
+//                             placeholder="Email"
+//                             value={formData.email}
+//                             onChange={handleChange}
+//                             className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 text-sm"
+//                             required
+//                         />
+//                     </div>
+//                     <Input
+//                         name="subject"
+//                         placeholder="Subject"
+//                         value={formData.subject}
+//                         onChange={handleChange}
+//                         className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 text-sm"
+//                         required
+//                     />
+//                     <Textarea
+//                         name="message"
+//                         placeholder="Message..."
+//                         rows={3}
+//                         value={formData.message}
+//                         onChange={handleChange}
+//                         className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 text-sm"
+//                         required
+//                     />
+//                     <Button type="submit" size="sm" className="w-full bg-amber-500 hover:bg-amber-600 text-black">
+//                         <Send className="w-3 h-3 mr-1" />
+//                         Send
+//                     </Button>
+//                 </form>
+//             </CardContent>
+//         </Card>
+//     );
+// };
 
 const createCommandProcessor = (data, setDisplayData, switchToGui) => {
     if (!data) return async () => "Portfolio data not loaded.";
@@ -406,10 +370,19 @@ const createCommandProcessor = (data, setDisplayData, switchToGui) => {
                 setDisplayData({ type: 'certifications-list', content: data.certifications });
                 return data.certifications.map(c => `${c.id}. ${c.name}`).join('\n');
 
-            case 'contact':
-                setDisplayData({ type: 'contact', content: data.contact });
-                return 'Contact information and form shown on right panel';
-
+                case 'contact':
+                    setDisplayData({
+                      type: 'contact',
+                      content: {
+                        email: data.contact.email,
+                        phone: data.contact.phone,
+                        location: data.contact.location,
+                        twitter: data.contact.twitter,
+                        github: data.contact.github,
+                        linkedin: data.contact.linkedin
+                      }
+                    });
+                    return 'Contact information and form shown on right panel';
             case 'about':
                 setDisplayData({ type: 'about', content: { text: data.about_me } });
                 return 'About me section shown on right panel';
@@ -718,7 +691,7 @@ const DisplayPanel = ({ displayData }) => {
                                 <span className="text-gray-300 text-sm">{displayData.content.location}</span>
                             </div>
                         </div>
-                        <ContactForm />
+                        <ContactForm contactData={displayData.content} />
                     </div>
                 );
 
@@ -857,7 +830,7 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
                                         autoComplete="off"
                                         autoCapitalize="off"
                                     />
-                                    {!isProcessing && <Cursor />}
+                                    {<Cursor />}
                                 </div>
                             </div>
                         </div>

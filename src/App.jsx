@@ -85,28 +85,28 @@ const mockPortfolioData = {
   ],
   "projects": [
     {
-      "id": 1,
-      "name": "E-commerce Platform",
-      "description": "Full-stack e-commerce solution with React, Node.js, and PostgreSQL",
-      "website_link": "https://example-ecommerce.com",
-      "details_link": "https://github.com/barackdev/ecommerce",
-      "tags": ["React", "Node.js", "PostgreSQL", "E-commerce"]
+      "id": 3,
+      "name": "AVIATOR",
+      "description": "Aviator Game Client - A real-time online betting game built with React, TypeScript, and Redux. Players bet on a virtual airplane's flight duration, aiming to cash out before it flies away",
+      "website_link": "",
+      "details_link": "https://github.com/IsoDevMate/AVIATOR",
+      "tags": ["TypeScript", "React", "Redux", "Game Development","Distributed Systems", "Backend","green-blue deployments"]
     },
     {
-      "id": 2,
-      "name": "Task Management App",
-      "description": "Real-time collaboration tool built with React, Socket.io, and MongoDB",
-      "website_link": "https://taskapp.example.com",
-      "details_link": "https://github.com/barackdev/taskapp",
-      "tags": ["React", "Socket.io", "MongoDB", "Real-time"]
+      "id": 4,
+      "name": "MPESA-DARAJA-WITH-TRPC",
+      "description": "Seamlessly integrate M-Pesa payments into web applications with type-safe APIs and zero guesswork. From checkout to confirmation in seconds — because your customers deserve payments that just work",
+      "website_link": "",
+      "details_link": "https://github.com/IsoDevMate/MPESA-DARAJA-WITH-TRPC",
+      "tags": ["TypeScript", "MPesa", "tRPC", "Payment Integration"]
     },
     {
       "id": 3,
       "name": "Portfolio Terminal",
       "description": "Interactive terminal-style portfolio with GUI/CLI modes",
       "website_link": "https://barackdev.com",
-      "details_link": "https://github.com/barackdev/portfolio",
-      "tags": ["React", "Terminal", "Animation", "Portfolio"]
+      "details_link": "https://github.com/IsoDevMate/better-portfolio",
+      "tags": ["React", "Terminal", "Animation", "Portfolio","ssh"]
     }
   ],
   "skills": [

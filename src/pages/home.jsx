@@ -5,6 +5,7 @@ import Experience from '@/components/ui/experience';
 import Projects from '@/components/ui/projects';
 import Education from '@/components/ui/education';
 import Interests from '@/components/ui/interests';
+import Certifications from '../components/ui/certifications';
 
 export default function HomePage({ portfolioData }) {
     if (!portfolioData) {
@@ -26,9 +27,9 @@ export default function HomePage({ portfolioData }) {
                     <Experience items={portfolioData.experience} />
                 </div>
                 <div className="space-y-12">
+                    <Certifications items={portfolioData.Certifications} />
                     <Projects items={portfolioData.projects} />
                     <Education data={portfolioData.education} />
-                    <Interests items={portfolioData.interests} />
                 </div>
             </div>
         </div>
