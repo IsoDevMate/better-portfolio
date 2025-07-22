@@ -5,102 +5,191 @@ import HomePage from './pages/home.jsx';
 import TerminalPage from './pages/terminal.jsx';
 import { Button } from '@/components/ui/button';
 
-import portfolioSchema from './portfolio.json';
-
 const mockPortfolioData = {
-  name: "Barack Ouma",
-  title: "Full Stack Developer",
-  profile_picture_url: "",
-  bio: "Passionate full-stack developer with expertise in modern web technologies",
-  about_me: "I'm a dedicated developer who loves creating efficient, scalable solutions and learning new technologies.",
-  contact: {
-    email: "barack.ouma@example.com",
-    twitter: "@barack_dev",
-    github: "https://github.com/barackdev",
-    linkedin: "https://linkedin.com/in/barackdev",
-    location: "Ruiru, Kiambu County, KE"
+  "name": "Barack Ouma",
+  "title": "Software Engineer | Backend | AWS Certified",
+  "profile_picture_url": "",
+  "bio": "Passionate full-stack developer with expertise in modern web technologies",
+  "about_me": "I'm a dedicated developer who loves creating efficient, scalable solutions and learning new technologies.",
+  "contact": {
+    "email": "barack.ouma@example.com",
+    "twitter": "https://twitter.com/BarackOuma7",
+    "github": "https://github.com/IsoDevMate",
+    "linkedin": "https://www.linkedin.com/in/barack-ouma-b37089212/",
+    "location": "Nairobi County, Kenya",
+    "website": "https://barackoumasite.netlify.app/"
   },
-  experience: [
+  "experience": [
+
     {
-      id: 1,
-      title: "Senior Full Stack Developer",
-      company: "Tech Solutions Ltd",
-      dates: "2023 - Present",
-      description_points: [
-        "Developed and maintained React/Node.js applications serving 10k+ users",
-        "Implemented GraphQL APIs reducing data transfer by 40%",
-        "Led a team of 3 junior developers in agile development practices"
+      "id": 1,
+      "title": "Technical Writer",
+      "company": "Kodaschool",
+      "dates": "Oct 2024 - Present · 10 mos",
+      "location": "Nairobi County, Kenya · Remote",
+      "description_points": [
+        "Write technical blogs that contribute to educational and beginner-friendly content focused on programming",
+        "Write clear, beginner-friendly guides on backend technologies such as TypeScript, Node.js, Java, and AWS services"
       ],
-      tags: ["React", "Node.js", "GraphQL", "Leadership"]
+      "tags": ["Technical Documentation", "TypeScript", "Node.js", "Java", "AWS"]
     },
     {
-      id: 2,
-      title: "Frontend Developer",
-      company: "Digital Innovations",
-      dates: "2021 - 2023",
-      description_points: [
-        "Built responsive web applications using React and Tailwind CSS",
-        "Collaborated with UI/UX designers to implement pixel-perfect designs",
-        "Optimized application performance resulting in 25% faster load times"
+      "id": 2,
+      "title": "Software Engineering Trainee",
+      "company": "Power Learn Project",
+      "dates": "Feb 2025 - Present · 6 mos",
+      "location": "Nairobi County, Kenya · On-site",
+      "description_points": [
+        "Participated in an intensive software development training program focusing on web technologies (HTML, CSS), Python, and JavaScript",
+        "Currently advancing to specialized mobile development with Dart and Flutter modules",
+        "Web development fundamentals (HTML, CSS, responsive design)",
+        "Python programming and Django framework",
+        "JavaScript fundamentals and application",
+        "Currently focusing on Dart programming language and Flutter for cross-platform mobile development",
+        "Data structures and algorithms"
       ],
-      tags: ["React", "Tailwind CSS", "Performance", "UI/UX"]
+      "tags": ["HTML", "CSS", "Python", "JavaScript", "Dart", "Flutter", "Django"]
+    },
+    {
+      "id": 3,
+      "title": "Full Stack Engineer",
+      "company": "Bee Multiscents",
+      "dates": "Nov 2024 - Feb 2025 · 4 mos",
+      "location": "Nairobi, Kenya · Hybrid",
+      "description_points": [
+        "Developed and managed the full-stack architecture of a dynamic, IoT-integrated fragrance system",
+        "Built a responsive UI and admin dashboard using React.js, Firebase, and Node.js",
+        "Developed a backend system to support dynamic pages, content management, and seamless IoT device interactions",
+        "Integrated Cloudflare for enhanced security, performance, and DDoS protection",
+        "Engineered a backend solution enabling remote control of smart diffusers via a secure dashboard",
+        "Worked with the IoT team to develop APIs for real-time scent customization and automation",
+        "Ensured smooth data synchronization between the dashboard, backend, and IoT devices"
+      ],
+      "tags": ["React", "Firebase", "Node.js", "IoT", "Cloudflare", "API Development"]
+    },
+    {
+      "id": 4,
+      "title": "Full Stack Engineer",
+      "company": "Yafreeka",
+      "dates": "Oct 2023 - Feb 2024 · 5 mos",
+      "location": "Nairobi County, Kenya · Remote",
+      "description_points": [
+        "Implemented the payments page and Y Studio using React",
+        "Led the migration from MongoDB to Firebase to address video fetching challenges",
+        "Gained hands-on experience writing cloud functions in Firebase",
+        "Contributed to both frontend and backend development, improving system performance",
+        "Collaborated with cross-functional teams to deliver features on time"
+      ],
+      "tags": ["React", "Firebase", "MongoDB", "Cloud Functions"]
     }
   ],
-  projects: [
+  "projects": [
     {
-      id: 1,
-      name: "E-commerce Platform",
-      description: "Full-stack e-commerce solution with React, Node.js, and PostgreSQL",
-      website_link: "https://example-ecommerce.com",
-      details_link: "https://github.com/barackdev/ecommerce",
-      tags: ["React", "Node.js", "PostgreSQL", "E-commerce"]
+      "id": 1,
+      "name": "E-commerce Platform",
+      "description": "Full-stack e-commerce solution with React, Node.js, and PostgreSQL",
+      "website_link": "https://example-ecommerce.com",
+      "details_link": "https://github.com/barackdev/ecommerce",
+      "tags": ["React", "Node.js", "PostgreSQL", "E-commerce"]
     },
     {
-      id: 2,
-      name: "Task Management App",
-      description: "Real-time collaboration tool built with React, Socket.io, and MongoDB",
-      website_link: "https://taskapp.example.com",
-      details_link: "https://github.com/barackdev/taskapp",
-      tags: ["React", "Socket.io", "MongoDB", "Real-time"]
+      "id": 2,
+      "name": "Task Management App",
+      "description": "Real-time collaboration tool built with React, Socket.io, and MongoDB",
+      "website_link": "https://taskapp.example.com",
+      "details_link": "https://github.com/barackdev/taskapp",
+      "tags": ["React", "Socket.io", "MongoDB", "Real-time"]
     },
     {
-      id: 3,
-      name: "Portfolio Terminal",
-      description: "Interactive terminal-style portfolio with GUI/CLI modes",
-      website_link: "https://barackdev.com",
-      details_link: "https://github.com/barackdev/portfolio",
-      tags: ["React", "Terminal", "Animation", "Portfolio"]
+      "id": 3,
+      "name": "Portfolio Terminal",
+      "description": "Interactive terminal-style portfolio with GUI/CLI modes",
+      "website_link": "https://barackdev.com",
+      "details_link": "https://github.com/barackdev/portfolio",
+      "tags": ["React", "Terminal", "Animation", "Portfolio"]
     }
   ],
-  skills: [
+  "skills": [
     {
-      category: "Frontend",
-      values: ["React", "Vue.js", "TypeScript", "Tailwind CSS", "Framer Motion"]
+      "category": "Frontend",
+      "values": ["React", "HTML", "CSS", "JavaScript", "Dart", "Flutter"]
     },
     {
-      category: "Backend",
-      values: ["Node.js", "Python", "GraphQL", "REST APIs", "PostgreSQL", "MongoDB"]
+      "category": "Backend",
+      "values": ["Node.js", "Python", "Django", "Firebase", "GraphQL", "MongoDB"]
     },
     {
-      category: "DevOps",
-      values: ["Docker", "AWS", "Git", "CI/CD", "Linux"]
+      "category": "Cloud & DevOps",
+      "values": ["AWS", "Cloudflare", "CI/CD", "Linux", "Docker"]
+    },
+    {
+      "category": "Other",
+      "values": ["Technical Documentation", "IoT", "API Development"]
     }
   ],
-  education: {
-    degree: "Bachelor of Computer Science",
-    university: "University of Nairobi",
-    dates: "2018 - 2022",
-    description: "Focused on software engineering, algorithms, and web technologies",
-    tags: ["Computer Science", "Software Engineering", "Web Development"]
+  "education": {
+    "degree": "Bachelor's degree, Information Technology",
+    "university": "Kenyatta University",
+    "dates": null,
+    "description": "Cascading Style Sheets (CSS), Python (Programming Language) and related technologies",
+    "tags": ["Information Technology", "Computer Science"]
   },
-  interests: [
+  "certifications": [
+    {
+      "name": "AWS Database Migration Service",
+      "issuer": "Amazon Web Services (AWS)",
+      "date": "May 2025",
+      "skills": ["Amazon Relational Database Service (RDS)", "Amazon Database Migration Service"]
+    },
+    {
+      "name": "Configuring and Deploying VPCs with Multiple Subnets",
+      "issuer": "Amazon Web Services (AWS)",
+      "date": "May 2025",
+      "skills": ["AWS Networking"]
+    },
+    {
+      "name": "Graph Developer - Associate",
+      "issuer": "Apollo GraphQL",
+      "date": "Feb 2025",
+      "skills": ["Apollo GraphQL", "GraphQL", "Node.js"]
+    },
+    {
+      "name": "Google Cloud Skills Badges",
+      "issuer": "Google Cloud Skills Boost",
+      "date": "2024",
+      "skills": ["PostgreSQL", "Databases", "Load Balancing", "Cloud Infrastructure", "Cloud Storage"]
+    },
+    {
+      "name": "AWS re/Start Graduate",
+      "issuer": "Amazon Web Services (AWS)",
+      "date": "Aug 2024",
+      "skills": ["Amazon Web Services (AWS)"]
+    }
+  ],
+  "honors": [
+    {
+      "name": "GDSC-Core Team Member-(Android) - KU",
+      "issuer": "GDSC - KU",
+      "date": "Jul 2024",
+      "description": "As a GDSC Core Member and Android Lead at Kenyatta University, played a crucial role in fostering a vibrant community of student developers."
+    }
+  ],
+  "recommendations": [
+    {
+      "name": "Mr. Kibet",
+      "position": "CEO at REDOLENCE LIVING LIMITED (BEE MULTISCENTS)",
+      "date": "March 4, 2025",
+      "content": "Highly recommend Barrack Ouma for his exceptional contributions at Bee Multiscent. As a key member of our development team, Barrack played a crucial role in designing and managing the full-stack architecture of our IoT-integrated fragrance system. His expertise in React.js, Firebase, Node.js, and Cloudflare security ensured a seamless and secure user experience."
+    }
+  ],
+  "interests": [
     "Web Development",
-    "Machine Learning",
-    "Open Source",
-    "Tech Mentoring",
-    "Photography"
+    "Cloud Computing",
+    "IoT",
+    "Technical Writing",
+    "Mobile Development"
   ]
-};
+}
 
 const LoadingScreen = () => (
   <motion.div
