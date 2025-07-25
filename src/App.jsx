@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Terminal, User, FileText, Code, Mail, Monitor, TerminalSquare } from 'lucide-react';
 import HomePage from './pages/home.jsx';
 import TerminalPage from './pages/terminal.jsx';
+import TerminalWS from './components/terminal/TerminalWS';
 import { Button } from '@/components/ui/button';
 
 const mockPortfolioData = {
@@ -259,7 +260,7 @@ const AnimatedHeader = ({ portfolioData, mode, onModeToggle }) => (
 
 function App() {
   const [portfolioData, setPortfolioData] = useState(null);
-  const [mode, setMode] = useState('gui'); // 'gui' or 'terminal'
+  const [mode, setMode] = useState('gui'); // 'gui', 'terminal', or 'ws-terminal'
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -282,7 +283,26 @@ function App() {
   }, []);
 
   const switchToGui = () => setMode('gui');
-  const toggleMode = () => setMode(mode === 'gui' ? 'terminal' : 'gui');
+  const toggleMode = () => {
+    // Cycle through modes: gui -> terminal -> ws-terminal -> gui
+    setMode(prevMode => {
+      if (prevMode === 'gui') return 'terminal';
+      if (prevMode === 'terminal') return 'ws-terminal';
+      return 'gui';
+    });
+  };
+  
+  const getModeIcon = () => {
+    if (mode === 'terminal') return <TerminalSquare className="w-4 h-4 mr-1" />;
+    if (mode === 'ws-terminal') return <Terminal className="w-4 h-4 mr-1" />;
+    return <Monitor className="w-4 h-4 mr-1" />;
+  };
+  
+  const getModeText = () => {
+    if (mode === 'terminal') return 'Terminal';
+    if (mode === 'ws-terminal') return 'SSH Terminal';
+    return 'GUI Mode';
+  };
 
   return (
     <>
@@ -331,6 +351,17 @@ function App() {
                       portfolioData={portfolioData}
                       switchToGui={switchToGui}
                     />
+                  </motion.div>
+                ) : mode === 'ws-terminal' ? (
+                  <motion.div
+                    key="ws-terminal"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.05 }}
+                    transition={{ duration: 0.3 }}
+                    className="min-h-screen"
+                  >
+                    <TerminalWS onClose={switchToGui} />
                   </motion.div>
                 ) : (
                   <motion.div

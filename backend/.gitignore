@@ -1,0 +1,6 @@
+./ssh
+./dist
+./node_modules
+./ssh/host_key
+./ssh/host_key.pub
+./ssh/host_key.old
