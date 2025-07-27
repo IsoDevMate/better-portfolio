@@ -1,15 +1,23 @@
-
-
 import React from 'react';
 import { motion } from 'framer-motion';
 
-// Define icon positions in a more organized way
-// Using a grid-like approach with zones around the center
+// Import all your images
+import springIcon from '../../assets/spring-icon.svg';
+import awsIcon from '../../assets/aws.svg';
+import flutterIcon from '../../assets/flutter.svg';
+import postgresqlIcon from '../../assets/postgresql.svg';
+import reactIcon from '../../assets/react.svg';
+import nestjsIcon from '../../assets/nestjs.svg';
+import graphqlIcon from '../../assets/graphql.svg';
+import typescriptIcon from '../../assets/typescript-icon.svg';
+import javaIcon from '../../assets/java.svg';
+import githubActionsIcon from '../../assets/github-actions.svg';
+import dockerIcon from '../../assets/docker.svg';
+
 const icons = [
-  // Top row - above the card
   {
     name: 'Spring',
-    src: '/src/assets/spring-icon.svg',
+    src: springIcon, // ✅ FIXED - using imported variable
     x: '20%',
     y: '15%',
     duration: 14,
@@ -17,7 +25,7 @@ const icons = [
   },
   {
     name: 'AWS',
-    src: '/src/assets/aws.svg',
+    src: awsIcon, // ✅ FIXED
     x: '50%',
     y: '10%',
     duration: 9,
@@ -25,17 +33,15 @@ const icons = [
   },
   {
     name: 'Flutter',
-    src: '/src/assets/flutter.svg',
+    src: flutterIcon, // ✅ FIXED
     x: '80%',
     y: '15%',
     duration: 9,
     hoverColor: '#02569b'
   },
-
-  // Left side - beside the card
   {
     name: 'PostgreSQL',
-    src: '/src/assets/postgresql.svg',
+    src: postgresqlIcon, // ✅ FIXED
     x: '95%',
     y: '55%',
     duration: 12,
@@ -43,7 +49,7 @@ const icons = [
   },
   {
     name: 'React',
-    src: '/src/assets/react.svg',
+    src: reactIcon, // ✅ FIXED
     x: '10%',
     y: '35%',
     duration: 10,
@@ -51,7 +57,7 @@ const icons = [
   },
   {
     name: 'NestJS',
-    src: '/src/assets/nestjs.svg',
+    src: nestjsIcon, // ✅ FIXED
     x: '5%',
     y: '55%',
     duration: 10,
@@ -59,17 +65,15 @@ const icons = [
   },
   {
     name: 'GraphQL',
-    src: '/src/assets/graphql.svg',
+    src: graphqlIcon, // ✅ FIXED
     x: '15%',
     y: '75%',
     duration: 14,
     hoverColor: '#e10098'
   },
-
-  // Right side - beside the card
   {
     name: 'TypeScript',
-    src: '/src/assets/typescript-icon.svg',
+    src: typescriptIcon, // ✅ FIXED
     x: '90%',
     y: '35%',
     duration: 12,
@@ -77,18 +81,15 @@ const icons = [
   },
   {
     name: 'Java',
-    src: '/src/assets/java.svg',
+    src: javaIcon, // ✅ FIXED
     x: '85%',
     y: '75%',
     duration: 8,
     hoverColor: '#f89820'
   },
-
-  // Bottom row - below the card
-
   {
     name: 'GitHub Actions',
-    src: '/src/assets/github-actions.svg',
+    src: githubActionsIcon, // ✅ FIXED
     x: '25%',
     y: '85%',
     duration: 10,
@@ -96,13 +97,14 @@ const icons = [
   },
   {
     name: 'Docker',
-    src: '/src/assets/docker.svg',
+    src: dockerIcon, // ✅ FIXED
     x: '75%',
     y: '85%',
     duration: 13,
     hoverColor: '#2496ed'
   }
 ];
+
 
 const TechIcons = () => {
   return (
