@@ -15,8 +15,8 @@ const Projects = ({ items }) => (
                         ))}
                     </div>
                     <div className="mt-3 flex gap-4 text-sm">
-                        <a href={project.website_link} target="_blank" rel="noopener noreferrer" className="text-amber-300 hover:underline">Visit Website</a>
-                        <a href={project.details_link} target="_blank" rel="noopener noreferrer" className="text-amber-300 hover:underline">View Details</a>
+                       <a href={project.website_link} target="_blank" rel="noopener noreferrer" className="text-emerald-300 hover:underline">Visit Website</a>
+                       <a href={project.details_link} target="_blank" rel="noopener noreferrer" className="text-emerald-300 hover:underline">View Details</a>
                     </div>
                 </div>
             ))}

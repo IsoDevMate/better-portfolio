@@ -5,7 +5,7 @@ import { X } from 'lucide-react';
 
 const UserPrompt = () => (
   <div className="flex items-center">
-    <span className="text-amber-300">user@portfolio</span>
+    <span className="text-emerald-300">user@portfolio</span>
     <span className="text-white">:</span>
     <span className="text-blue-400">~$</span>
   </div>
@@ -24,13 +24,13 @@ const TerminalWS = ({ onClose }) => {
   // Connect to WebSocket server
   useEffect(() => {
     const socket = new WebSocket('ws://localhost:3001');
-    
+
     socket.onopen = () => {
       console.log('Connected to WebSocket server');
       setIsConnected(true);
       setOutput(prev => [...prev, 'Connected to terminal server. Type a command to get started.']);
     };
-    
+
     socket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
@@ -41,20 +41,20 @@ const TerminalWS = ({ onClose }) => {
         console.error('Error parsing WebSocket message:', error);
       }
     };
-    
+
     socket.onclose = () => {
       console.log('Disconnected from WebSocket server');
       setIsConnected(false);
       setOutput(prev => [...prev, 'Disconnected from server. Refresh to reconnect.']);
     };
-    
+
     socket.onerror = (error) => {
       console.error('WebSocket error:', error);
       setOutput(prev => [...prev, 'Connection error. Please try again later.']);
     };
-    
+
     setWs(socket);
-    
+
     return () => {
       if (socket.readyState === WebSocket.OPEN) {
         socket.close();
@@ -75,16 +75,16 @@ const TerminalWS = ({ onClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!input.trim() || !isConnected || !ws) return;
-    
+
     // Add user input to output
     setOutput(prev => [...prev, `$ ${input}`]);
-    
+
     // Send command to server
     ws.send(JSON.stringify({
       type: 'command',
       command: input
     }));
-    
+
     // Clear input
     setInput('');
   };
@@ -119,10 +119,10 @@ const TerminalWS = ({ onClose }) => {
           Close
         </Button>
       </div>
-      
+
       <Card className="flex-1 flex flex-col bg-[#0D1117] border-gray-700">
         <CardHeader className="pb-2">
-          <CardTitle className="text-amber-300 font-mono text-sm">Terminal</CardTitle>
+          <CardTitle className="text-emerald-300 font-mono text-sm">Terminal</CardTitle>
         </CardHeader>
         <CardContent className="flex-1 p-4 overflow-y-auto font-mono text-sm">
           <div className="space-y-1">
@@ -133,7 +133,7 @@ const TerminalWS = ({ onClose }) => {
             ))}
             <div ref={terminalEndRef} />
           </div>
-          
+
           <form onSubmit={handleSubmit} className="mt-2 flex items-center">
             <UserPrompt />
             <div className="flex-1 flex items-center">

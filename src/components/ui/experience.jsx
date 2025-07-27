@@ -11,7 +11,7 @@ const Experience = ({ items }) => (
                 {items?.map((item) => (
                     <div key={item.id} className="relative pl-8">
                         {/* Timeline Dot */}
-                        <div className="absolute left-0 top-1.5 w-3 h-3 rounded-full bg-amber-300 border-2 border-[#1E1E1E]"></div>
+                       <div className="absolute left-0 top-1.5 w-3 h-3 rounded-full bg-emerald-300 border-2 border-[#1E1E1E]"></div>
                         <p className="font-semibold text-white">{item.title}</p>
                         <p className="text-sm text-gray-400">{item.company} &bull; {item.dates}</p>
                         <ul className="mt-2 space-y-1 list-disc list-inside text-sm text-gray-300">

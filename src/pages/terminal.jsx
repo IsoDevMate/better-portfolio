@@ -8,7 +8,7 @@ import ContactForm from './contactform';
 
 const UserPrompt = () => (
     <div className="flex items-center">
-        <span className="text-amber-300">barack.ouma~/dev/null@portfolio</span>
+        <span className="text-emerald-300">barack.ouma~/dev/null@portfolio</span>
         <span className="text-white">:</span>
         <span className="text-blue-400">~$</span>
     </div>
@@ -430,7 +430,7 @@ const DisplayPanel = ({ displayData }) => {
                         <div className="space-y-2">
                             {displayData.content.commands.map((cmd, index) => (
                                 <div key={index} className="border-l-2 border-amber-300 pl-3 py-1">
-                                    <code className="text-amber-300 font-mono text-sm">{cmd.cmd}</code>
+                                    <code className="text-emerald-300 font-mono text-sm">{cmd.cmd}</code>
                                     <p className="text-gray-300 text-xs mt-1">{cmd.desc}</p>
                                 </div>
                             ))}
@@ -446,7 +446,7 @@ const DisplayPanel = ({ displayData }) => {
                                 {displayData.content.name.split(' ').map(n => n[0]).join('')}
                             </div>
                             <h3 className="text-lg font-bold text-white">{displayData.content.name}</h3>
-                            <p className="text-amber-300 text-sm">{displayData.content.title}</p>
+                            <p className="text-emerald-300 text-sm">{displayData.content.title}</p>
                         </div>
                         <p className="text-gray-300 text-sm text-center">{displayData.content.bio}</p>
                     </div>
@@ -458,7 +458,7 @@ const DisplayPanel = ({ displayData }) => {
                         <h3 className="text-lg font-semibold text-white">Skills</h3>
                         {displayData.content.map((skill, index) => (
                             <div key={index} className="space-y-2">
-                                <h4 className="text-amber-300 font-medium text-sm">{skill.category}</h4>
+                                <h4 className="text-emerald-300 font-medium text-sm">{skill.category}</h4>
                                 <div className="flex flex-wrap gap-1">
                                     {skill.values.map((value, i) => (
                                         <Badge key={i} variant="secondary" className="bg-gray-700 text-gray-300 text-xs">
@@ -481,7 +481,7 @@ const DisplayPanel = ({ displayData }) => {
                                     <div className="flex items-start justify-between mb-1">
                                         <div>
                                             <h4 className="font-semibold text-white text-sm">{exp.title}</h4>
-                                            <p className="text-amber-300 text-xs">{exp.company}</p>
+                                            <p className="text-emerald-300 text-xs">{exp.company}</p>
                                         </div>
                                         <Badge variant="outline" className="border-gray-600 text-gray-400 text-xs">
                                             #{exp.id}
@@ -506,7 +506,7 @@ const DisplayPanel = ({ displayData }) => {
                     <div className="space-y-3">
                         <div>
                             <h3 className="text-lg font-semibold text-white">{displayData.content.title}</h3>
-                            <p className="text-amber-300 text-sm">{displayData.content.company}</p>
+                            <p className="text-emerald-300 text-sm">{displayData.content.company}</p>
                             <p className="text-gray-400 text-xs flex items-center gap-1 mt-1">
                                 <Calendar className="w-3 h-3" />
                                 {displayData.content.dates}
@@ -517,7 +517,7 @@ const DisplayPanel = ({ displayData }) => {
                             <ul className="space-y-1">
                                 {displayData.content.description_points.map((point, i) => (
                                     <li key={i} className="text-gray-300 text-xs flex items-start gap-2">
-                                        <span className="text-amber-300 mt-1">•</span>
+                                        <span className="text-emerald-300 mt-1">•</span>
                                         <span>{point}</span>
                                     </li>
                                 ))}
@@ -555,11 +555,11 @@ const DisplayPanel = ({ displayData }) => {
                                         ))}
                                     </div>
                                     <div className="flex gap-2 text-xs">
-                                        <a href={project.website_link} className="text-amber-300 hover:underline flex items-center gap-1">
+                                        <a href={project.website_link} className="text-emerald-300 hover:underline flex items-center gap-1">
                                             <ExternalLink className="w-2 h-2" />
                                             Site
                                         </a>
-                                        <a href={project.details_link} className="text-amber-300 hover:underline flex items-center gap-1">
+                                        <a href={project.details_link} className="text-emerald-300 hover:underline flex items-center gap-1">
                                             <ExternalLink className="w-2 h-2" />
                                             Details
                                         </a>
@@ -583,11 +583,11 @@ const DisplayPanel = ({ displayData }) => {
                             ))}
                         </div>
                         <div className="flex gap-3 text-sm">
-                            <a href={displayData.content.website_link} className="flex items-center gap-1 text-amber-300 hover:underline">
+                            <a href={displayData.content.website_link} className="flex items-center gap-1 text-emerald-300 hover:underline">
                                 <ExternalLink className="w-3 h-3" />
                                 Website
                             </a>
-                            <a href={displayData.content.details_link} className="flex items-center gap-1 text-amber-300 hover:underline">
+                            <a href={displayData.content.details_link} className="flex items-center gap-1 text-emerald-300 hover:underline">
                                 <ExternalLink className="w-3 h-3" />
                                 Details
                             </a>
@@ -601,7 +601,7 @@ const DisplayPanel = ({ displayData }) => {
                         <h3 className="text-lg font-semibold text-white">Education</h3>
                         <div className="border border-gray-700 rounded-lg p-3">
                             <h4 className="font-semibold text-white text-sm">{displayData.content.degree}</h4>
-                            <p className="text-amber-300 text-xs">{displayData.content.university}</p>
+                            <p className="text-emerald-300 text-xs">{displayData.content.university}</p>
                             <p className="text-gray-400 text-xs flex items-center gap-1 mt-1">
                                 <Calendar className="w-3 h-3" />
                                 {displayData.content.dates}
@@ -627,10 +627,10 @@ const DisplayPanel = ({ displayData }) => {
                                 <div key={cert.id} className="border border-gray-700 rounded-lg p-3 hover:border-amber-300 transition-colors">
                                     <div className="flex items-start justify-between mb-1">
                                         <div className="flex items-start gap-2">
-                                            <Award className="w-4 h-4 text-amber-300 mt-0.5 flex-shrink-0" />
+                                            <Award className="w-4 h-4 text-emerald-300 mt-0.5 flex-shrink-0" />
                                             <div>
                                                 <h4 className="font-semibold text-white text-sm">{cert.name}</h4>
-                                                <p className="text-amber-300 text-xs">{cert.issuer}</p>
+                                                <p className="text-emerald-300 text-xs">{cert.issuer}</p>
                                             </div>
                                         </div>
                                         <Badge variant="outline" className="border-gray-600 text-gray-400 text-xs">
@@ -655,11 +655,11 @@ const DisplayPanel = ({ displayData }) => {
                 return (
                     <div className="space-y-3">
                         <div className="flex items-center gap-2">
-                            <Award className="w-5 h-5 text-amber-300" />
+                            <Award className="w-5 h-5 text-emerald-300" />
                             <h3 className="text-lg font-semibold text-white">{displayData.content.name}</h3>
                         </div>
                         <div>
-                            <p className="text-amber-300 font-medium text-sm">{displayData.content.issuer}</p>
+                            <p className="text-emerald-300 font-medium text-sm">{displayData.content.issuer}</p>
                             <p className="text-gray-400 text-xs">Issued: {displayData.content.date}</p>
                             <p className="text-gray-400 text-xs">ID: {displayData.content.credential_id}</p>
                         </div>
@@ -679,15 +679,15 @@ const DisplayPanel = ({ displayData }) => {
                         <h3 className="text-lg font-semibold text-white">Contact</h3>
                         <div className="space-y-2">
                             <div className="flex items-center gap-2">
-                                <Mail className="w-4 h-4 text-amber-300" />
+                                <Mail className="w-4 h-4 text-emerald-300" />
                                 <span className="text-gray-300 text-sm">{displayData.content.email}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <Phone className="w-4 h-4 text-amber-300" />
+                                <Phone className="w-4 h-4 text-emerald-300" />
                                 <span className="text-gray-300 text-sm">{displayData.content.phone}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <MapPin className="w-4 h-4 text-amber-300" />
+                                <MapPin className="w-4 h-4 text-emerald-300" />
                                 <span className="text-gray-300 text-sm">{displayData.content.location}</span>
                             </div>
                         </div>
@@ -799,7 +799,7 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
             <div className="w-1/2 p-4 terminal-panel">
                 <Card className="bg-[#0D1117] border-gray-700 h-full">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-amber-300 font-mono text-sm">Terminal</CardTitle>
+                        <CardTitle className="text-emerald-300 font-mono text-sm">Terminal</CardTitle>
                     </CardHeader>
                     <CardContent className="p-4 h-full overflow-y-auto font-mono text-sm">
                         <div className="pb-20">

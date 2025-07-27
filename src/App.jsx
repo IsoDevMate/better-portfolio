@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Terminal, User, FileText, Code, Mail, Monitor, TerminalSquare } from 'lucide-react';
 import HomePage from './pages/home.jsx';
+import BlogsPage from '@/components/ui/blogs';
 import TerminalPage from './pages/terminal.jsx';
 import TerminalWS from './components/terminal/TerminalWS';
 import { Button } from '@/components/ui/button';
@@ -13,15 +15,56 @@ const mockPortfolioData = {
   "bio": "Passionate full-stack developer with expertise in modern web technologies",
   "about_me": "I'm a dedicated developer who loves creating efficient, scalable solutions and learning new technologies.",
   "contact": {
-    "email": "barack.ouma@example.com",
+    "email": "oumaoduor5827@gmail.com",
     "twitter": "https://twitter.com/BarackOuma7",
     "github": "https://github.com/IsoDevMate",
     "linkedin": "https://www.linkedin.com/in/barack-ouma-b37089212/",
     "location": "Nairobi County, Kenya",
     "website": "https://barackoumasite.netlify.app/"
   },
+  "blogs": [
+    {
+      "id": 1,
+      "title": "Building Scalable React Applications with TypeScript",
+      "description": "Learn how to structure large-scale React applications using TypeScript, exploring advanced patterns, best practices, and performance optimization techniques that I've learned from building production applications.",
+      "url": "https://example.com/blog/react-typescript-scalable",
+      "published_date": "Dec 15, 2024",
+      "read_time": 8,
+      "platform": "Kodaschool",
+      "tags": ["React", "TypeScript", "Architecture", "Performance"]
+    },
+    {
+      "id": 2,
+      "title": "AWS Lambda Functions: From Zero to Production",
+      "description": "A comprehensive guide to building, deploying, and monitoring AWS Lambda functions. Covers everything from basic setup to advanced patterns like event-driven architecture and cold start optimization.",
+      "url": "https://example.com/blog/aws-lambda-guide",
+      "published_date": "Nov 28, 2024",
+      "read_time": 12,
+      "platform": "Kodaschool",
+      "tags": ["AWS", "Lambda", "Serverless", "Node.js"]
+    },
+    {
+      "id": 3,
+      "title": "The Future of IoT: Building Smart Systems with React and Firebase",
+      "description": "Exploring how modern web technologies can be used to create intuitive dashboards for IoT devices. Real-world examples from my experience building smart fragrance systems.",
+      "url": "https://example.com/blog/iot-react-firebase",
+      "published_date": "Oct 22, 2024",
+      "read_time": 10,
+      "platform": "Medium",
+      "tags": ["IoT", "React", "Firebase", "Smart Systems"]
+    },
+    {
+      "id": 4,
+      "title": "Understanding GraphQL: A Practical Approach",
+      "description": "Deep dive into GraphQL fundamentals, from basic queries to advanced schema design. Includes practical examples and performance considerations for production applications.",
+      "url": "https://example.com/blog/graphql-practical-guide",
+      "published_date": "Sep 10, 2024",
+      "read_time": 15,
+      "platform": "Dev.to",
+      "tags": ["GraphQL", "API Design", "Apollo", "Backend"]
+    }
+  ],
   "experience": [
-
     {
       "id": 1,
       "title": "Technical Writer",
@@ -97,7 +140,7 @@ const mockPortfolioData = {
       "id": 4,
       "name": "MPESA-DARAJA-WITH-TRPC",
       "description": "Seamlessly integrate M-Pesa payments into web applications with type-safe APIs and zero guesswork. From checkout to confirmation in seconds — because your customers deserve payments that just work",
-      "website_link": "",
+      "website_link": "https://github.com/IsoDevMate/MPESA-DARAJA-WITH-TRPC",
       "details_link": "https://github.com/IsoDevMate/MPESA-DARAJA-WITH-TRPC",
       "tags": ["TypeScript", "MPesa", "tRPC", "Payment Integration"]
     },
@@ -105,8 +148,8 @@ const mockPortfolioData = {
       "id": 3,
       "name": "Portfolio Terminal",
       "description": "Interactive terminal-style portfolio with GUI/CLI modes",
-      "website_link": "https://barackdev.com",
-      "details_link": "https://github.com/IsoDevMate/better-portfolio",
+      "website_link": "https://better-portfolio-pi.vercel.app",
+      "details_link": "https://better-portfolio-pi.vercel.app",
       "tags": ["React", "Terminal", "Animation", "Portfolio","ssh"]
     }
   ],
@@ -190,7 +233,7 @@ const mockPortfolioData = {
     "Technical Writing",
     "Mobile Development"
   ]
-}
+};
 
 const LoadingScreen = () => (
   <motion.div
@@ -202,75 +245,123 @@ const LoadingScreen = () => (
     <motion.div
       animate={{ rotate: 360 }}
       transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-      className="w-8 h-8 border-2 border-[#00D9FF] border-t-transparent rounded-full"
+      className="w-8 h-8 border-2 border-[#10B981] border-t-transparent rounded-full"
     />
-    <span className="ml-3 text-[#00D9FF]">Loading portfolio...</span>
+    <span className="ml-3 text-[#10B981]">Loading portfolio...</span>
   </motion.div>
 );
 
-const AnimatedHeader = ({ portfolioData, mode, onModeToggle }) => (
-  <motion.header
-    initial={{ y: -100, opacity: 0 }}
-    animate={{ y: 0, opacity: 1 }}
-    transition={{ duration: 0.6, ease: "easeOut" }}
-    className="bg-[#111111] text-white p-4 sticky top-0 z-50 shadow-md border-b border-gray-800"
-  >
-    <div className="mx-auto max-w-5xl flex justify-between items-center">
-      <motion.div
-        initial={{ x: -20, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ delay: 0.3, duration: 0.5 }}
-        className="font-bold text-lg text-[#00D9FF]"
-      >
-        {portfolioData?.name}.dev
-      </motion.div>
+const AnimatedHeader = ({ portfolioData, mode, onModeToggle }) => {
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
-      <motion.div
-        initial={{ x: 20, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ delay: 0.3, duration: 0.5 }}
-      >
-        <Button
-          variant="outline"
-          className="bg-transparent border-gray-600 hover:bg-gray-800 hover:text-white transition-all duration-300"
-          onClick={onModeToggle}
+  return (
+    <motion.header
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="bg-[#111111] text-white p-4 sticky top-0 z-50 shadow-md border-b border-gray-800"
+    >
+      <div className="mx-auto max-w-5xl flex justify-between items-center">
+        <motion.div
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          className="font-bold text-lg text-[#10B981]"
         >
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="flex items-center"
-          >
-            {mode === 'gui' ? (
-              <>
-                <TerminalSquare className="w-4 h-4 mr-2" />
-                Terminal Mode
-              </>
-            ) : (
-              <>
-                <User className="w-4 h-4 mr-2" />
-                GUI Mode
-              </>
-            )}
-          </motion.div>
-        </Button>
-      </motion.div>
-    </div>
-  </motion.header>
-);
+          <Link to="/" className="hover:text-[#34D399] transition-colors duration-200">
+            {portfolioData?.name}.dev
+          </Link>
+        </motion.div>
 
-function App() {
+        {/* Navigation Links */}
+        <motion.nav
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+          className="hidden md:flex items-center gap-6 text-sm"
+        >
+          <Link
+            to="/"
+            className={`hover:text-[#10B981] transition-colors duration-200 ${
+              isHomePage ? 'text-[#10B981]' : 'text-gray-300'
+            }`}
+          >
+            Home
+          </Link>
+          <Link
+            to="/blogs"
+            className={`hover:text-[#10B981] transition-colors duration-200 ${
+              location.pathname === '/blogs' ? 'text-[#10B981]' : 'text-gray-300'
+            }`}
+          >
+            Blogs
+          </Link>
+        </motion.nav>
+
+        <motion.div
+          initial={{ x: 20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          className="flex items-center gap-3"
+        >
+          <Button
+            variant="outline"
+            className="bg-transparent border-gray-600 hover:bg-gray-800 hover:text-white transition-all duration-300"
+            onClick={onModeToggle}
+          >
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="flex items-center"
+            >
+              {mode === 'gui' ? (
+                <>
+                  <TerminalSquare className="w-4 h-4 mr-2" />
+                  Terminal Mode
+                </>
+              ) : (
+                <>
+                  <User className="w-4 h-4 mr-2" />
+                  GUI Mode
+                </>
+              )}
+            </motion.div>
+          </Button>
+        </motion.div>
+      </div>
+    </motion.header>
+  );
+};
+
+const PageTransition = ({ children }) => {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={location.pathname}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.3 }}
+      >
+        {children}
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
+function AppContent() {
   const [portfolioData, setPortfolioData] = useState(null);
-  const [mode, setMode] = useState('gui'); // 'gui', 'terminal', or 'ws-terminal'
+  const [mode, setMode] = useState('gui');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
       try {
-        // Simulate loading time
         await new Promise(resolve => setTimeout(resolve, 1500));
-
-        // Use mock data that follows the JSON schema structure
         setPortfolioData(mockPortfolioData);
       } catch (error) {
         console.error("Failed to load portfolio data:", error);
@@ -284,26 +375,88 @@ function App() {
 
   const switchToGui = () => setMode('gui');
   const toggleMode = () => {
-    // Cycle through modes: gui -> terminal -> ws-terminal -> gui
     setMode(prevMode => {
       if (prevMode === 'gui') return 'terminal';
       if (prevMode === 'terminal') return 'ws-terminal';
       return 'gui';
     });
   };
-  
-  const getModeIcon = () => {
-    if (mode === 'terminal') return <TerminalSquare className="w-4 h-4 mr-1" />;
-    if (mode === 'ws-terminal') return <Terminal className="w-4 h-4 mr-1" />;
-    return <Monitor className="w-4 h-4 mr-1" />;
-  };
-  
-  const getModeText = () => {
-    if (mode === 'terminal') return 'Terminal';
-    if (mode === 'ws-terminal') return 'SSH Terminal';
-    return 'GUI Mode';
-  };
 
+  return (
+    <div className="min-h-screen bg-[#111111] text-white">
+      <AnimatePresence mode="wait">
+        {loading ? (
+          <LoadingScreen key="loading" />
+        ) : (
+          <motion.div
+            key="main"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="w-full min-h-screen"
+          >
+            <AnimatePresence mode="wait">
+              {mode === 'terminal' ? (
+                <motion.div
+                  key="terminal"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.05 }}
+                  transition={{ duration: 0.3 }}
+                  className="min-h-screen"
+                >
+                  <TerminalPage
+                    portfolioData={portfolioData}
+                    switchToGui={switchToGui}
+                  />
+                </motion.div>
+              ) : mode === 'ws-terminal' ? (
+                <motion.div
+                  key="ws-terminal"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.05 }}
+                  transition={{ duration: 0.3 }}
+                  className="min-h-screen"
+                >
+                  <TerminalWS onClose={switchToGui} />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="gui"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <AnimatedHeader
+                    portfolioData={portfolioData}
+                    mode={mode}
+                    onModeToggle={toggleMode}
+                  />
+                  <PageTransition>
+                    <Routes>
+                      <Route
+                        path="/"
+                        element={<HomePage portfolioData={portfolioData} />}
+                      />
+                      <Route
+                        path="/blogs"
+                        element={<BlogsPage portfolioData={portfolioData} />}
+                      />
+                    </Routes>
+                  </PageTransition>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function App() {
   return (
     <>
       <style>{`
@@ -320,70 +473,16 @@ function App() {
 
         :root {
           --background: #111111;
-          --primary: #00D9FF;
+          --primary: #10B981;
+          --primary-light: #34D399;
+          --primary-dark: #059669;
           --card-bg: #1a1a1a;
         }
       `}</style>
 
-      <div className="min-h-screen bg-[#111111] text-white">
-        <AnimatePresence mode="wait">
-          {loading ? (
-            <LoadingScreen key="loading" />
-          ) : (
-            <motion.div
-              key="main"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="w-full min-h-screen"
-            >
-              <AnimatePresence mode="wait">
-                {mode === 'terminal' ? (
-                  <motion.div
-                    key="terminal"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 1.05 }}
-                    transition={{ duration: 0.3 }}
-                    className="min-h-screen"
-                  >
-                    <TerminalPage
-                      portfolioData={portfolioData}
-                      switchToGui={switchToGui}
-                    />
-                  </motion.div>
-                ) : mode === 'ws-terminal' ? (
-                  <motion.div
-                    key="ws-terminal"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 1.05 }}
-                    transition={{ duration: 0.3 }}
-                    className="min-h-screen"
-                  >
-                    <TerminalWS onClose={switchToGui} />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="gui"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <AnimatedHeader
-                      portfolioData={portfolioData}
-                      mode={mode}
-                      onModeToggle={toggleMode}
-                    />
-                    <HomePage portfolioData={portfolioData} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+      <Router>
+        <AppContent />
+      </Router>
     </>
   );
 }

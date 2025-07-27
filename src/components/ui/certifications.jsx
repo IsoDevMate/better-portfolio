@@ -11,7 +11,7 @@ const Certifications = ({ items }) => {
         {items.map((cert) => (
           <div key={cert.id} className="border-b border-gray-700 pb-4 last:border-b-0">
             <div className="flex items-start gap-2">
-              <Award className="w-4 h-4 text-amber-300 mt-1" />
+             <Award className="w-4 h-4 text-emerald-300 mt-1" />
               <div>
                 <h4 className="font-semibold text-white">{cert.name}</h4>
                 <p className="text-sm text-gray-400">{cert.issuer} &bull; {cert.date}</p>
