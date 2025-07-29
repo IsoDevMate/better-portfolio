@@ -8,7 +8,7 @@ import Interests from '@/components/ui/interests';
 import Certifications from '../components/ui/certifications';
 import Blogs from '../components/ui/blogs';
 import Footer from '../components/ui/footer';
-
+import profilepic from '../assets/barack.jpeg';
 
 export default function HomePage({ portfolioData }) {
     if (!portfolioData) {
@@ -23,7 +23,7 @@ export default function HomePage({ portfolioData }) {
                 title={portfolioData.title}
                 bio={portfolioData.bio}
                 contact={portfolioData.contact}
-                profilePictureUrl={portfolioData.profile_picture_url}
+                profilePictureUrl={profilepic}
             />
 
             {/* Content Section */}
