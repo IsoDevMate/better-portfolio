@@ -653,6 +653,7 @@
 // };
 
 // export default InterestsPage;
+
 import React, { useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Code2, BookOpen, Coffee, Rocket, Brain, ArrowLeft, ExternalLink } from 'lucide-react';
@@ -670,8 +671,15 @@ import DI from '../../assets/ioc-and-mapper-in-c-1-638.webp';
 
 const InterestsPage = ({ portfolioData }) => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isVisible, setIsVisible] = useState(true); // Force initial visibility
   const carouselRef = useRef();
+
+  // Auto-scroll functionality
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev === passions.length - 1 ? 0 : prev + 1));
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const passions = [
     {
@@ -761,22 +769,6 @@ const InterestsPage = ({ portfolioData }) => {
     }
   ];
 
-  // Auto-scroll functionality with proper dependencies
-  useEffect(() => {
-    if (!isVisible || passions.length === 0) return;
-
-    const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev === passions.length - 1 ? 0 : prev + 1));
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [passions.length, isVisible]);
-
-  // Handle image load errors
-  const handleImageError = (e) => {
-    e.target.style.display = 'none';
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#111111] to-[#0a0a0a]">
       {/* Background effects */}
@@ -823,12 +815,13 @@ const InterestsPage = ({ portfolioData }) => {
           </motion.p>
         </motion.div>
 
-        {/* Passion Carousel - Simplified with better error handling */}
+        {/* Passion Carousel */}
         <motion.section
           className="mb-24 relative"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px 0px 0px 0px" }}
+          transition={{ duration: 0.8 }}
         >
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
@@ -839,96 +832,82 @@ const InterestsPage = ({ portfolioData }) => {
             </p>
           </div>
 
-          {/* Simplified Carousel Container */}
-          <div className="relative w-full max-w-4xl mx-auto">
-            <div className="relative h-[32rem] w-full overflow-hidden rounded-2xl">
+          <div className="relative h-[32rem] w-full overflow-hidden rounded-2xl">
+            <div className="absolute inset-0 flex">
               {passions.map((passion, index) => {
-                const isActive = index === activeIndex;
                 const distance = Math.abs(index - activeIndex);
+                const scale = distance === 0 ? 1 : 1 - (distance * 0.2);
+                const opacity = distance === 0 ? 1 : 0.7 - (distance * 0.3);
+                const zIndex = passions.length - distance;
+                const xPos = (index - activeIndex) * 40;
                 const Icon = passion.icon;
 
                 return (
                   <motion.div
                     key={passion.id}
-                    className={`absolute inset-0 bg-gray-900 rounded-2xl overflow-hidden cursor-pointer transition-all duration-500 ${
-                      isActive ? 'z-30' : 'z-10'
-                    }`}
+                    className={`absolute inset-0 bg-gray-900 rounded-2xl overflow-hidden ${index === activeIndex ? 'cursor-default' : 'cursor-pointer'}`}
                     style={{
-                      transform: `translateX(${(index - activeIndex) * 100}%) scale(${
-                        isActive ? 1 : 0.9
-                      })`,
-                      opacity: distance > 1 ? 0 : isActive ? 1 : 0.6,
+                      scale,
+                      opacity,
+                      zIndex,
+                      x: `${xPos}%`,
+                      backgroundImage: `url(${passion.image})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      width: '85%',
+                      left: '7.5%',
+                      boxShadow: index === activeIndex ? '0 25px 50px -12px rgba(16, 185, 129, 0.25)' : 'none',
+                      willChange: 'transform, opacity' // Optimize for animations
+                    }}
+                    initial={false} // Prevent initial animation flash
+                    animate={{
+                      scale,
+                      opacity,
+                      x: `${xPos}%`
+                    }}
+                    transition={{
+                      type: 'spring',
+                      stiffness: 260,
+                      damping: 25,
+                      mass: 0.5
                     }}
                     onClick={() => setActiveIndex(index)}
                   >
-                    {/* Background Image with Error Handling */}
-                    <div className="absolute inset-0">
-                      <img
-                        src={passion.image}
-                        alt={passion.title}
-                        className="w-full h-full object-cover"
-                        onError={handleImageError}
-                        loading="lazy"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/70 to-gray-900/20" />
-                    </div>
-
-                    {/* Content */}
-                    <div className="absolute bottom-0 left-0 right-0 p-8 text-left z-10">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className={`p-3 rounded-lg ${passion.color} bg-gray-900/80 backdrop-blur-sm`}>
-                          <Icon className="w-6 h-6" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/70 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-8 text-left">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className={`p-2 rounded-lg ${passion.color} bg-opacity-20`}>
+                          <Icon className="w-5 h-5" />
                         </div>
-                        <h3 className="text-2xl md:text-3xl font-bold text-white">{passion.title}</h3>
+                        <h3 className="text-2xl font-bold text-white">{passion.title}</h3>
                       </div>
-                      <p className="text-gray-200 text-lg max-w-2xl leading-relaxed">
-                        {passion.description}
-                      </p>
+                      <p className="text-gray-300 max-w-lg">{passion.description}</p>
                     </div>
                   </motion.div>
                 );
               })}
             </div>
+          </div>
 
-            {/* Navigation Indicators */}
-            <div className="flex justify-center mt-8 gap-3">
-              {passions.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setActiveIndex(index)}
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    index === activeIndex
-                      ? 'bg-emerald-400 w-8'
-                      : 'bg-gray-600 hover:bg-gray-500 w-2'
-                  }`}
-                  aria-label={`Go to slide ${index + 1}`}
-                />
-              ))}
-            </div>
-
-            {/* Navigation Arrows */}
-            <button
-              onClick={() => setActiveIndex(prev => prev === 0 ? passions.length - 1 : prev - 1)}
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-40 p-2 bg-gray-900/80 hover:bg-gray-900 text-white rounded-full transition-all duration-200 backdrop-blur-sm"
-              aria-label="Previous slide"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => setActiveIndex(prev => prev === passions.length - 1 ? 0 : prev + 1)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-40 p-2 bg-gray-900/80 hover:bg-gray-900 text-white rounded-full transition-all duration-200 backdrop-blur-sm"
-              aria-label="Next slide"
-            >
-              <ArrowLeft className="w-5 h-5 rotate-180" />
-            </button>
+          {/* Indicators */}
+          <div className="flex justify-center mt-8 gap-2">
+            {passions.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setActiveIndex(index)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${index === activeIndex ? 'bg-emerald-400 w-6' : 'bg-gray-600'}`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
           </div>
         </motion.section>
 
-        {/* Books Section - Simplified Animation */}
+        {/* Books Section */}
         <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px 0px 0px 0px" }}
+          transition={{ duration: 0.8, delay: 0.2 }}
           className="mb-24 relative"
         >
           <div className="text-center mb-16">
@@ -941,30 +920,28 @@ const InterestsPage = ({ portfolioData }) => {
           </div>
 
           <div className="relative">
-            {/* Fade edges */}
-            <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#0a0a0a] to-transparent z-10 pointer-events-none"></div>
-            <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-[#0a0a0a] to-transparent z-10 pointer-events-none"></div>
+            <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#0a0a0a] to-transparent z-10 pointer-events-none"></div>
+            <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#0a0a0a] to-transparent z-10 pointer-events-none"></div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 px-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 px-8">
               {books.map((book, index) => (
                 <motion.div
                   key={book.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="group relative bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl overflow-hidden hover:border-emerald-300/30 transition-all duration-300 hover:-translate-y-1"
                 >
-                  <div className="h-56 overflow-hidden bg-gray-800">
+                  <div className="h-56 overflow-hidden">
                     <img
                       src={book.cover}
-                      alt={`${book.title} cover`}
+                      alt={book.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      onError={handleImageError}
-                      loading="lazy"
                     />
                   </div>
                   <div className="p-4">
-                    <h3 className="font-medium text-white text-sm mb-1 group-hover:text-emerald-300 transition-colors duration-300 line-clamp-2">
+                    <h3 className="font-medium text-white text-sm mb-1 group-hover:text-emerald-300 transition-colors duration-300 line-clamp-1">
                       {book.title}
                     </h3>
                     <p className="text-xs text-gray-400 mb-2">by {book.author}</p>
@@ -983,9 +960,10 @@ const InterestsPage = ({ portfolioData }) => {
 
         {/* Call to Action */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.0 }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px 0px 0px 0px" }}
+          transition={{ duration: 0.6, delay: 0.4 }}
           className="text-center p-8 bg-gray-900/30 backdrop-blur-sm border border-gray-800 rounded-2xl mb-16"
         >
           <Coffee className="w-12 h-12 text-emerald-300 mx-auto mb-4" />
@@ -994,7 +972,7 @@ const InterestsPage = ({ portfolioData }) => {
             Have a book recommendation, want to discuss dependency injection patterns, or just chat about tech? I'd love to hear from you!
           </p>
           <motion.a
-            href={`mailto:${portfolioData?.contact?.email || 'contact@example.com'}`}
+            href={`mailto:${portfolioData?.contact?.email}`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-300/10 hover:bg-emerald-300/20 border border-emerald-300/30 hover:border-emerald-300/50 rounded-lg text-emerald-300 hover:text-emerald-200 font-medium transition-all duration-300"
