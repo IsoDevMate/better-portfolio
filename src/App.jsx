@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal, User, FileText, Code, Mail, Monitor, TerminalSquare, Download } from 'lucide-react';
+import { Terminal, User, FileText, Code, Mail, Monitor, TerminalSquare, Download, X, Menu, Home } from 'lucide-react';
 import HomePage from './pages/home.jsx';
 import BlogsPage from '@/components/ui/blogs';
 import TerminalPage from './pages/terminal.jsx';
@@ -314,6 +314,12 @@ const LoadingScreen = () => (
 const AnimatedHeader = ({ portfolioData, mode, onModeToggle }) => {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Close menu when route changes
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location]);
 
   return (
     <motion.header
@@ -334,37 +340,22 @@ const AnimatedHeader = ({ portfolioData, mode, onModeToggle }) => {
           </Link>
         </motion.div>
 
-        {/* Navigation Links */}
+        {/* Desktop Navigation */}
         <motion.nav
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.5 }}
           className="hidden md:flex items-center gap-6 text-sm"
         >
-          <Link
-            to="/"
-            className={`hover:text-[#10B981] transition-colors duration-200 ${
-              isHomePage ? 'text-[#10B981]' : 'text-gray-300'
-            }`}
-          >
+          <NavLink to="/" isActive={isHomePage}>
             Home
-          </Link>
-          <Link
-            to="/blogs"
-            className={`hover:text-[#10B981] transition-colors duration-200 ${
-              location.pathname === '/blogs' ? 'text-[#10B981]' : 'text-gray-300'
-            }`}
-          >
+          </NavLink>
+          <NavLink to="/blogs" isActive={location.pathname === '/blogs'}>
             Blogs
-          </Link>
-          <Link
-            to="/interests"
-            className={`hover:text-[#10B981] transition-colors duration-200 ${
-              location.pathname === '/interests' ? 'text-[#10B981]' : 'text-gray-300'
-            }`}
-          >
+          </NavLink>
+          <NavLink to="/interests" isActive={location.pathname === '/interests'}>
             Interests
-          </Link>
+          </NavLink>
         </motion.nav>
 
         <motion.div
@@ -382,6 +373,7 @@ const AnimatedHeader = ({ portfolioData, mode, onModeToggle }) => {
             <Download className="w-4 h-4" />
             <span>Resume</span>
           </a>
+
           <Button
             variant="outline"
             className="bg-transparent border-gray-600 hover:bg-gray-800 hover:text-white transition-all duration-300"
@@ -405,11 +397,85 @@ const AnimatedHeader = ({ portfolioData, mode, onModeToggle }) => {
               )}
             </motion.div>
           </Button>
+
+          {/* Mobile menu button */}
+          <button
+            className="md:hidden p-2 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? (
+              <X className="w-6 h-6 text-gray-300" />
+            ) : (
+              <Menu className="w-6 h-6 text-gray-300" />
+            )}
+          </button>
         </motion.div>
       </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
+            className="md:hidden absolute left-0 right-0 bg-[#111111] shadow-lg border-t border-gray-800 z-40"
+          >
+            <div className="px-4 py-3 space-y-3">
+              <MobileNavLink to="/" isActive={isHomePage}>
+                <Home className="w-5 h-5 mr-3" /> Home
+              </MobileNavLink>
+              <MobileNavLink to="/blogs" isActive={location.pathname === '/blogs'}>
+                <FileText className="w-5 h-5 mr-3" /> Blogs
+              </MobileNavLink>
+              <MobileNavLink to="/interests" isActive={location.pathname === '/interests'}>
+                <Code className="w-5 h-5 mr-3" /> Interests
+              </MobileNavLink>
+
+              <a
+                href="https://drive.google.com/uc?export=download&id=1oV6w5w6oPMtN3zaqCidjTDXQfMhjIhv8"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center w-full px-4 py-3 text-left text-gray-300 hover:bg-gray-800 rounded-lg transition-colors duration-200"
+              >
+                <Download className="w-5 h-5 mr-3" />
+                Download Resume
+              </a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 };
+
+// Reusable NavLink component for desktop
+const NavLink = ({ to, children, isActive }) => (
+  <Link
+    to={to}
+    className={`hover:text-[#10B981] transition-colors duration-200 ${
+      isActive ? 'text-[#10B981]' : 'text-gray-300'
+    }`}
+  >
+    {children}
+  </Link>
+);
+
+// Reusable MobileNavLink component
+const MobileNavLink = ({ to, children, isActive }) => (
+  <Link
+    to={to}
+    className={`flex items-center w-full px-4 py-3 text-left rounded-lg transition-colors duration-200 ${
+      isActive
+        ? 'text-[#10B981] bg-emerald-900/20'
+        : 'text-gray-300 hover:bg-gray-800'
+    }`}
+  >
+    {children}
+  </Link>
+);
 
 const PageTransition = ({ children }) => {
   const location = useLocation();
