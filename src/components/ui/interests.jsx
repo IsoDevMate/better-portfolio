@@ -653,9 +653,8 @@
 // };
 
 // export default InterestsPage;
-
 import React, { useRef, useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { Code2, BookOpen, Coffee, Rocket, Brain, ArrowLeft, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
@@ -671,15 +670,24 @@ import DI from '../../assets/ioc-and-mapper-in-c-1-638.webp';
 
 const InterestsPage = ({ portfolioData }) => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const carouselRef = useRef();
+  const sectionRefs = {
+    passions: useRef(),
+    books: useRef(),
+    cta: useRef()
+  };
 
-  // Auto-scroll functionality
+  // Auto-scroll functionality with pause on hover
   useEffect(() => {
+    if (!isAutoPlaying) return;
+
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev === passions.length - 1 ? 0 : prev + 1));
     }, 5000);
+
     return () => clearInterval(interval);
-  }, []);
+  }, [isAutoPlaying]);
 
   const passions = [
     {
@@ -769,12 +777,17 @@ const InterestsPage = ({ portfolioData }) => {
     }
   ];
 
+  // Use InView for scroll detection
+  const isPassionsInView = useInView(sectionRefs.passions, { once: true, margin: "0px 0px -100px 0px" });
+  const isBooksInView = useInView(sectionRefs.books, { once: true, margin: "0px 0px -100px 0px" });
+  const isCTAInView = useInView(sectionRefs.cta, { once: true, margin: "0px 0px -100px 0px" });
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#111111] to-[#0a0a0a]">
-      {/* Background effects */}
+      {/* Background effects - optimized with will-change */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-300/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-300/5 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-300/5 rounded-full blur-3xl will-change-transform"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-300/5 rounded-full blur-3xl will-change-transform"></div>
       </div>
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -816,24 +829,35 @@ const InterestsPage = ({ portfolioData }) => {
         </motion.div>
 
         {/* Passion Carousel */}
-        <motion.section
+        <section
+          ref={sectionRefs.passions}
           className="mb-24 relative"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px 0px 0px 0px" }}
-          transition={{ duration: 0.8 }}
         >
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              animate={isPassionsInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6 }}
+              className="text-3xl md:text-4xl font-bold text-white mb-4"
+            >
               Technical <span className="text-emerald-300">Passions</span>
-            </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={isPassionsInView ? { opacity: 1 } : {}}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-gray-400 max-w-2xl mx-auto"
+            >
               Areas I'm deeply invested in and constantly exploring
-            </p>
+            </motion.p>
           </div>
 
-          <div className="relative h-[32rem] w-full overflow-hidden rounded-2xl">
-            <div className="absolute inset-0 flex">
+          <div
+            className="relative h-[32rem] w-full overflow-hidden rounded-2xl"
+            onMouseEnter={() => setIsAutoPlaying(false)}
+            onMouseLeave={() => setIsAutoPlaying(true)}
+          >
+            <AnimatePresence initial={false}>
               {passions.map((passion, index) => {
                 const distance = Math.abs(index - activeIndex);
                 const scale = distance === 0 ? 1 : 1 - (distance * 0.2);
@@ -844,7 +868,7 @@ const InterestsPage = ({ portfolioData }) => {
 
                 return (
                   <motion.div
-                    key={passion.id}
+                    key={`${passion.id}-${activeIndex}`}
                     className={`absolute inset-0 bg-gray-900 rounded-2xl overflow-hidden ${index === activeIndex ? 'cursor-default' : 'cursor-pointer'}`}
                     style={{
                       scale,
@@ -856,14 +880,22 @@ const InterestsPage = ({ portfolioData }) => {
                       backgroundPosition: 'center',
                       width: '85%',
                       left: '7.5%',
-                      boxShadow: index === activeIndex ? '0 25px 50px -12px rgba(16, 185, 129, 0.25)' : 'none',
-                      willChange: 'transform, opacity' // Optimize for animations
+                      willChange: 'transform, opacity'
                     }}
-                    initial={false} // Prevent initial animation flash
+                    initial={{
+                      scale: 0.9,
+                      opacity: 0.5,
+                      x: `${xPos}%`
+                    }}
                     animate={{
                       scale,
                       opacity,
-                      x: `${xPos}%`
+                      x: `${xPos}%`,
+                      boxShadow: index === activeIndex ? '0 25px 50px -12px rgba(16, 185, 129, 0.25)' : 'none'
+                    }}
+                    exit={{
+                      scale: 0.9,
+                      opacity: 0
                     }}
                     transition={{
                       type: 'spring',
@@ -886,11 +918,16 @@ const InterestsPage = ({ portfolioData }) => {
                   </motion.div>
                 );
               })}
-            </div>
+            </AnimatePresence>
           </div>
 
           {/* Indicators */}
-          <div className="flex justify-center mt-8 gap-2">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={isPassionsInView ? { opacity: 1 } : {}}
+            transition={{ delay: 0.4 }}
+            className="flex justify-center mt-8 gap-2"
+          >
             {passions.map((_, index) => (
               <button
                 key={index}
@@ -899,45 +936,55 @@ const InterestsPage = ({ portfolioData }) => {
                 aria-label={`Go to slide ${index + 1}`}
               />
             ))}
-          </div>
-        </motion.section>
+          </motion.div>
+        </section>
 
         {/* Books Section */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px 0px 0px 0px" }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+        <section
+          ref={sectionRefs.books}
           className="mb-24 relative"
         >
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Books That at <span className="text-emerald-300">Fill the Gaps</span>
-            </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              animate={isBooksInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6 }}
+              className="text-3xl md:text-4xl font-bold text-white mb-4"
+            >
+              Books That <span className="text-emerald-300">Fill the Gaps</span>
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={isBooksInView ? { opacity: 1 } : {}}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-gray-400 max-w-2xl mx-auto"
+            >
               Foundational reading that has influenced my technical and personal growth
-            </p>
+            </motion.p>
           </div>
 
           <div className="relative">
             <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#0a0a0a] to-transparent z-10 pointer-events-none"></div>
             <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#0a0a0a] to-transparent z-10 pointer-events-none"></div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={isBooksInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 px-8"
+            >
               {books.map((book, index) => (
                 <motion.div
                   key={book.title}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="group relative bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl overflow-hidden hover:border-emerald-300/30 transition-all duration-300 hover:-translate-y-1"
+                  whileHover={{ y: -5 }}
+                  className="group relative bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl overflow-hidden hover:border-emerald-300/30 transition-all duration-300"
                 >
                   <div className="h-56 overflow-hidden">
                     <img
                       src={book.cover}
                       alt={book.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
                     />
                   </div>
                   <div className="p-4">
@@ -954,16 +1001,16 @@ const InterestsPage = ({ portfolioData }) => {
                   </div>
                 </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
-        </motion.section>
+        </section>
 
         {/* Call to Action */}
-        <motion.div
+        <motion.section
+          ref={sectionRefs.cta}
           initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px 0px 0px 0px" }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          animate={isCTAInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
           className="text-center p-8 bg-gray-900/30 backdrop-blur-sm border border-gray-800 rounded-2xl mb-16"
         >
           <Coffee className="w-12 h-12 text-emerald-300 mx-auto mb-4" />
@@ -981,7 +1028,7 @@ const InterestsPage = ({ portfolioData }) => {
             Get In Touch
             <ExternalLink className="w-4 h-4" />
           </motion.a>
-        </motion.div>
+        </motion.section>
       </div>
     </div>
   );
