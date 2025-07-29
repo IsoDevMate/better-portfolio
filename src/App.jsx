@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal, User, FileText, Code, Mail, Monitor, TerminalSquare } from 'lucide-react';
+import { Terminal, User, FileText, Code, Mail, Monitor, TerminalSquare, Download } from 'lucide-react';
 import HomePage from './pages/home.jsx';
 import BlogsPage from '@/components/ui/blogs';
 import TerminalPage from './pages/terminal.jsx';
 import TerminalWS from './components/terminal/TerminalWS';
+import InterestsPage from '@/components/ui/interests';
 import { Button } from '@/components/ui/button';
 
 const mockPortfolioData = {
@@ -20,7 +21,7 @@ const mockPortfolioData = {
     "github": "https://github.com/IsoDevMate",
     "linkedin": "https://www.linkedin.com/in/barack-ouma-b37089212/",
     "location": "Nairobi County, Kenya",
-    "website": "https://barackoumasite.netlify.app/"
+    "website": "https://barack-ouma-portfolio.vercel.app"
   },
   "blogs": [
     {
@@ -156,11 +157,11 @@ const mockPortfolioData = {
   "skills": [
     {
       "category": "Frontend",
-      "values": ["React", "HTML", "CSS", "JavaScript", "Dart", "Flutter"]
+      "values": ["React", "TypeScript", "Dart", "Flutter"]
     },
     {
       "category": "Backend",
-      "values": ["Node.js", "Python", "Django", "Firebase", "GraphQL", "MongoDB"]
+      "values": ["Nestjs", "Python", "Java", "Firebase", "GraphQL", "NOSQL","Message Queues(BULLMQ)"]
     },
     {
       "category": "Cloud & DevOps",
@@ -168,7 +169,7 @@ const mockPortfolioData = {
     },
     {
       "category": "Other",
-      "values": ["Technical Documentation", "IoT", "API Development"]
+      "values": ["Technical Documentation", "API Development"]
     }
   ],
   "education": {
@@ -176,7 +177,7 @@ const mockPortfolioData = {
     "university": "Kenyatta University",
     "dates": null,
     "description": "Cascading Style Sheets (CSS), Python (Programming Language) and related technologies",
-    "tags": ["Information Technology", "Computer Science"]
+    "tags": ["Information Technology"]
   },
   "certifications": [
     {
@@ -227,9 +228,8 @@ const mockPortfolioData = {
     }
   ],
   "interests": [
-    "Web Development",
+    "Dependency Injection,CQRS,PubSub,CDNs,TDD,",
     "Cloud Computing",
-    "IoT",
     "Technical Writing",
     "Mobile Development"
   ]
@@ -297,6 +297,14 @@ const AnimatedHeader = ({ portfolioData, mode, onModeToggle }) => {
           >
             Blogs
           </Link>
+          <Link
+            to="/interests"
+            className={`hover:text-[#10B981] transition-colors duration-200 ${
+              location.pathname === '/interests' ? 'text-[#10B981]' : 'text-gray-300'
+            }`}
+          >
+            Interests
+          </Link>
         </motion.nav>
 
         <motion.div
@@ -305,6 +313,15 @@ const AnimatedHeader = ({ portfolioData, mode, onModeToggle }) => {
           transition={{ delay: 0.3, duration: 0.5 }}
           className="flex items-center gap-3"
         >
+          <a
+            href="https://drive.google.com/uc?export=download&id=1oV6w5w6oPMtN3zaqCidjTDXQfMhjIhv8"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg border border-emerald-300/20 hover:bg-emerald-300/10 text-emerald-300 hover:text-white transition-colors duration-200"
+          >
+            <Download className="w-4 h-4" />
+            <span>Resume</span>
+          </a>
           <Button
             variant="outline"
             className="bg-transparent border-gray-600 hover:bg-gray-800 hover:text-white transition-all duration-300"
@@ -443,6 +460,10 @@ function AppContent() {
                       <Route
                         path="/blogs"
                         element={<BlogsPage portfolioData={portfolioData} />}
+                      />
+                      <Route
+                        path="/interests"
+                        element={<InterestsPage portfolioData={portfolioData} />}
                       />
                     </Routes>
                   </PageTransition>
