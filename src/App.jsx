@@ -63,7 +63,67 @@ const mockPortfolioData = {
       "read_time": 15,
       "platform": "Dev.to",
       "tags": ["GraphQL", "API Design", "Apollo", "Backend"]
-    }
+    },
+      {
+    "id": 1,
+    "title": "How to Seamlessly Roll Auth into Your React App using Firebase Authentication",
+    "description": "Learn how to implement production-ready authentication in minutes with Firebase, eliminating the need to build auth servers from scratch.",
+    "url": "https://kodaschool.com/blog/how-to-seamlessly-roll-auth-into-your-react-app-using-firebase-authentication",
+    "published_date": "Jul 15, 2025",
+    "read_time": 8,
+    "platform": "Kodaschool",
+    "tags": ["React", "Firebase", "Authentication", "BaaS"]
+  },
+  {
+    "id": 2,
+    "title": "What is Inversion of Control?",
+    "description": "Exploring how IoC flips traditional program structure to create more testable and maintainable code in Node.js applications.",
+    "url": "https://kodaschool.com/blog/inversion-of-control",
+    "published_date": "Jul 10, 2025",
+    "read_time": 10,
+    "platform": "Kodaschool",
+    "tags": ["Node.js", "Dependency Injection", "Testing", "Architecture"]
+  },
+  {
+    "id": 3,
+    "title": "Master Any Framework: The Mindset Shift That Actually Works",
+    "description": "The secret sauce big teams use to adopt NestJS, Spring, or GraphQL quickly and wield new languages confidently.",
+    "url": "https://dev.to/isodevmate/master-any-framework-the-mindset-shift-that-actually-works-1234",
+    "published_date": "Jul 8, 2025",
+    "read_time": 12,
+    "platform": "Dev.to",
+    "tags": ["Learning", "Frameworks", "NestJS", "Spring"]
+  },
+  {
+    "id": 4,
+    "title": "What Makes Buffers, Streams and Files Different?",
+    "description": "Understanding the core differences between buffers, streams and files and when to use each in real-world coding.",
+    "url": "https://kodaschool.com/blog/what-makes-buffers-and-files-different",
+    "published_date": "Jul 4, 2025",
+    "read_time": 9,
+    "platform": "Kodaschool",
+    "tags": ["Node.js", "Buffers", "Streams", "Files"]
+  },
+  {
+    "id": 5,
+    "title": "MPesa Daraja 2.0 + tRPC",
+    "description": "A type-safe alternative to integrate with Daraja 2.0 that simplifies STK push, reduces bugs, and improves developer experience.",
+    "url": "https://kodaschool.com/blog/Intergration-mpesa-daraja-and-daraja-2.0",
+    "published_date": "Mar 10, 2025",
+    "read_time": 15,
+    "platform": "Kodaschool",
+    "tags": ["MPesa", "tRPC", "Payments", "TypeScript"]
+  },
+  {
+    "id": 6,
+    "title": "NestJS Tutorial for Beginners: Complete Guide",
+    "description": "Comprehensive guide to getting started with NestJS, covering core concepts and best practices for building scalable applications.",
+    "url": "https://kodaschool.com/blog/nestjs-tutorial-beginners-complete-guide",
+    "published_date": "Feb 28, 2025",
+    "read_time": 20,
+    "platform": "Kodaschool",
+    "tags": ["NestJS", "Node.js", "Backend", "TypeScript"]
+  }
   ],
   "experience": [
     {
