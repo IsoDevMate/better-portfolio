@@ -44,26 +44,6 @@ const mockPortfolioData = {
       "platform": "Kodaschool",
       "tags": ["AWS", "Lambda", "Serverless", "Node.js"]
     },
-    {
-      "id": 3,
-      "title": "The Future of IoT: Building Smart Systems with React and Firebase",
-      "description": "Exploring how modern web technologies can be used to create intuitive dashboards for IoT devices. Real-world examples from my experience building smart fragrance systems.",
-      "url": "https://example.com/blog/iot-react-firebase",
-      "published_date": "Oct 22, 2024",
-      "read_time": 10,
-      "platform": "Medium",
-      "tags": ["IoT", "React", "Firebase", "Smart Systems"]
-    },
-    {
-      "id": 4,
-      "title": "Understanding GraphQL: A Practical Approach",
-      "description": "Deep dive into GraphQL fundamentals, from basic queries to advanced schema design. Includes practical examples and performance considerations for production applications.",
-      "url": "https://example.com/blog/graphql-practical-guide",
-      "published_date": "Sep 10, 2024",
-      "read_time": 15,
-      "platform": "Dev.to",
-      "tags": ["GraphQL", "API Design", "Apollo", "Backend"]
-    },
       {
     "id": 1,
     "title": "How to Seamlessly Roll Auth into Your React App using Firebase Authentication",
@@ -123,7 +103,27 @@ const mockPortfolioData = {
     "read_time": 20,
     "platform": "Kodaschool",
     "tags": ["NestJS", "Node.js", "Backend", "TypeScript"]
-  }
+  },
+    {
+      "id": 3,
+      "title": "The Future of IoT: Building Smart Systems with React and Firebase",
+      "description": "Exploring how modern web technologies can be used to create intuitive dashboards for IoT devices. Real-world examples from my experience building smart fragrance systems.",
+      "url": "https://example.com/blog/iot-react-firebase",
+      "published_date": "Oct 22, 2024",
+      "read_time": 10,
+      "platform": "Medium",
+      "tags": ["IoT", "React", "Firebase", "Smart Systems"]
+    },
+    {
+      "id": 4,
+      "title": "Understanding GraphQL: A Practical Approach",
+      "description": "Deep dive into GraphQL fundamentals, from basic queries to advanced schema design. Includes practical examples and performance considerations for production applications.",
+      "url": "https://example.com/blog/graphql-practical-guide",
+      "published_date": "Sep 10, 2024",
+      "read_time": 15,
+      "platform": "Dev.to",
+      "tags": ["GraphQL", "API Design", "Apollo", "Backend"]
+    }
   ],
   "experience": [
     {
