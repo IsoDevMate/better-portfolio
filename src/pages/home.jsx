@@ -15,6 +15,7 @@ export default function HomePage({ portfolioData }) {
         return <div className="text-center text-gray-400 p-10">Loading portfolio data...</div>;
     }
 
+
     return (
         <div className="w-full">
             {/* Full-screen Hero Section */}

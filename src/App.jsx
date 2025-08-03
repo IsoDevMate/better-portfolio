@@ -321,6 +321,9 @@ const AnimatedHeader = ({ portfolioData, mode, onModeToggle }) => {
     setIsMenuOpen(false);
   }, [location]);
 
+ useEffect(() => {
+    window.scrollTo(0, 0, 'smooth');
+  }, []);
   return (
     <motion.header
       initial={{ y: -100, opacity: 0 }}
