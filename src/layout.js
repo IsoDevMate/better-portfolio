@@ -9,6 +9,16 @@ export default function Layout() {
     const [mode, setMode] = useState('gui'); // 'gui' or 'terminal'
     const [portfolioData, setPortfolioData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const location = window.location.pathname;
+
+    // Scroll to top on route change
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'smooth'
+        });
+    }, [location]);
 
     useEffect(() => {
         const fetchPortfolioData = async () => {
