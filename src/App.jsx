@@ -229,7 +229,7 @@ const mockPortfolioData = {
     },
     {
       "category": "Backend",
-      "values": ["Nestjs", "Python", "Java", "Firebase", "GraphQL", "NOSQL","Message Queues(BULLMQ)"]
+      "values": ["Nestjs", "Java", "Firebase", "GraphQL", "NOSQL","Message Queues(BULLMQ)"]
     },
     {
       "category": "Cloud & DevOps",
