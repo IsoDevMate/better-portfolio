@@ -190,21 +190,29 @@ const mockPortfolioData = {
   ],
   "projects": [
     {
-      "id": 3,
-      "name": "AVIATOR",
-      "description": "Aviator Game Client - A real-time online betting game built with React, TypeScript, and Redux. Players bet on a virtual airplane's flight duration, aiming to cash out before it flies away",
-      "website_link": "",
-      "details_link": "https://github.com/IsoDevMate/AVIATOR",
-      "tags": ["TypeScript", "React", "Redux", "Game Development","Distributed Systems", "Backend","green-blue deployments"]
+      "id": 1,
+      "name": "ComfyBase Event Management System",
+      "description": "A comprehensive Smart event management platform designed to simplify event organization, enhance attendee engagement, and provide seamless event experiences. Features real-time interactions, live streaming, interactive note-taking, media sharing, and an awards system.",
+      "website_link": "https://final-year-project-swart-phi.vercel.app",
+      "details_link": "",
+      "tags": ["React", "Node.js", "MongoDB", "WebRTC", "Real-time", "Event Management", "Live Streaming"]
     },
     {
-      "id": 4,
-      "name": "MPESA-DARAJA-WITH-TRPC",
-      "description": "Seamlessly integrate M-Pesa payments into web applications with type-safe APIs and zero guesswork. From checkout to confirmation in seconds — because your customers deserve payments that just work",
-      "website_link": "https://github.com/IsoDevMate/MPESA-DARAJA-WITH-TRPC",
-      "details_link": "https://github.com/IsoDevMate/MPESA-DARAJA-WITH-TRPC",
-      "tags": ["TypeScript", "MPesa", "tRPC", "Payment Integration"]
+      "id": 2,
+      "name": "ComfyBase Mobile App",
+      "description": "Cross-platform mobile application for event management with Flutter. Features interactive note-taking, multimedia support, QR code verification, and seamless cross-platform accessibility for Android, iOS, Web, and Desktop.",
+      "website_link": "https://comfybase-plp-7wum.vercel.app/",
+      "details_link": "https://github.com/IsoDevMate/comfybase-plp",
+      "tags": ["Flutter", "Dart", "Cross-platform", "Mobile Development", "Event Management", "Real-time"]
     },
+      {
+                id: 4,
+                name: 'Groreels.com UGC Automation Platform',
+                description: 'Built an AI-powered platform enabling users to generate and schedule UGC videos, blog posts, and avatars for TikTok, Reels, and YouTube. Engineered key modules including avatar/video generators, content calendar, affiliate system, and auto-posting workflows with integrated analytics and payment handling. Inspired by tools like MakeUGC.ai and Creatify, Groreels helps creators and businesses automate campaigns end-to-end from script to scheduled post.',
+                techStack: ['AI', 'Video Generation', 'Content Automation', 'React', 'Node.js'],
+                website: 'https://groreels.com',
+                date: 'July 2025 - Present'
+              },
     {
       "id": 3,
       "name": "Portfolio Terminal",
