@@ -7,6 +7,7 @@ import BlogsPage from '@/components/ui/blogs';
 import TerminalPage from './pages/terminal.jsx';
 import TerminalWS from './components/terminal/TerminalWS';
 import InterestsPage from '@/components/ui/interests';
+import TerminalPaymentCallback from './pages/terminal-payment-callback.jsx';
 import { Button } from '@/components/ui/button';
 
 const mockPortfolioData = {
@@ -601,6 +602,10 @@ function AppContent() {
                       <Route
                         path="/interests"
                         element={<InterestsPage portfolioData={portfolioData} />}
+                      />
+                      <Route
+                        path="/terminal-payment-callback"
+                        element={<TerminalPaymentCallback />}
                       />
                     </Routes>
                   </PageTransition>

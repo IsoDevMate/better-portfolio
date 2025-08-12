@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer';
 import cors from 'cors';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
+import cron from 'node-cron';
 
 // ============================================================================
 // NOTE: Original SSH functionality is preserved in separate files:
@@ -15,6 +16,29 @@ import dotenv from 'dotenv';
 dotenv.config()
 
 const app = express();
+
+// Keep-alive configuration
+const SERVER_URL = process.env.SERVER_URL || 'https://better-portfolio.onrender.com';
+
+// Simple keep-alive function
+const keepAlive = async () => {
+  try {
+    const response = await fetch(`${SERVER_URL}/health`);
+    if (response.ok) {
+      console.log(`✅ Keep-alive ping successful at ${new Date().toISOString()}`);
+    } else {
+      console.log(`⚠️ Keep-alive ping failed with status: ${response.status}`);
+    }
+  } catch (error) {
+    console.error(`❌ Keep-alive ping error:`, error);
+  }
+};
+
+// Schedule a cron job to keep the server alive (every minute)
+cron.schedule('*/1 * * * *', () => {
+  console.log('🔄 Keep-alive cron job running...');
+  keepAlive();
+});
 
 // Middleware
 app.use(cors());
@@ -47,6 +71,7 @@ const verifyPaystackWebhook = (req: express.Request): boolean => {
 
   return hash === req.headers['x-paystack-signature'];
 };
+
 
 // Terminal sponsorship endpoint
 app.post('/terminal-sponsor', async (req, res) => {
@@ -449,6 +474,7 @@ app.listen(PORT, () => {
   console.log(`📧 Using email provider: ${process.env.EMAIL_PROVIDER || 'Gmail'}`);
   console.log(`📬 Emails will be sent to: ${process.env.RECIPIENT_EMAIL}`);
   console.log(`💳 Paystack webhook enabled: ${process.env.PAYSTACK_SECRET_KEY ? 'Yes' : 'No'}`);
+  console.log(`🔄 Keep-alive enabled: Yes (every minute)`);
   console.log(`📋 Available endpoints:`);
   console.log(`   POST /support-email - Contact form`);
   console.log(`   POST /paystack-webhook - Paystack webhook`);
