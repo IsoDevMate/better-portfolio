@@ -285,6 +285,9 @@ const WelcomeBanner = () => (
       <p className="text-green-200 text-xs mt-1 font-mono">
         Type <code className="bg-green-700 px-1 rounded">sponsor</code> to support my work • Starting from 49 KES
       </p>
+      <p className="text-blue-200 text-xs mt-1 font-mono">
+        💡 GraphQL Mode: <code className="bg-blue-700 px-1 rounded">mutation sponsorship 99</code> for payments
+      </p>
     </div>
   </div>
 );
@@ -364,6 +367,216 @@ const createCommandProcessor = (data, setDisplayData, switchToGui, mode, setSpon
             const entity = args[0] || 'Portfolio';
             let responseData = {};
             let responseTime = Math.floor(Math.random() * 30) + 20; // Random response time 20-50ms
+
+            // Handle payment-related GraphQL operations
+            if (entity.toLowerCase() === 'payment' || entity.toLowerCase() === 'sponsorship') {
+              const amount = args[1] ? parseInt(args[1]) : null;
+
+              if (cmd === 'mutation' && amount) {
+                // Handle sponsorship mutation
+                if (amount < 49) {
+                  return `❌ GraphQL Error: Minimum sponsorship amount is 49 KES
+💡 Custom amounts must be at least 29 KES
+
+Try: mutation sponsorship 49`;
+                }
+
+                try {
+                  const response = await fetch('https://better-portfolio.onrender.com/graphql', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      query: `
+                        mutation CreateSponsorship($amount: Int!) {
+                          createSponsorship(amount: $amount) {
+                            success
+                            authorization_url
+                            reference
+                            amount
+                            message
+                            error
+                          }
+                        }
+                      `,
+                      variables: {
+                        amount: amount
+                      }
+                    })
+                  });
+
+                  const result = await response.json();
+
+                  if (result.data?.createSponsorship?.success) {
+                    const paymentData = result.data.createSponsorship;
+
+                    // Open payment URL in new tab
+                    window.open(paymentData.authorization_url, '_blank');
+
+                    setDisplayData({
+                      type: 'graphql-payment',
+                      content: {
+                        operation: 'MUTATION',
+                        entity: 'sponsorship',
+                        query: `mutation CreateSponsorship($amount: Int!) {
+  createSponsorship(amount: $amount) {
+    success
+    authorization_url
+    reference
+    amount
+    message
+    error
+  }
+}`,
+                        variables: { amount },
+                        responseTime: 150,
+                        data: paymentData,
+                        timestamp: new Date().toISOString()
+                      }
+                    });
+
+                    return `GraphQL Sponsorship Mutation:
+mutation CreateSponsorship($amount: Int!) {
+  createSponsorship(amount: $amount) {
+    success
+    authorization_url
+    reference
+    amount
+    message
+    error
+  }
+}
+
+Variables: { "amount": ${amount} }
+
+Request to: https://better-portfolio.onrender.com/graphql
+Response Time: 150ms
+Status: 200 OK
+
+✅ Payment URL generated and opened in new tab
+🔗 Reference: ${paymentData.reference}
+💰 Amount: ${paymentData.amount} KES
+
+📋 Instructions:
+1. Complete payment on Paystack
+2. Return here to verify with: query payment ${paymentData.reference}`;
+                  } else {
+                    return `❌ GraphQL Error: ${result.data?.createSponsorship?.error || 'Payment initialization failed'}`;
+                  }
+                } catch (error) {
+                  return `❌ GraphQL Error: Failed to connect to payment API`;
+                }
+              } else if (cmd === 'query' && args[1]) {
+                // Handle payment verification query
+                const reference = args[1];
+
+                try {
+                  const response = await fetch('https://better-portfolio.onrender.com/graphql', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      query: `
+                        query VerifyPayment($reference: String!) {
+                          verifyPayment(reference: $reference) {
+                            success
+                            data {
+                              amount
+                              sponsor
+                              email
+                              status
+                              reference
+                            }
+                            error
+                          }
+                        }
+                      `,
+                      variables: {
+                        reference: reference
+                      }
+                    })
+                  });
+
+                  const result = await response.json();
+
+                  if (result.data?.verifyPayment?.success) {
+                    const verificationData = result.data.verifyPayment.data;
+
+                    setDisplayData({
+                      type: 'graphql-verification',
+                      content: {
+                        operation: 'QUERY',
+                        entity: 'payment',
+                        query: `query VerifyPayment($reference: String!) {
+  verifyPayment(reference: $reference) {
+    success
+    data {
+      amount
+      sponsor
+      email
+      status
+      reference
+    }
+    error
+  }
+}`,
+                        variables: { reference },
+                        responseTime: 120,
+                        data: verificationData,
+                        timestamp: new Date().toISOString()
+                      }
+                    });
+
+                    return `GraphQL Payment Verification:
+query VerifyPayment($reference: String!) {
+  verifyPayment(reference: $reference) {
+    success
+    data {
+      amount
+      sponsor
+      email
+      status
+      reference
+    }
+    error
+  }
+}
+
+Variables: { "reference": "${reference}" }
+
+Request to: https://better-portfolio.onrender.com/graphql
+Response Time: 120ms
+Status: 200 OK
+
+🎉 Payment Verification Successful!
+=====================================
+
+✅ Status: ${verificationData.status}
+💰 Amount: ${verificationData.amount} KES
+👤 Sponsor: ${verificationData.sponsor}
+📧 Email: ${verificationData.email}
+🔗 Reference: ${verificationData.reference}
+
+💝 Thank you for your sponsorship!
+Your support means the world to me! ❤️`;
+                  } else {
+                    return `❌ GraphQL Error: ${result.data?.verifyPayment?.error || 'Payment verification failed'}`;
+                  }
+                } catch (error) {
+                  return `❌ GraphQL Error: Failed to connect to payment API`;
+                }
+              } else {
+                return `GraphQL Payment Commands:
+• mutation sponsorship <amount> - Create sponsorship payment
+• query payment <reference> - Verify payment status
+
+Examples:
+• mutation sponsorship 99
+• query payment graphql_sponsor_1234567890`;
+              }
+            }
 
             // Simulate different response times based on entity
             switch(entity.toLowerCase()) {
@@ -458,6 +671,37 @@ Status: 200 OK`;
   projects: [Project]!
   skills: [SkillCategory]!
   certifications: [Certification]!
+}
+
+type PaymentResponse {
+  success: Boolean!
+  authorization_url: String
+  reference: String
+  amount: Int
+  message: String
+  error: String
+}
+
+type PaymentVerification {
+  success: Boolean!
+  data: PaymentData
+  error: String
+}
+
+type PaymentData {
+  amount: Int
+  sponsor: String
+  email: String
+  status: String
+  reference: String
+}
+
+type Query {
+  verifyPayment(reference: String!): PaymentVerification!
+}
+
+type Mutation {
+  createSponsorship(amount: Int!, email: String, name: String): PaymentResponse!
 }`;
 
           case 'help':
@@ -470,6 +714,8 @@ Status: 200 OK`;
                   { cmd: 'query projects', desc: 'Get project information' },
                   { cmd: 'query skills', desc: 'Retrieve technical skills' },
                   { cmd: 'query about', desc: 'Get about me information' },
+                  { cmd: 'mutation sponsorship <amount>', desc: '💝 Create sponsorship payment (49+ KES)' },
+                  { cmd: 'query payment <reference>', desc: 'Verify payment status' },
                   { cmd: 'schema', desc: 'Show complete GraphQL schema' },
                   { cmd: 'explorer', desc: 'Open Apollo Sandbox Explorer' },
                   { cmd: 'sponsor', desc: '💝 Support my work with a donation (49+ KES)' },
@@ -1476,11 +1722,23 @@ ${displayData.content.education?.dates}
       );
 
     case 'graphql-response':
+    case 'graphql-payment':
+    case 'graphql-verification':
       return (
         <div className="h-full flex flex-col" ref={scrollRef}>
           <div className="flex items-center justify-between border-b border-gray-700 pb-2 mb-4">
             <h3 className="text-lg font-bold text-white font-mono">
               GraphQL {displayData.content.operation} - {displayData.content.entity}
+              {displayData.type === 'graphql-payment' && (
+                <Badge variant="outline" className="ml-2 text-green-400 border-green-400 text-xs">
+                  💝 Payment
+                </Badge>
+              )}
+              {displayData.type === 'graphql-verification' && (
+                <Badge variant="outline" className="ml-2 text-blue-400 border-blue-400 text-xs">
+                  ✅ Verification
+                </Badge>
+              )}
             </h3>
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="text-green-400 border-green-400 text-xs">
@@ -2049,6 +2307,9 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
             </div>
             <p className="text-green-200 text-xs mt-1 font-mono">
               Type <code className="bg-green-700 px-1 rounded">sponsor</code> to support • From 49 KES
+            </p>
+            <p className="text-blue-200 text-xs mt-1 font-mono">
+              💡 GraphQL: <code className="bg-blue-700 px-1 rounded">mutation sponsorship 99</code>
             </p>
           </div>
         </div>

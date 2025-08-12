@@ -4,6 +4,10 @@ import cors from 'cors';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 import cron from 'node-cron';
+import { createServer } from 'http';
+import { WebSocketServer } from 'ws';
+import { graphqlHTTP } from 'express-graphql';
+import { buildSchema } from 'graphql';
 
 // ============================================================================
 // NOTE: Original SSH functionality is preserved in separate files:
@@ -467,6 +471,201 @@ app.get('/server-ip', async (req, res) => {
   }
 });
 
+// GraphQL Schema for Payment Functionality
+const paymentSchema = buildSchema(`
+  type PaymentResponse {
+    success: Boolean!
+    authorization_url: String
+    reference: String
+    amount: Int
+    message: String
+    error: String
+  }
+
+  type PaymentVerification {
+    success: Boolean!
+    data: PaymentData
+    error: String
+  }
+
+  type PaymentData {
+    amount: Int
+    sponsor: String
+    email: String
+    status: String
+    reference: String
+  }
+
+  type Query {
+    verifyPayment(reference: String!): PaymentVerification!
+  }
+
+  type Mutation {
+    createSponsorship(amount: Int!, email: String, name: String): PaymentResponse!
+  }
+`);
+
+// GraphQL Resolvers
+const paymentResolvers = {
+  verifyPayment: async ({ reference }: { reference: string }) => {
+    try {
+      if (!reference) {
+        return {
+          success: false,
+          data: null,
+          error: 'Reference is required'
+        };
+      }
+
+      const response = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
+        headers: {
+          'Authorization': `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+        }
+      });
+
+      const result = await response.json();
+
+      if (result.status && result.data.status === 'success') {
+        const { amount, customer, metadata } = result.data;
+        const sponsorAmount = amount / 100;
+        const sponsorEmail = customer?.email || metadata?.email || 'anonymous@example.com';
+        const sponsorName = customer?.first_name && customer?.last_name
+          ? `${customer.first_name} ${customer.last_name}`
+          : metadata?.name || 'Anonymous';
+
+        return {
+          success: true,
+          data: {
+            amount: sponsorAmount,
+            sponsor: sponsorName,
+            email: sponsorEmail,
+            status: 'success',
+            reference: reference
+          },
+          error: null
+        };
+      } else {
+        return {
+          success: false,
+          data: null,
+          error: result.message || 'Payment verification failed'
+        };
+      }
+    } catch (error) {
+      console.error('GraphQL payment verification error:', error);
+      return {
+        success: false,
+        data: null,
+        error: 'Internal server error'
+      };
+    }
+  },
+
+  createSponsorship: async ({ amount, email, name }: { amount: number; email?: string; name?: string }) => {
+    try {
+      // Validate required fields
+      if (!amount || amount <= 0) {
+        return {
+          success: false,
+          authorization_url: null,
+          reference: null,
+          amount: null,
+          message: null,
+          error: 'Valid amount is required'
+        };
+      }
+
+      // Validate minimum amount (49 KES for preset amounts, 29 KES for custom)
+      if (amount < 29) {
+        return {
+          success: false,
+          authorization_url: null,
+          reference: null,
+          amount: null,
+          message: null,
+          error: 'Minimum sponsorship amount is 29 KES'
+        };
+      }
+
+      if (amount < 49) {
+        return {
+          success: false,
+          authorization_url: null,
+          reference: null,
+          amount: null,
+          message: null,
+          error: 'Minimum sponsorship amount is 49 KES'
+        };
+      }
+
+      // Generate unique reference
+      const reference = `graphql_sponsor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+      // Create Paystack payment URL
+      const paystackUrl = `https://api.paystack.co/transaction/initialize`;
+
+      const response = await fetch(paystackUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email || 'sponsor@example.com',
+          amount: amount * 100, // Convert to kobo
+          currency: 'KES',
+          reference: reference,
+          callback_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/terminal-payment-callback`,
+          metadata: {
+            name: name || 'GraphQL Sponsor',
+            source: 'graphql',
+            amount: amount
+          }
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.status) {
+        return {
+          success: true,
+          authorization_url: result.data.authorization_url,
+          reference: reference,
+          amount: amount,
+          message: 'Payment URL generated successfully',
+          error: null
+        };
+      } else {
+        return {
+          success: false,
+          authorization_url: null,
+          reference: null,
+          amount: null,
+          message: null,
+          error: result.message || 'Failed to generate payment URL'
+        };
+      }
+    } catch (error) {
+      console.error('GraphQL sponsorship error:', error);
+      return {
+        success: false,
+        authorization_url: null,
+        reference: null,
+        amount: null,
+        message: null,
+        error: 'Internal server error'
+      };
+    }
+  }
+};
+
+// GraphQL endpoint
+app.use('/graphql', graphqlHTTP({
+  schema: paymentSchema,
+  rootValue: paymentResolvers,
+  graphiql: true, // Enable GraphiQL interface for testing
+}));
+
 // Root endpoint
 app.get('/', (req, res) => {
   res.json({
@@ -478,7 +677,8 @@ app.get('/', (req, res) => {
       'POST /terminal-sponsor': 'Terminal sponsorship payment',
       'POST /verify-payment': 'Verify payment status',
       'GET /health': 'Health check',
-      'GET /server-ip': 'Get server IP for Paystack whitelisting'
+      'GET /server-ip': 'Get server IP for Paystack whitelisting',
+      'POST /graphql': 'GraphQL payment API'
     }
   });
 });
