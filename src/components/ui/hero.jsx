@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Mail, Twitter, Github, Linkedin, MapPin, UserCircle } from 'lucide-react';
+import { Mail, Twitter, Github, Linkedin, MapPin, UserCircle, Terminal, ArrowRight } from 'lucide-react';
 import TechIcons from './techicons';
 import { SponsorButton, SponsorModal, SponsorSuccess } from './sponsor';
 
@@ -82,8 +82,19 @@ const Hero = ({ name, title, bio, contact, profilePictureUrl }) => {
 
                     </div>
 
+                    {/* Terminal Payment Awareness */}
+                    <div className="mt-4 p-3 bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-lg">
+                        <div className="flex items-center gap-2 text-blue-300 text-xs">
+                            <Terminal className="w-3 h-3" />
+                            <span className="font-medium">💡 Try Terminal Mode!</span>
+                        </div>
+                        <p className="text-blue-200 text-xs mt-1">
+                            Buy me a coffee like a developer - sponsor via the terminal
+                        </p>
+                    </div>
+
                     {/* Sponsorship Button */}
-                    <div className="mt-6 flex justify-center">
+                    <div className="mt-4 flex justify-center">
                         <SponsorButton
                             onSponsor={() => setShowSponsorModal(true)}
                             className="transform hover:scale-110 transition-transform duration-300"

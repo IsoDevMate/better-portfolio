@@ -86,6 +86,21 @@ app.post('/terminal-sponsor', async (req, res) => {
       });
     }
 
+    // Validate minimum amount (49 KES for preset amounts, 29 KES for custom)
+    if (amount < 29) {
+      return res.status(400).json({
+        success: false,
+        error: 'Minimum sponsorship amount is 29 KES'
+      });
+    }
+
+    if (amount < 49) {
+      return res.status(400).json({
+        success: false,
+        error: 'Minimum sponsorship amount is 49 KES'
+      });
+    }
+
     // Generate unique reference
     const reference = `terminal_sponsor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 

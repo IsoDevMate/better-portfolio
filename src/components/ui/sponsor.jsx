@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Coffee, Star, Gift, Sparkles, CreditCard, CheckCircle } from 'lucide-react';
+import { Heart, Coffee, Star, Gift, Sparkles, CreditCard, CheckCircle, Terminal, AlertCircle } from 'lucide-react';
 
 const SponsorButton = ({ onSponsor, className = "" }) => {
   return (
@@ -17,14 +17,28 @@ const SponsorButton = ({ onSponsor, className = "" }) => {
 };
 
 const SponsorModal = ({ isOpen, onClose, onSponsor }) => {
-  const [selectedAmount, setSelectedAmount] = useState(5);
+  const [selectedAmount, setSelectedAmount] = useState(49);
   const [customAmount, setCustomAmount] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showTerminalTip, setShowTerminalTip] = useState(false);
 
-  const presetAmounts = [1, 5, 10, 25, 50, 100];
+  // Updated pricing structure - minimum 49, custom minimum 29
+  const presetAmounts = [49, 99, 199, 499, 999, 1999];
 
   const handleSponsor = async () => {
-    const amount = customAmount || selectedAmount;
+    const amount = customAmount ? parseInt(customAmount) : selectedAmount;
+
+    // Validate minimum amounts
+    if (customAmount && amount < 29) {
+      alert('Custom amount must be at least 29 KES');
+      return;
+    }
+
+    if (amount < 49) {
+      alert('Minimum sponsorship amount is 49 KES');
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
@@ -84,6 +98,18 @@ const SponsorModal = ({ isOpen, onClose, onSponsor }) => {
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Terminal Payment Awareness Banner */}
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-3 text-white text-sm">
+            <div className="flex items-center gap-2 mb-2">
+              <Terminal className="w-4 h-4" />
+              <span className="font-semibold">💡 Pro Tip!</span>
+            </div>
+            <p className="text-blue-100">
+              Try the <strong>Terminal Mode</strong> for an even cooler sponsorship experience!
+              Type <code className="bg-blue-700 px-1 rounded">sponsor</code> in the terminal.
+            </p>
+          </div>
+
           <div className="grid grid-cols-3 gap-2">
             {presetAmounts.map((amount) => (
               <Button
@@ -102,20 +128,29 @@ const SponsorModal = ({ isOpen, onClose, onSponsor }) => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm text-gray-200 font-medium">Custom Amount</label>
+            <label className="text-sm text-gray-200 font-medium">
+              Custom Amount <span className="text-yellow-400">(Min: 29 KES)</span>
+            </label>
             <input
               type="number"
               value={customAmount}
               onChange={(e) => setCustomAmount(e.target.value)}
-              placeholder="Enter amount"
+              placeholder="Enter amount (min 29)"
+              min="29"
               className="w-full px-3 py-2 bg-gray-700 border border-gray-500 rounded text-white placeholder-gray-300 focus:border-green-500 focus:ring-1 focus:ring-green-500"
             />
+            {customAmount && parseInt(customAmount) < 29 && (
+              <div className="flex items-center gap-2 text-red-400 text-xs">
+                <AlertCircle className="w-3 h-3" />
+                <span>Custom amount must be at least 29 KES</span>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-2">
             <Button
               onClick={handleSponsor}
-              disabled={isProcessing}
+              disabled={isProcessing || (customAmount && parseInt(customAmount) < 29)}
               className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-medium"
             >
               {isProcessing ? (

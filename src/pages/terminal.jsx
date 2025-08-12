@@ -275,6 +275,17 @@ const WelcomeBanner = () => (
     <div className="text-blue-400 font-mono text-sm mb-1">PORTFOLIO TERMINAL v2.1.0</div>
     <div className="text-gray-400 font-mono text-xs">Welcome to Barack Ouma's Interactive Portfolio</div>
     <div className="text-yellow-400 font-mono text-xs mt-2">Type 'help' to see available commands • 'neofetch' for system info • 'exit' to quit</div>
+
+    {/* Terminal Payment Awareness Banner */}
+    <div className="mt-4 p-3 bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-green-500/30 rounded-lg">
+      <div className="flex items-center gap-2 text-green-300 text-xs font-mono">
+        <span className="text-green-400">💝</span>
+        <span className="font-semibold">SPONSORSHIP AVAILABLE!</span>
+      </div>
+      <p className="text-green-200 text-xs mt-1 font-mono">
+        Type <code className="bg-green-700 px-1 rounded">sponsor</code> to support my work • Starting from 49 KES
+      </p>
+    </div>
   </div>
 );
 
@@ -461,7 +472,7 @@ Status: 200 OK`;
                   { cmd: 'query about', desc: 'Get about me information' },
                   { cmd: 'schema', desc: 'Show complete GraphQL schema' },
                   { cmd: 'explorer', desc: 'Open Apollo Sandbox Explorer' },
-                  { cmd: 'sponsor', desc: 'Support my work with a donation' },
+                  { cmd: 'sponsor', desc: '💝 Support my work with a donation (49+ KES)' },
                   { cmd: 'check', desc: 'Check payment status with reference' },
                   { cmd: 'mode <type>', desc: 'Switch terminal mode' },
                   { cmd: 'clear', desc: 'Clear terminal' },
@@ -492,7 +503,7 @@ Status: 200 OK`;
                   { cmd: 'contact', desc: 'How to contact me' },
                   { cmd: 'neofetch', desc: 'Show system information' },
                   { cmd: 'mode <type>', desc: 'Switch terminal mode (simple/technical/graphql)' },
-                  { cmd: 'sponsor', desc: 'Support my work with a donation' },
+                  { cmd: 'sponsor', desc: '💝 Support my work with a donation (49+ KES)' },
                   { cmd: 'check', desc: 'Check payment status with reference' },
                   { cmd: 'clear', desc: 'Clear the screen' },
                   { cmd: 'exit', desc: 'Exit terminal' }
@@ -659,14 +670,16 @@ To sponsor my work:
 4. Check payment status with 'check <reference>'
 
 Quick sponsorship options:
-• 1    - Buy me a coffee ☕
-• 5    - Support my content creation
-• 10   - Help with server costs
-• 25   - Sponsor a blog post
-• 50   - Support open source work
-• 100  - Major project sponsor
+• 49   - Buy me a coffee ☕
+• 99   - Support my content creation
+• 199  - Help with server costs
+• 499  - Sponsor a blog post
+• 999  - Support open source work
+• 1999 - Major project sponsor
 
-Switch to Technical Mode and try: sponsor 5
+💡 Minimum amount: 49 KES | Custom minimum: 29 KES
+
+Switch to Technical Mode and try: sponsor 99
 
 Your support helps me create more amazing content and open source projects! ❤️`;
           }
@@ -757,7 +770,7 @@ Your support means the world to me! ❤️
             { cmd: 'sudo contact', desc: 'Get contact information with privileges' },
             { cmd: 'vim resume.txt', desc: 'View resume in vim-style' },
             { cmd: 'neofetch', desc: 'Display system information banner' },
-            { cmd: 'sponsor', desc: 'Support my work with a donation' },
+            { cmd: 'sponsor', desc: '💝 Support my work with a donation (49+ KES)' },
             { cmd: 'check', desc: 'Check payment status with reference' },
             { cmd: 'mode <type>', desc: 'Switch terminal mode' },
             { cmd: 'clear', desc: 'Clear terminal screen' },
@@ -1123,6 +1136,13 @@ Access granted. Contact information unlocked.
         case 'sponsor': {
           const amount = args[0] ? parseInt(args[0]) : null;
           if (amount && amount > 0) {
+            // Validate minimum amount
+            if (amount < 49) {
+              return `❌ Error: Minimum sponsorship amount is 49 KES
+💡 Custom amounts must be at least 29 KES
+
+Try: sponsor 49`;
+            }
             // Terminal-based sponsorship flow
             return await handleTerminalSponsorship(amount);
           }
@@ -1132,17 +1152,19 @@ Access granted. Contact information unlocked.
 Thank you for considering to sponsor my work!
 
 Quick sponsorship options:
-• 1    - Buy me a coffee ☕
-• 5    - Support my content creation
-• 10   - Help with server costs
-• 25   - Sponsor a blog post
-• 50   - Support open source work
-• 100  - Major project sponsor
+• 49   - Buy me a coffee ☕
+• 99   - Support my content creation
+• 199  - Help with server costs
+• 499  - Sponsor a blog post
+• 999  - Support open source work
+• 1999 - Major project sponsor
+
+💡 Minimum amount: 49 KES | Custom minimum: 29 KES
 
 Or enter any amount you prefer!
 
 Usage: sponsor <amount>
-Example: sponsor 5
+Example: sponsor 99
 
 Your support helps me create more amazing content and open source projects! ❤️`;
         }
@@ -2017,6 +2039,19 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
       <div className="p-4">
         <ModeSelector currentMode={mode} setMode={setMode} />
         {showWelcome && <WelcomeBanner />}
+
+        {/* Floating Terminal Payment Awareness */}
+        <div className="fixed top-20 right-4 z-20 max-w-xs">
+          <div className="bg-gradient-to-r from-green-600/90 to-emerald-600/90 backdrop-blur-sm border border-green-500/50 rounded-lg p-3 shadow-lg">
+            <div className="flex items-center gap-2 text-green-100 text-xs font-mono">
+              <span className="text-green-300">💝</span>
+              <span className="font-semibold">TERMINAL SPONSORSHIP</span>
+            </div>
+            <p className="text-green-200 text-xs mt-1 font-mono">
+              Type <code className="bg-green-700 px-1 rounded">sponsor</code> to support • From 49 KES
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="flex-1 flex p-4 pt-0">
