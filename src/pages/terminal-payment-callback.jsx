@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { CheckCircle, XCircle, Loader2, ArrowLeft, Home } from 'lucide-react';
+import { CheckCircle, XCircle, Loader2, Terminal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const TerminalPaymentCallback = () => {
@@ -10,8 +9,9 @@ const TerminalPaymentCallback = () => {
   const [paymentStatus, setPaymentStatus] = useState('loading');
   const [paymentData, setPaymentData] = useState(null);
   const [error, setError] = useState(null);
+  const [showCheckPrompt, setShowCheckPrompt] = useState(false);
 
-  const reference = searchParams.get('reference');
+  const reference = searchParams.get('reference') || searchParams.get('trxref');
   const trxref = searchParams.get('trxref');
 
   useEffect(() => {
@@ -36,14 +36,38 @@ const TerminalPaymentCallback = () => {
         if (result.success) {
           setPaymentStatus('success');
           setPaymentData(result.data);
+
+          // Trigger confetti and audio for successful payment
+          if (typeof window !== 'undefined' && window.confetti) {
+            window.confetti({
+              particleCount: 100,
+              spread: 70,
+              origin: { y: 0.6 }
+            });
+          }
+
+          // Play success audio
+          try {
+            const audio = new Audio('/success.mp3'); // You'll need to add this audio file
+            audio.play().catch(() => {
+              // Audio play failed, that's okay
+            });
+          } catch {
+            // Audio not available, that's okay
+          }
+
+          // Show check prompt after a delay
+          setTimeout(() => {
+            setShowCheckPrompt(true);
+          }, 2000);
         } else {
           setPaymentStatus('error');
           setError(result.error || 'Payment verification failed');
         }
-      } catch (err) {
-        setPaymentStatus('error');
-        setError('Failed to verify payment. Please try again.');
-      }
+              } catch {
+          setPaymentStatus('error');
+          setError('Failed to verify payment. Please try again.');
+        }
     };
 
     verifyPayment();
@@ -90,10 +114,7 @@ const TerminalPaymentCallback = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+      <div
         className="max-w-md w-full"
       >
         <div className="bg-gray-800 rounded-2xl p-8 shadow-2xl border border-gray-700">
@@ -120,10 +141,7 @@ const TerminalPaymentCallback = () => {
 
           {/* Payment Details */}
           {paymentStatus === 'success' && paymentData && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
+            <div
               className="bg-gray-700 rounded-lg p-4 mb-6"
             >
               <h3 className="text-white font-semibold mb-3">Payment Details</h3>
@@ -141,7 +159,7 @@ const TerminalPaymentCallback = () => {
                   <span className="text-green-400 font-semibold">{paymentData.status}</span>
                 </div>
               </div>
-            </motion.div>
+            </div>
           )}
 
           {/* Reference Info */}
@@ -163,6 +181,37 @@ const TerminalPaymentCallback = () => {
             </div>
           )}
 
+                    {/* Check Payment Prompt */}
+          {showCheckPrompt && paymentStatus === 'success' && (
+            <div
+              className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4"
+            >
+              <h4 className="text-emerald-800 font-semibold mb-2">Check Payment Status?</h4>
+              <p className="text-emerald-700 text-sm mb-3">
+                Would you like to verify your payment status in the terminal?
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => {
+                    navigate('/terminal');
+                    // Store reference in localStorage for terminal to use
+                    localStorage.setItem('lastPaymentReference', reference);
+                  }}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-4 py-2"
+                >
+                  Yes, check status
+                </Button>
+                <Button
+                  onClick={() => setShowCheckPrompt(false)}
+                  variant="outline"
+                  className="border-emerald-300 text-emerald-700 hover:bg-emerald-50 text-sm px-4 py-2"
+                >
+                  No, thanks
+                </Button>
+              </div>
+            </div>
+          )}
+
           {/* Action Buttons */}
           <div className="space-y-3">
             <Button
@@ -178,7 +227,7 @@ const TerminalPaymentCallback = () => {
               variant="outline"
               className="w-full border-gray-600 text-gray-300 hover:bg-gray-700 font-semibold py-3 rounded-lg transition-colors"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <Terminal className="w-4 h-4 mr-2" />
               Back to Terminal
             </Button>
           </div>
@@ -190,7 +239,7 @@ const TerminalPaymentCallback = () => {
             </p>
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };

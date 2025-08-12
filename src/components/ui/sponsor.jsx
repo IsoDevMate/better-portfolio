@@ -10,7 +10,7 @@ const SponsorButton = ({ onSponsor, className = "" }) => {
       onClick={onSponsor}
       className={`bg-gray-800 hover:bg-gray-700 text-white border border-gray-600 hover:border-gray-500 transition-all duration-200 flex items-center gap-2 ${className}`}
     >
-      <Heart className="w-5 h-5 text-pink-500 fill-none stroke-2" />
+      <Heart className="w-5 h-5 text-green-500 fill-none stroke-2" />
       Sponsor My Work
     </Button>
   );
@@ -76,7 +76,7 @@ const SponsorModal = ({ isOpen, onClose, onSponsor }) => {
       <Card className="bg-gray-800 border-gray-600 max-w-md w-full">
         <CardHeader className="text-center">
           <CardTitle className="text-white flex items-center justify-center gap-2">
-            <Heart className="w-6 h-6 text-pink-500" />
+            <Heart className="w-6 h-6 text-green-500" />
             Sponsor My Work
           </CardTitle>
           <p className="text-gray-200 text-sm">
@@ -92,7 +92,7 @@ const SponsorModal = ({ isOpen, onClose, onSponsor }) => {
                 onClick={() => setSelectedAmount(amount)}
                 className={`text-sm ${
                   selectedAmount === amount
-                    ? "bg-green-600 hover:bg-green-700 text-white"
+                    ? "bg-emerald-600 hover:bg-emerald-700 text-white"
                     : "bg-gray-700 hover:bg-gray-600 text-white border-gray-500"
                 }`}
               >
@@ -108,7 +108,7 @@ const SponsorModal = ({ isOpen, onClose, onSponsor }) => {
               value={customAmount}
               onChange={(e) => setCustomAmount(e.target.value)}
               placeholder="Enter amount"
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-500 rounded text-white placeholder-gray-300 focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-500 rounded text-white placeholder-gray-300 focus:border-green-500 focus:ring-1 focus:ring-green-500"
             />
           </div>
 
@@ -116,7 +116,7 @@ const SponsorModal = ({ isOpen, onClose, onSponsor }) => {
             <Button
               onClick={handleSponsor}
               disabled={isProcessing}
-              className="flex-1 bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white font-medium"
+              className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-medium"
             >
               {isProcessing ? (
                 <>

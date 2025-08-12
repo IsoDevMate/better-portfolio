@@ -646,6 +646,73 @@ ${tags}${websiteInfo}\n`;
             setDisplayData({ type: 'contact', content: data.contact });
             return `Email: ${data.contact.email}\nLocation: ${data.contact.location}\nGitHub: ${data.contact.github}`;
 
+          case 'sponsor': {
+            return `💝 Sponsorship Portal
+==================
+
+Sponsorship is available in Technical Mode for better experience!
+
+To sponsor my work:
+1. Switch to Technical Mode using the toggle at the top
+2. Type 'sponsor <amount>' to start payment
+3. Complete payment via Paystack
+4. Check payment status with 'check <reference>'
+
+Quick sponsorship options:
+• 1    - Buy me a coffee ☕
+• 5    - Support my content creation
+• 10   - Help with server costs
+• 25   - Sponsor a blog post
+• 50   - Support open source work
+• 100  - Major project sponsor
+
+Switch to Technical Mode and try: sponsor 5
+
+Your support helps me create more amazing content and open source projects! ❤️`;
+          }
+
+          case 'check': {
+            const reference = args[0];
+            if (!reference) {
+              return `❌ Error: Please provide a payment reference
+Usage: check <reference>
+Example: check terminal_sponsor_1234567890`;
+            }
+
+            try {
+              const response = await fetch('https://better-portfolio.onrender.com/verify-payment', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ reference }),
+              });
+
+              const result = await response.json();
+
+              if (result.success) {
+                const { amount, sponsor, email, status } = result.data;
+                return `🎉 Payment Verification Successful!
+=====================================
+
+✅ Status: ${status}
+💰 Amount: ${amount}
+👤 Sponsor: ${sponsor}
+📧 Email: ${email}
+🔗 Reference: ${reference}
+
+💝 Thank you for your sponsorship!
+Your support means the world to me! ❤️
+
+[Payment notification email sent to admin]`;
+              } else {
+                return `❌ Payment verification failed: ${result.error}`;
+              }
+            } catch (error) {
+              return `❌ Error checking payment: ${error.message}`;
+            }
+          }
+
           case 'clear':
             return 'clear';
 
@@ -1793,6 +1860,8 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
   const [showSponsorModal, setShowSponsorModal] = useState(false);
   const [showSponsorSuccess, setShowSponsorSuccess] = useState(false);
   const [sponsorAmount, setSponsorAmount] = useState(0);
+  const [showPaymentCheckPrompt, setShowPaymentCheckPrompt] = useState(false);
+  const [lastPaymentReference, setLastPaymentReference] = useState(null);
   const terminalEndRef = useRef(null);
   const inputRef = useRef(null);
   const [displayScrollRef, setDisplayScrollRef] = useState(null);
@@ -1838,6 +1907,16 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
     ]);
     setDisplayData(null);
   }, [mode]);
+
+  // Check for payment reference from callback page
+  useEffect(() => {
+    const storedReference = localStorage.getItem('lastPaymentReference');
+    if (storedReference) {
+      setLastPaymentReference(storedReference);
+      setShowPaymentCheckPrompt(true);
+      localStorage.removeItem('lastPaymentReference');
+    }
+  }, []);
 
   const handleKeyDown = async (e) => {
     if (e.key === 'Enter' && !isProcessing) {
@@ -2018,6 +2097,54 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
           amount={sponsorAmount}
           onClose={() => setShowSponsorSuccess(false)}
         />
+      )}
+
+      {/* Payment Check Prompt */}
+      {showPaymentCheckPrompt && lastPaymentReference && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 border border-gray-600 rounded-lg p-6 max-w-md w-full">
+            <div className="text-center mb-4">
+              <h3 className="text-white font-semibold text-lg mb-2">Check Payment Status?</h3>
+              <p className="text-gray-300 text-sm">
+                Would you like to verify your payment status?
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Button
+                onClick={async () => {
+                  setShowPaymentCheckPrompt(false);
+                  // Auto-execute check command
+                  const checkCommand = `check ${lastPaymentReference}`;
+                  setInput(checkCommand);
+                  // Trigger command execution
+                  const newHistory = [...history, { type: 'input', text: checkCommand }];
+                  setHistory(newHistory);
+                  setInput('');
+
+                  setTimeout(async () => {
+                    const output = await processCommand(checkCommand);
+                    if (output) {
+                      setHistory(prev => [...prev, { type: 'output', text: output, streaming: true }]);
+                    }
+                  }, 100);
+                }}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+              >
+                Yes, check status
+              </Button>
+              <Button
+                onClick={() => setShowPaymentCheckPrompt(false)}
+                variant="outline"
+                className="flex-1 border-gray-500 text-gray-300 hover:bg-gray-700"
+              >
+                No, thanks
+              </Button>
+            </div>
+            <div className="mt-3 text-xs text-gray-400 text-center">
+              Reference: {lastPaymentReference}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -175,7 +175,7 @@ app.post('/verify-payment', async (req, res) => {
           subject: `🎉 Terminal Sponsorship: ${sponsorAmount} from ${sponsorName}`,
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-              <div style="background: linear-gradient(135deg, #ec4899, #be185d); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+              <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
                 <h1 style="margin: 0; font-size: 28px;">💻 Terminal Sponsorship!</h1>
                 <p style="margin: 10px 0 0 0; opacity: 0.9;">Someone sponsored via your terminal!</p>
               </div>
@@ -183,21 +183,21 @@ app.post('/verify-payment', async (req, res) => {
               <div style="border: 2px solid #e5e7eb; border-top: none; padding: 40px; border-radius: 0 0 10px 10px; background: #ffffff;">
                 <h2 style="color: #1f2937; margin-top: 0; font-size: 24px;">Terminal Sponsorship Details</h2>
 
-                <div style="background: #fdf2f8; padding: 25px; border-radius: 8px; margin: 25px 0; border-left: 5px solid #ec4899;">
+                <div style="background: #f0fdf4; padding: 25px; border-radius: 8px; margin: 25px 0; border-left: 5px solid #10b981;">
                   <div style="display: grid; gap: 15px;">
                     <p style="margin: 0;"><strong style="color: #374151;">💰 Amount:</strong> <span style="color: #1f2937; font-size: 18px; font-weight: bold;">${sponsorAmount}</span></p>
                     <p style="margin: 0;"><strong style="color: #374151;">👤 Sponsor:</strong> <span style="color: #1f2937;">${sponsorName}</span></p>
-                    <p style="margin: 0;"><strong style="color: #374151;">📧 Email:</strong> <a href="mailto:${sponsorEmail}" style="color: #ec4899; text-decoration: none;">${sponsorEmail}</a></p>
+                    <p style="margin: 0;"><strong style="color: #374151;">📧 Email:</strong> <a href="mailto:${sponsorEmail}" style="color: #10b981; text-decoration: none;">${sponsorEmail}</a></p>
                     <p style="margin: 0;"><strong style="color: #374151;">🔗 Reference:</strong> <span style="color: #1f2937; font-family: monospace;">${reference}</span></p>
                     <p style="margin: 0;"><strong style="color: #374151;">💻 Source:</strong> <span style="color: #1f2937;">Terminal Interface</span></p>
                   </div>
                 </div>
 
-                <div style="margin-top: 35px; padding: 25px; background: linear-gradient(135deg, #fdf2f8, #fce7f3); border-radius: 8px; text-align: center;">
-                  <h4 style="margin: 0 0 15px 0; color: #be185d;">🎉 Terminal Success!</h4>
+                <div style="margin-top: 35px; padding: 25px; background: linear-gradient(135deg, #f0fdf4, #d1fae5); border-radius: 8px; text-align: center;">
+                  <h4 style="margin: 0 0 15px 0; color: #059669;">🎉 Terminal Success!</h4>
                   <p style="margin: 0 0 15px 0; color: #374151; font-size: 14px;">Your terminal sponsorship feature is working perfectly!</p>
                   <a href="mailto:${sponsorEmail}?subject=Thank you for your terminal sponsorship!"
-                     style="display: inline-block; background: #ec4899; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+                     style="display: inline-block; background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
                     Send Thank You Email
                   </a>
                 </div>
@@ -367,7 +367,7 @@ app.post('/paystack-webhook', async (req, res) => {
           subject: `🎉 New Sponsorship: ${sponsorAmount} from ${sponsorName}`,
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-              <div style="background: linear-gradient(135deg, #ec4899, #be185d); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+              <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
                 <h1 style="margin: 0; font-size: 28px;">💝 New Sponsorship!</h1>
                 <p style="margin: 10px 0 0 0; opacity: 0.9;">Someone just supported your work!</p>
               </div>
@@ -375,20 +375,20 @@ app.post('/paystack-webhook', async (req, res) => {
               <div style="border: 2px solid #e5e7eb; border-top: none; padding: 40px; border-radius: 0 0 10px 10px; background: #ffffff;">
                 <h2 style="color: #1f2937; margin-top: 0; font-size: 24px;">Sponsorship Details</h2>
 
-                <div style="background: #fdf2f8; padding: 25px; border-radius: 8px; margin: 25px 0; border-left: 5px solid #ec4899;">
+                <div style="background: #f0fdf4; padding: 25px; border-radius: 8px; margin: 25px 0; border-left: 5px solid #10b981;">
                   <div style="display: grid; gap: 15px;">
                     <p style="margin: 0;"><strong style="color: #374151;">💰 Amount:</strong> <span style="color: #1f2937; font-size: 18px; font-weight: bold;">${sponsorAmount}</span></p>
                     <p style="margin: 0;"><strong style="color: #374151;">👤 Sponsor:</strong> <span style="color: #1f2937;">${sponsorName}</span></p>
-                    <p style="margin: 0;"><strong style="color: #374151;">📧 Email:</strong> <a href="mailto:${sponsorEmail}" style="color: #ec4899; text-decoration: none;">${sponsorEmail}</a></p>
+                    <p style="margin: 0;"><strong style="color: #374151;">📧 Email:</strong> <a href="mailto:${sponsorEmail}" style="color: #10b981; text-decoration: none;">${sponsorEmail}</a></p>
                     <p style="margin: 0;"><strong style="color: #374151;">🔗 Reference:</strong> <span style="color: #1f2937; font-family: monospace;">${reference}</span></p>
                   </div>
                 </div>
 
-                <div style="margin-top: 35px; padding: 25px; background: linear-gradient(135deg, #fdf2f8, #fce7f3); border-radius: 8px; text-align: center;">
-                  <h4 style="margin: 0 0 15px 0; color: #be185d;">🎉 Thank You Message</h4>
+                <div style="margin-top: 35px; padding: 25px; background: linear-gradient(135deg, #f0fdf4, #d1fae5); border-radius: 8px; text-align: center;">
+                  <h4 style="margin: 0 0 15px 0; color: #059669;">🎉 Thank You Message</h4>
                   <p style="margin: 0 0 15px 0; color: #374151; font-size: 14px;">Consider sending a thank you email to your sponsor!</p>
                   <a href="mailto:${sponsorEmail}?subject=Thank you for your sponsorship!"
-                     style="display: inline-block; background: #ec4899; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+                     style="display: inline-block; background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
                     Send Thank You Email
                   </a>
                 </div>
