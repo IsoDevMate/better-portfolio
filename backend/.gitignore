@@ -4,3 +4,5 @@
 ./ssh/host_key
 ./ssh/host_key.pub
 ./ssh/host_key.old
+.env
+

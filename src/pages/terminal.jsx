@@ -286,7 +286,7 @@ const createCommandProcessor = (data, setDisplayData, switchToGui, mode, setSpon
       // Step 1: Initialize payment
       console.log(`🔄 Initializing payment for ${amount}...`);
 
-      const response = await fetch('http://localhost:3001/terminal-sponsor', {
+              const response = await fetch('https://better-portfolio.onrender.com/terminal-sponsor', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1089,7 +1089,7 @@ Example: check terminal_sponsor_1234567890`;
           }
 
           try {
-            const response = await fetch('http://localhost:3001/verify-payment', {
+            const response = await fetch('https://better-portfolio.onrender.com/verify-payment', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
