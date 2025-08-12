@@ -94,7 +94,6 @@ const Hero = ({ name, title, bio, contact, profilePictureUrl }) => {
                     </div>
 
 
-                    
                     {/* Sponsorship Button */}
                     <div className="mt-4 flex justify-center">
                         <SponsorButton
