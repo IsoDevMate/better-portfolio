@@ -2329,21 +2329,7 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
         <ModeSelector currentMode={mode} setMode={setMode} />
         {showWelcome && <WelcomeBanner />}
 
-        {/* Floating Terminal Payment Awareness */}
-        <div className="fixed top-20 right-4 z-20 max-w-xs">
-          <div className="bg-gradient-to-r from-green-600/90 to-emerald-600/90 backdrop-blur-sm border border-green-500/50 rounded-lg p-3 shadow-lg">
-            <div className="flex items-center gap-2 text-green-100 text-xs font-mono">
-              <span className="text-green-300">💝</span>
-              <span className="font-semibold">TERMINAL SPONSORSHIP</span>
-            </div>
-            <p className="text-green-200 text-xs mt-1 font-mono">
-              Type <code className="bg-green-700 px-1 rounded">sponsor</code> to support • From 49 KES
-            </p>
-            <p className="text-blue-200 text-xs mt-1 font-mono">
-              💡 GraphQL: <code className="bg-blue-700 px-1 rounded">mutation sponsorship 99</code>
-            </p>
-          </div>
-        </div>
+
       </div>
 
       <div className="flex-1 flex p-4 pt-0">
