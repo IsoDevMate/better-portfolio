@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { CheckCircle, XCircle, Loader2, Terminal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import confetti from 'canvas-confetti';
 
 const TerminalPaymentCallback = () => {
   const [searchParams] = useSearchParams();
@@ -38,22 +39,26 @@ const TerminalPaymentCallback = () => {
           setPaymentData(result.data);
 
           // Trigger confetti and audio for successful payment
-          if (typeof window !== 'undefined' && window.confetti) {
-            window.confetti({
+          try {
+            confetti({
               particleCount: 100,
               spread: 70,
               origin: { y: 0.6 }
             });
+          } catch (error) {
+            console.log('Confetti failed to load:', error);
           }
 
-          // Play success audio
+          // Play success audio (optional - will fail gracefully if file doesn't exist)
           try {
-            const audio = new Audio('/success.mp3'); // You'll need to add this audio file
+            const audio = new Audio('/success.mp3');
+            audio.volume = 0.5;
             audio.play().catch(() => {
               // Audio play failed, that's okay
             });
-          } catch {
+          } catch (error) {
             // Audio not available, that's okay
+            console.log('Audio file not found:', error);
           }
 
           // Show check prompt after a delay
