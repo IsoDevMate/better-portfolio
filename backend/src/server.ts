@@ -402,6 +402,31 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Get server IP address for Paystack whitelisting
+app.get('/server-ip', async (req, res) => {
+  try {
+    // Get server's public IP
+    const ipResponse = await fetch('https://api.ipify.org?format=json');
+    const ipData = await ipResponse.json();
+
+    res.json({
+      success: true,
+      server_ip: ipData.ip,
+      message: 'Use this IP address to whitelist in Paystack dashboard',
+      paystack_config: {
+        webhook_url: `${req.protocol}://${req.get('host')}/paystack-webhook`,
+        callback_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/terminal-payment-callback`
+      }
+    });
+  } catch (error) {
+    console.error('❌ Error getting server IP:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get server IP address'
+    });
+  }
+});
+
 // Root endpoint
 app.get('/', (req, res) => {
   res.json({
@@ -410,7 +435,10 @@ app.get('/', (req, res) => {
     endpoints: {
       'POST /support-email': 'Send contact form email',
       'POST /paystack-webhook': 'Paystack webhook verification',
-      'GET /health': 'Health check'
+      'POST /terminal-sponsor': 'Terminal sponsorship payment',
+      'POST /verify-payment': 'Verify payment status',
+      'GET /health': 'Health check',
+      'GET /server-ip': 'Get server IP for Paystack whitelisting'
     }
   });
 });

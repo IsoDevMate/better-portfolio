@@ -5,4 +5,5 @@
 ./ssh/host_key.pub
 ./ssh/host_key.old
 .env
-
+.env.local
+.e*
