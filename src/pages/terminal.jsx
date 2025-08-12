@@ -368,7 +368,7 @@ const createCommandProcessor = (data, setDisplayData, switchToGui, mode, setSpon
             let responseData = {};
             let responseTime = Math.floor(Math.random() * 30) + 20; // Random response time 20-50ms
 
-            // Handle payment-related GraphQL operations
+            // Handle payment-related GraphQL operations FIRST
             if (entity.toLowerCase() === 'payment' || entity.toLowerCase() === 'sponsorship') {
               const amount = args[1] ? parseInt(args[1]) : null;
 
