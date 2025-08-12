@@ -295,7 +295,7 @@ const WelcomeBanner = () => (
 const createCommandProcessor = (data, setDisplayData, switchToGui, mode, setSponsorAmount, setShowSponsorModal) => {
 
   // Terminal sponsorship handler
-  const handleTerminalSponsorship = async (amount) => {
+  const handleTerminalSponsorship = async (amount, email) => {
     try {
       // Step 1: Initialize payment
       console.log(`🔄 Initializing payment for ${amount}...`);
@@ -307,7 +307,7 @@ const createCommandProcessor = (data, setDisplayData, switchToGui, mode, setSpon
         },
         body: JSON.stringify({
           amount: amount,
-          email: 'sponsor@example.com',
+          email: email,
           name: 'Terminal Sponsor'
         }),
       });
@@ -381,6 +381,18 @@ const createCommandProcessor = (data, setDisplayData, switchToGui, mode, setSpon
 Try: mutation sponsorship 49`;
                 }
 
+                // Prompt for email address
+                const email = args[2] || 'barack.ouma@example.com'; // Default email if not provided
+
+                if (!email || email === 'sponsor@example.com') {
+                  return `❌ GraphQL Error: Valid email address required
+💡 Usage: mutation sponsorship <amount> <email>
+
+Examples:
+• mutation sponsorship 99 user@example.com
+• mutation sponsorship 199 john.doe@gmail.com`;
+                }
+
                 try {
                   const response = await fetch('https://better-portfolio.onrender.com/graphql', {
                     method: 'POST',
@@ -389,8 +401,8 @@ Try: mutation sponsorship 49`;
                     },
                     body: JSON.stringify({
                       query: `
-                        mutation CreateSponsorship($amount: Int!) {
-                          createSponsorship(amount: $amount) {
+                        mutation CreateSponsorship($amount: Int!, $email: String!) {
+                          createSponsorship(amount: $amount, email: $email) {
                             success
                             authorization_url
                             reference
@@ -401,7 +413,8 @@ Try: mutation sponsorship 49`;
                         }
                       `,
                       variables: {
-                        amount: amount
+                        amount: amount,
+                        email: email
                       }
                     })
                   });
@@ -567,15 +580,18 @@ Your support means the world to me! ❤️`;
                 } catch (error) {
                   return `❌ GraphQL Error: Failed to connect to payment API`;
                 }
-              } else {
-                return `GraphQL Payment Commands:
-• mutation sponsorship <amount> - Create sponsorship payment
+                             } else {
+                 return `GraphQL Payment Commands:
+• mutation sponsorship <amount> <email> - Create sponsorship payment
 • query payment <reference> - Verify payment status
 
 Examples:
-• mutation sponsorship 99
-• query payment graphql_sponsor_1234567890`;
-              }
+• mutation sponsorship 99 user@example.com
+• mutation sponsorship 199 john.doe@gmail.com
+• query payment graphql_sponsor_1234567890
+
+💡 Note: Email address is required for payment processing`;
+               }
             }
 
             // Simulate different response times based on entity
@@ -1381,6 +1397,8 @@ Access granted. Contact information unlocked.
 
         case 'sponsor': {
           const amount = args[0] ? parseInt(args[0]) : null;
+          const email = args[1] || 'barack.ouma@example.com'; // Default email
+
           if (amount && amount > 0) {
             // Validate minimum amount
             if (amount < 49) {
@@ -1389,8 +1407,19 @@ Access granted. Contact information unlocked.
 
 Try: sponsor 49`;
             }
+
+            // Validate email
+            if (!email || email === 'sponsor@example.com') {
+              return `❌ Error: Valid email address required
+💡 Usage: sponsor <amount> <email>
+
+Examples:
+• sponsor 99 user@example.com
+• sponsor 199 john.doe@gmail.com`;
+            }
+
             // Terminal-based sponsorship flow
-            return await handleTerminalSponsorship(amount);
+            return await handleTerminalSponsorship(amount, email);
           }
           return `💝 Sponsorship Portal
 ==================
@@ -1409,8 +1438,10 @@ Quick sponsorship options:
 
 Or enter any amount you prefer!
 
-Usage: sponsor <amount>
-Example: sponsor 99
+Usage: sponsor <amount> <email>
+Example: sponsor 99 user@example.com
+
+💡 Note: Email address is required for payment processing
 
 Your support helps me create more amazing content and open source projects! ❤️`;
         }
