@@ -1,7 +1,8 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Mail, Twitter, Github, Linkedin, MapPin, UserCircle } from 'lucide-react';
 import TechIcons from './techicons';
+import { SponsorButton, SponsorModal, SponsorSuccess } from './sponsor';
 
 const generateContactUrl = (key, value) => {
     switch (key) {
@@ -38,6 +39,10 @@ const socialLinks = [
 ];
 
 const Hero = ({ name, title, bio, contact, profilePictureUrl }) => {
+    const [showSponsorModal, setShowSponsorModal] = useState(false);
+    const [showSponsorSuccess, setShowSponsorSuccess] = useState(false);
+    const [sponsorAmount, setSponsorAmount] = useState(0);
+
     return (
         <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
             <TechIcons />
@@ -76,6 +81,14 @@ const Hero = ({ name, title, bio, contact, profilePictureUrl }) => {
                         ))}
 
                     </div>
+
+                    {/* Sponsorship Button */}
+                    <div className="mt-6 flex justify-center">
+                        <SponsorButton
+                            onSponsor={() => setShowSponsorModal(true)}
+                            className="transform hover:scale-110 transition-transform duration-300"
+                        />
+                    </div>
                 </div>
 
                 <div className="mt-12 flex flex-col items-center">
@@ -92,6 +105,24 @@ const Hero = ({ name, title, bio, contact, profilePictureUrl }) => {
                 <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-amber-300/5 rounded-full blur-3xl"></div>
                 <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-emerald-300/5 rounded-full blur-3xl"></div>
             </div>
+
+            {/* Sponsorship Modals */}
+            <SponsorModal
+                isOpen={showSponsorModal}
+                onClose={() => setShowSponsorModal(false)}
+                onSponsor={(amount, reference) => {
+                    setSponsorAmount(amount);
+                    setShowSponsorModal(false);
+                    setShowSponsorSuccess(true);
+                }}
+            />
+
+            {showSponsorSuccess && (
+                <SponsorSuccess
+                    amount={sponsorAmount}
+                    onClose={() => setShowSponsorSuccess(false)}
+                />
+            )}
         </div>
     );
 };

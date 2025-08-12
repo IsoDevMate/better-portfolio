@@ -1,807 +1,430 @@
-// import * as ssh2 from 'ssh2';
-// import { Socket } from 'net';
-// import * as fs from 'fs';
-// import * as path from 'path';
-// import { execSync } from 'child_process';
-
-// // Use the correct types from ssh2
-// type Server = ssh2.Server;
-// type Connection = ssh2.Connection;
-// type ServerChannel = ssh2.ServerChannel;
-// type Session = ssh2.Session;
-// type AuthContext = ssh2.AuthContext;
-// type ClientInfo = ssh2.ClientInfo;
-
-// // Create a custom ServerChannel type that extends the original
-// type CustomServerChannel = ServerChannel & {
-//   socket?: Socket & {
-//     end: () => void;
-//   };
-// };
-
-// // User type definition
-// interface User {
-//   username: string;
-//   password: string;
-//   name: string;
-//   email: string;
-// }
-
-// // SSH Server configuration
-// interface SSHServerConfig {
-//   port: number;
-//   host: string;
-//   hostKeyPath: string;
-// }
-
-// // User database type
-// interface UserDatabase {
-//   [username: string]: User;
-// }
-
-// // This is a simple in-memory user database
-// const users: UserDatabase = {
-//   guest: {
-//     username: '',
-//     password: '', // In production, use hashed passwords!
-//     name: '',
-//     email: ''
-//   },
-//   admin: {
-//     username: '',
-//     password: '', // In production, use hashed passwords!
-//     name: '',
-//     email: ''
-//   }
-// };
-
-// // Command handler type
-// type CommandHandler = (stream: ServerChannel, args: string[], username: string) => void;
-
-// // Available commands
-// const commands: Record<string, CommandHandler> = {
-//   help: (stream, args, username) => {
-//     const helpText = `
-// Available commands:
-//   help     - Show this help message
-//   about    - Learn about me
-//   projects - View my projects
-//   contact  - Get in touch
-//   clear    - Clear the screen
-//   exit     - Disconnect\n`;
-//     stream.write(helpText);
-//   },
-
-//   about: (stream, args, username) => {
-//     const aboutText = `
-// About Me:
-//   I'm a passionate developer with experience in building web applications
-//   and solving complex problems with code. I love learning new technologies
-//   and sharing knowledge with others.\n`;
-//     stream.write(aboutText);
-//   },
-
-//   projects: (stream, args, username) => {
-//     const projectsText = `
-// My Projects:
-//   1. Project One - A web application for X
-//   2. Project Two - A mobile app for Y
-//   3. Open Source Contributions - Various open source projects\n`;
-//     stream.write(projectsText);
-//   },
-
-//   contact: (stream, args, username) => {
-//     const contactText = `
-// Contact Me:
-//   Email: your.email@example.com
-//   GitHub: github.com/yourusername
-//   LinkedIn: linkedin.com/in/yourusername\n`;
-//     stream.write(contactText);
-//   },
-
-//   clear: (stream, args, username) => {
-//     // Clear the screen (ANSI escape sequence)
-//     stream.write('\x1B[2J\x1B[0f');
-//   }
-// };
-
-// // Handle command execution
-// function handleCommand(command: string, stream: ServerChannel, username: string) {
-//   if (!command) return;
-
-//   const [cmd, ...args] = command.split(' ');
-//   const handler = commands[cmd.toLowerCase()];
-
-//   if (handler) {
-//     handler(stream, args, username);
-//   } else if (cmd.toLowerCase() === 'exit') {
-//     stream.end('Goodbye!\r\n');
-//     (stream as CustomServerChannel).socket?.end();
-//   } else {
-//     stream.write(`Command not found: ${cmd}\n`);
-//   }
-// }
-
-// // Show command prompt
-// function showPrompt(stream: ServerChannel) {
-//   stream.write('portfolio$ ');
-// }
-
-// // More robust key generation that works with SSH2 - Fixed TypeScript errors
-// const generateTempKey = (keyPath: string, isRetry: boolean = false): Buffer => {
-//   const keyDir = path.dirname(keyPath);
-//   if (!fs.existsSync(keyDir)) {
-//     fs.mkdirSync(keyDir, { recursive: true });
-//   }
-
-//   if (!fs.existsSync(keyPath)) {
-//     console.log('Generating new SSH host key...');
-
-//     try {
-//       // Method 1: Try using ssh-keygen (most compatible)
-//       console.log('Attempting to generate key using ssh-keygen...');
-//       execSync(`ssh-keygen -t rsa -b 2048 -f "${keyPath}" -N "" -m PEM`, {
-//         stdio: 'pipe' // Don't show output unless there's an error
-//       });
-//       console.log(`SSH host key generated successfully using ssh-keygen at: ${keyPath}`);
-//     } catch (sshKeygenError) {
-//       console.log('ssh-keygen not available or failed, trying Node.js crypto...');
-
-//       try {
-//         // Method 2: Use Node.js crypto with PKCS#1 format
-//         const { generateKeyPairSync } = require('crypto');
-
-//         const { privateKey } = generateKeyPairSync('rsa', {
-//           modulusLength: 2048,
-//           publicKeyEncoding: {
-//             type: 'spki',
-//             format: 'pem'
-//           },
-//           privateKeyEncoding: {
-//             type: 'pkcs1', // SSH2 prefers PKCS#1
-//             format: 'pem'
-//           }
-//         });
-
-//         fs.writeFileSync(keyPath, privateKey);
-//         console.log(`SSH host key generated using Node.js crypto at: ${keyPath}`);
-//       } catch (cryptoError) {
-//         console.log('PKCS#1 failed, trying PKCS#8...');
-
-//         try {
-//           // Method 3: Fallback to PKCS#8 (sometimes works)
-//           const { generateKeyPairSync } = require('crypto');
-
-//           const { privateKey } = generateKeyPairSync('rsa', {
-//             modulusLength: 2048,
-//             publicKeyEncoding: {
-//               type: 'spki',
-//               format: 'pem'
-//             },
-//             privateKeyEncoding: {
-//               type: 'pkcs8',
-//               format: 'pem'
-//             }
-//           });
-
-//           fs.writeFileSync(keyPath, privateKey);
-//           console.log(`SSH host key generated using PKCS#8 format at: ${keyPath}`);
-//         } catch (pkcs8Error) {
-//           // Method 4: Use a hardcoded test key (development only!)
-//           console.log('All key generation methods failed, using test key (DEVELOPMENT ONLY)');
-//           const testKey = `-----BEGIN RSA PRIVATE KEY-----
-// MIIEpAIBAAKCAQEAyWGWjWDYdqrKGkE8UhXu9UhXrHjKcN7LdqXq9J7k8E8u8K8Q
-// l8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8k
-// UhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhX
-// rHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHj
-// KcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN
-// 7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7Ld
-// qXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq
-// 9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7
-// k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E
-// 8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8
-// K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Q
-// l8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8k
-// UhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhX
-// rHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHj
-// KcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN
-// 7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7
-// -----END RSA PRIVATE KEY-----`;
-
-//           fs.writeFileSync(keyPath, testKey);
-//           console.warn('WARNING: Using test key for development. Generate proper key for production!');
-//         }
-//       }
-//     }
-//   }
-
-//   console.log(`Loading SSH host key from: ${keyPath}`);
-//   try {
-//     const keyData = fs.readFileSync(keyPath);
-//     const keyString = keyData.toString();
-
-//     // Basic validation
-//     if (!keyString.includes('-----BEGIN') || !keyString.includes('-----END')) {
-//       throw new Error('Invalid key format - missing PEM markers');
-//     }
-
-//     // Check if it looks like a valid RSA key
-//     if (!keyString.includes('RSA PRIVATE KEY') && !keyString.includes('PRIVATE KEY')) {
-//       throw new Error('Key does not appear to be a valid RSA private key');
-//     }
-
-//     console.log('SSH host key loaded and validated successfully');
-//     return keyData;
-//   } catch (error) {
-//     console.error('Error reading SSH key:', error);
-
-//     // Remove the problematic key and try again (but only once to avoid infinite recursion)
-//     if (fs.existsSync(keyPath)) {
-//       console.log('Removing problematic key file and regenerating...');
-//       fs.unlinkSync(keyPath);
-//       // Use the isRetry parameter to prevent infinite recursion
-//       if (!isRetry) {
-//         return generateTempKey(keyPath, true);
-//       }
-//     }
-
-//     // Handle the error properly with type checking
-//     const errorMessage = error instanceof Error ? error.message : String(error);
-//     throw new Error(`Failed to generate or load SSH host key: ${errorMessage}`);
-//   }
-// };
-
-// // Server configuration
-// const config: SSHServerConfig = {
-//   port: parseInt(process.env.SSH_PORT || '2222'),
-//   host: process.env.HOST || '0.0.0.0',
-//   hostKeyPath: process.env.SSH_HOST_KEY_PATH || path.join(__dirname, '../ssh/host_key')
-// };
-
-// // Generate or load host key
-// let hostKey: Buffer;
-// try {
-//   hostKey = generateTempKey(config.hostKeyPath);
-//   console.log('SSH host key setup completed successfully');
-// } catch (error) {
-//   const errorMessage = error instanceof Error ? error.message : String(error);
-//   console.error('Failed to setup SSH host key:', errorMessage);
-//   console.error('Please ensure you have ssh-keygen installed or check file permissions');
-//   process.exit(1);
-// }
-
-// // Create SSH server with minimal configuration
-// const sshServer = new ssh2.Server({
-//   hostKeys: [hostKey]
-// });
-
-// sshServer.on('connection', (client: Connection, info: ClientInfo) => {
-//   console.log('New SSH connection from:', info.ip);
-//   let username: string = '';
-
-//   // Handle authentication
-//   client.on('authentication', (ctx: AuthContext) => {
-//     username = ctx.username;
-//     const password = ctx.method === 'password' ? ctx.password : null;
-
-//     if (password && users[username] && users[username].password === password) {
-//       ctx.accept();
-//     } else {
-//       ctx.reject();
-//     }
-//   });
-
-//   // Handle authenticated session
-//   client.on('ready', () => {
-//     console.log(`Client authenticated: ${username}`);
-
-//     client.on('session', (accept, reject) => {
-//       const session = accept();
-//       if (!session) return;
-
-//       // Handle shell session
-//       session.on('shell', (accept) => {
-//         const stream = accept() as CustomServerChannel;
-//         if (!stream) return;
-
-//         // Set terminal settings
-//         stream.setEncoding('utf8');
-
-//         // Display welcome message and prompt
-//         const welcomeMessage = `
-//   Welcome to ${users[username]?.name || 'My'}'s Portfolio!
-//   Type 'help' to see available commands.\n\n`;
-
-//         stream.write(welcomeMessage);
-//         showPrompt(stream);
-
-//         // Handle user input
-//         let commandBuffer = '';
-//         stream.on('data', (data: Buffer) => {
-//           const input = data.toString('utf8');
-
-//           // Handle backspace/delete
-//           if (input === '\x7f' || input === '\b') {
-//             if (commandBuffer.length > 0) {
-//               commandBuffer = commandBuffer.slice(0, -1);
-//               stream.write('\b \b');
-//             }
-//             return;
-//           }
-
-//           // Handle enter key
-//           if (input === '\r' || input === '\n' || input === '\r\n') {
-//             stream.write('\r\n');
-//             handleCommand(commandBuffer.trim(), stream, username);
-//             commandBuffer = '';
-//             showPrompt(stream);
-//           } else if (input.length === 1 && input >= ' ' && input <= '~') {
-//             // Only append printable ASCII characters
-//             commandBuffer += input;
-//             stream.write(input);
-//           }
-//         });
-
-//         // Handle stream end
-//         stream.on('end', () => {
-//           console.log(`Shell session ended for user: ${username}`);
-//         });
-//       });
-//     });
-//   });
-
-//   client.on('end', () => {
-//     console.log('Client disconnected');
-//   });
-
-//   client.on('error', (err: Error) => {
-//     console.error('Client error:', err);
-//   });
-// });
-
-// // Start the SSH server
-// const PORT = config.port;
-// sshServer.listen(PORT, config.host, () => {
-//   console.log(`SSH server started on ${config.host}:${PORT}`);
-//   console.log('Connect using: ssh -p 2222 guest@localhost');
-//   console.log('Available users: guest (password123), admin (admin123)');
-// });
-
-// // Handle server errors
-// sshServer.on('error', (err: Error) => {
-//   console.error('SSH Server error:', err);
-
-//   // Provide helpful error messages
-//   if (err.message.includes('EADDRINUSE')) {
-//     console.error(`Port ${PORT} is already in use. Try stopping other SSH servers or use a different port.`);
-//   } else if (err.message.includes('EACCES')) {
-//     console.error(`Permission denied. Try using a port number above 1024 or run with sudo.`);
-//   }
-// });
-
-// // Handle process termination
-// process.on('SIGINT', () => {
-//   console.log('\nShutting down server...');
-//   sshServer.close();
-//   process.exit();
-// });
-
-// process.on('SIGTERM', () => {
-//   console.log('\nReceived SIGTERM, shutting down server...');
-//   sshServer.close();
-//   process.exit();
-// });
-
-// // Unhandled promise rejection handler
-// process.on('unhandledRejection', (reason, promise) => {
-//   console.error('Unhandled Promise Rejection at:', promise, 'reason:', reason);
-// });
-
-// // Uncaught exception handler
-// process.on('uncaughtException', (error) => {
-//   console.error('Uncaught Exception:', error);
-//   process.exit(1);
-// });
-
-
-
-import * as ssh2 from 'ssh2';
-import { Socket } from 'net';
-import * as fs from 'fs';
-import * as path from 'path';
-import { execSync } from 'child_process';
-
-// Use the correct types from ssh2
-type Server = ssh2.Server;
-type Connection = ssh2.Connection;
-type ServerChannel = ssh2.ServerChannel;
-type Session = ssh2.Session;
-type AuthContext = ssh2.AuthContext;
-type ClientInfo = ssh2.ClientInfo;
-
-// Create a custom ServerChannel type that extends the original
-type CustomServerChannel = ServerChannel & {
-  socket?: Socket & {
-    end: () => void;
-  };
-};
-
-// User type definition
-interface User {
-  username: string;
-  password: string;
-  name: string;
-  email: string;
-}
-
-// SSH Server configuration
-interface SSHServerConfig {
-  port: number;
-  host: string;
-  hostKeyPath: string;
-}
-
-// User database type
-interface UserDatabase {
-  [username: string]: User;
-}
-
-// This is a simple in-memory user database
-const users: UserDatabase = {
-  guest: {
-    username: 'guest',
-    password: 'password123', // In production, use hashed passwords!
-    name: 'Guest User',
-    email: 'guest@example.com'
-  },
-  admin: {
-    username: 'admin',
-    password: 'admin123', // In production, use hashed passwords!
-    name: 'Admin User',
-    email: 'admin@example.com'
-  }
-};
-
-// Command handler type
-type CommandHandler = (stream: ServerChannel, args: string[], username: string) => void;
-
-// Available commands
-const commands: Record<string, CommandHandler> = {
-  help: (stream, args, username) => {
-    const helpText = `
-Available commands:
-  help     - Show this help message
-  about    - Learn about me
-  projects - View my projects
-  contact  - Get in touch
-  clear    - Clear the screen
-  exit     - Disconnect\n`;
-    stream.write(helpText);
-  },
-
-  about: (stream, args, username) => {
-    const aboutText = `
-About Me:
-  I'm a passionate developer with experience in building web applications
-  and solving complex problems with code. I love learning new technologies
-  and sharing knowledge with others.\n`;
-    stream.write(aboutText);
-  },
-
-  projects: (stream, args, username) => {
-    const projectsText = `
-My Projects:
-  1. Project One - A web application for X
-  2. Project Two - A mobile app for Y
-  3. Open Source Contributions - Various open source projects\n`;
-    stream.write(projectsText);
-  },
-
-  contact: (stream, args, username) => {
-    const contactText = `
-Contact Me:
-  Email: your.email@example.com
-  GitHub: github.com/yourusername
-  LinkedIn: linkedin.com/in/yourusername\n`;
-    stream.write(contactText);
-  },
-
-  clear: (stream, args, username) => {
-    // Clear the screen (ANSI escape sequence)
-    stream.write('\x1B[2J\x1B[0f');
-  }
-};
-
-// Handle command execution
-function handleCommand(command: string, stream: ServerChannel, username: string) {
-  if (!command) return;
-
-  const [cmd, ...args] = command.split(' ');
-  const handler = commands[cmd.toLowerCase()];
-
-  if (handler) {
-    handler(stream, args, username);
-  } else if (cmd.toLowerCase() === 'exit') {
-    stream.end('Goodbye!\r\n');
-    (stream as CustomServerChannel).socket?.end();
-  } else {
-    stream.write(`Command not found: ${cmd}\n`);
-  }
-}
-
-// Show command prompt
-function showPrompt(stream: ServerChannel) {
-  stream.write('portfolio$ ');
-}
-
-// More robust key generation that works with SSH2 - Fixed TypeScript errors
-const generateTempKey = (keyPath: string, isRetry: boolean = false): Buffer => {
-  const keyDir = path.dirname(keyPath);
-  if (!fs.existsSync(keyDir)) {
-    fs.mkdirSync(keyDir, { recursive: true });
-  }
-
-  if (!fs.existsSync(keyPath)) {
-    console.log('Generating new SSH host key...');
-
-    try {
-      // Method 1: Try using ssh-keygen (most compatible)
-      console.log('Attempting to generate key using ssh-keygen...');
-      execSync(`ssh-keygen -t rsa -b 2048 -f "${keyPath}" -N "" -m PEM`, {
-        stdio: 'pipe' // Don't show output unless there's an error
-      });
-      console.log(`SSH host key generated successfully using ssh-keygen at: ${keyPath}`);
-    } catch (sshKeygenError) {
-      console.log('ssh-keygen not available or failed, trying Node.js crypto...');
-
-      try {
-        // Method 2: Use Node.js crypto with PKCS#1 format
-        const { generateKeyPairSync } = require('crypto');
-
-        const { privateKey } = generateKeyPairSync('rsa', {
-          modulusLength: 2048,
-          publicKeyEncoding: {
-            type: 'spki',
-            format: 'pem'
-          },
-          privateKeyEncoding: {
-            type: 'pkcs1', // SSH2 prefers PKCS#1
-            format: 'pem'
-          }
-        });
-
-        fs.writeFileSync(keyPath, privateKey);
-        console.log(`SSH host key generated using Node.js crypto at: ${keyPath}`);
-      } catch (cryptoError) {
-        console.log('PKCS#1 failed, trying PKCS#8...');
-
-        try {
-          // Method 3: Fallback to PKCS#8 (sometimes works)
-          const { generateKeyPairSync } = require('crypto');
-
-          const { privateKey } = generateKeyPairSync('rsa', {
-            modulusLength: 2048,
-            publicKeyEncoding: {
-              type: 'spki',
-              format: 'pem'
-            },
-            privateKeyEncoding: {
-              type: 'pkcs8',
-              format: 'pem'
-            }
-          });
-
-          fs.writeFileSync(keyPath, privateKey);
-          console.log(`SSH host key generated using PKCS#8 format at: ${keyPath}`);
-        } catch (pkcs8Error) {
-          // Method 4: Use a hardcoded test key (development only!)
-          console.log('All key generation methods failed, using test key (DEVELOPMENT ONLY)');
-          const testKey = `-----BEGIN RSA PRIVATE KEY-----
-MIIEpAIBAAKCAQEAyWGWjWDYdqrKGkE8UhXu9UhXrHjKcN7LdqXq9J7k8E8u8K8Q
-l8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8k
-UhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhX
-rHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHj
-KcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN
-7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7Ld
-qXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq
-9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7
-k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E
-8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8
-K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Q
-l8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8k
-UhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhX
-rHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHj
-KcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN
-7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7LdqXq9J7k8E8u8K8Ql8kUhXrHjKcN7
------END RSA PRIVATE KEY-----`;
-
-          fs.writeFileSync(keyPath, testKey);
-          console.warn('WARNING: Using test key for development. Generate proper key for production!');
+import express from 'express';
+import nodemailer from 'nodemailer';
+import cors from 'cors';
+import crypto from 'crypto';
+import dotenv from 'dotenv';
+
+// ============================================================================
+// NOTE: Original SSH functionality is preserved in separate files:
+// - ssh-server.ts: SSH server implementation
+// - terminal.ts: Terminal functionality
+// - websocket-server.ts: WebSocket server
+// - index.ts: Main server entry point with SSH support
+// ============================================================================
+
+dotenv.config()
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Email configuration options
+const getEmailTransporter = () => {
+  const provider = process.env.EMAIL_PROVIDER || 'gmail';
+
+  switch (provider.toLowerCase()) {
+    case 'gmail':
+    default:
+      // Gmail SMTP (500 emails/day, easiest setup)
+      return nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.GMAIL_USER,
+          pass: process.env.GMAIL_APP_PASSWORD
         }
-      }
-    }
-  }
-
-  console.log(`Loading SSH host key from: ${keyPath}`);
-  try {
-    const keyData = fs.readFileSync(keyPath);
-    const keyString = keyData.toString();
-
-    // Basic validation
-    if (!keyString.includes('-----BEGIN') || !keyString.includes('-----END')) {
-      throw new Error('Invalid key format - missing PEM markers');
-    }
-
-    // Check if it looks like a valid RSA key
-    if (!keyString.includes('RSA PRIVATE KEY') && !keyString.includes('PRIVATE KEY')) {
-      throw new Error('Key does not appear to be a valid RSA private key');
-    }
-
-    console.log('SSH host key loaded and validated successfully');
-    return keyData;
-  } catch (error) {
-    console.error('Error reading SSH key:', error);
-
-    // Remove the problematic key and try again (but only once to avoid infinite recursion)
-    if (fs.existsSync(keyPath)) {
-      console.log('Removing problematic key file and regenerating...');
-      fs.unlinkSync(keyPath);
-      // Use the isRetry parameter to prevent infinite recursion
-      if (!isRetry) {
-        return generateTempKey(keyPath, true);
-      }
-    }
-
-    // Handle the error properly with type checking
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    throw new Error(`Failed to generate or load SSH host key: ${errorMessage}`);
-  }
-};
-
-// Server configuration
-const config: SSHServerConfig = {
-  port: parseInt(process.env.SSH_PORT || '2222'),
-  host: process.env.HOST || '0.0.0.0',
-  hostKeyPath: process.env.SSH_HOST_KEY_PATH || path.join(__dirname, '../ssh/host_key')
-};
-
-// Generate or load host key
-let hostKey: Buffer;
-try {
-  hostKey = generateTempKey(config.hostKeyPath);
-  console.log('SSH host key setup completed successfully');
-} catch (error) {
-  const errorMessage = error instanceof Error ? error.message : String(error);
-  console.error('Failed to setup SSH host key:', errorMessage);
-  console.error('Please ensure you have ssh-keygen installed or check file permissions');
-  process.exit(1);
-}
-
-// Create SSH server with minimal configuration
-const sshServer = new ssh2.Server({
-  hostKeys: [hostKey]
-});
-
-sshServer.on('connection', (client: Connection, info: ClientInfo) => {
-  console.log('New SSH connection from:', info.ip);
-  let username: string = '';
-
-  // Handle authentication - Accept anyone without password
-  client.on('authentication', (ctx: AuthContext) => {
-    username = ctx.username || 'anonymous';
-    // Accept any authentication method without validation
-    ctx.accept();
-  });
-
-  // Handle authenticated session
-  client.on('ready', () => {
-    console.log(`Client authenticated: ${username}`);
-
-    client.on('session', (accept, reject) => {
-      const session = accept();
-      if (!session) return;
-
-      // Handle shell session
-      session.on('shell', (accept) => {
-        const stream = accept() as CustomServerChannel;
-        if (!stream) return;
-
-        // Set terminal settings
-        stream.setEncoding('utf8');
-
-        // Display welcome message and prompt
-        const welcomeMessage = `
-  Welcome to My Portfolio Terminal!
-  Type 'help' to see available commands.
-  Connected as: ${username}\n\n`;
-
-        stream.write(welcomeMessage);
-        showPrompt(stream);
-
-        // Handle user input
-        let commandBuffer = '';
-        stream.on('data', (data: Buffer) => {
-          const input = data.toString('utf8');
-
-          // Handle backspace/delete
-          if (input === '\x7f' || input === '\b') {
-            if (commandBuffer.length > 0) {
-              commandBuffer = commandBuffer.slice(0, -1);
-              stream.write('\b \b');
-            }
-            return;
-          }
-
-          // Handle enter key
-          if (input === '\r' || input === '\n' || input === '\r\n') {
-            stream.write('\r\n');
-            handleCommand(commandBuffer.trim(), stream, username);
-            commandBuffer = '';
-            showPrompt(stream);
-          } else if (input.length === 1 && input >= ' ' && input <= '~') {
-            // Only append printable ASCII characters
-            commandBuffer += input;
-            stream.write(input);
-          }
-        });
-
-        // Handle stream end
-        stream.on('end', () => {
-          console.log(`Shell session ended for user: ${username}`);
-        });
       });
+  }
+};
+
+// Paystack webhook verification
+const verifyPaystackWebhook = (req: express.Request): boolean => {
+  const hash = crypto
+    .createHmac('sha512', process.env.PAYSTACK_SECRET_KEY || '')
+    .update(JSON.stringify(req.body))
+    .digest('hex');
+
+  return hash === req.headers['x-paystack-signature'];
+};
+
+// Terminal sponsorship endpoint
+app.post('/terminal-sponsor', async (req, res) => {
+  try {
+    const { amount, email, name } = req.body;
+
+    // Validate required fields
+    if (!amount || amount <= 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Valid amount is required'
+      });
+    }
+
+    // Generate unique reference
+    const reference = `terminal_sponsor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    // Create Paystack payment URL
+    const paystackUrl = `https://api.paystack.co/transaction/initialize`;
+
+    const response = await fetch(paystackUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email || 'sponsor@example.com',
+        amount: amount * 100, // Convert to kobo
+        currency: 'KES',
+        reference: reference,
+        callback_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/terminal-payment-callback`,
+        metadata: {
+          name: name || 'Terminal Sponsor',
+          source: 'terminal',
+          amount: amount
+        }
+      })
     });
-  });
 
-  client.on('end', () => {
-    console.log('Client disconnected');
-  });
+    const result = await response.json();
 
-  client.on('error', (err: Error) => {
-    console.error('Client error:', err);
-  });
-});
+    if (result.status) {
+      res.json({
+        success: true,
+        authorization_url: result.data.authorization_url,
+        reference: reference,
+        amount: amount,
+        message: 'Payment URL generated successfully'
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        error: result.message || 'Failed to generate payment URL'
+      });
+    }
 
-// Start the SSH server
-const PORT = config.port;
-sshServer.listen(PORT, config.host, () => {
-  console.log(`SSH server started on ${config.host}:${PORT}`);
-  console.log('Connect using: ssh -p 2222 <any_username>@localhost');
-  console.log('No password required - anyone can connect!');
-});
-
-// Handle server errors
-sshServer.on('error', (err: Error) => {
-  console.error('SSH Server error:', err);
-
-  // Provide helpful error messages
-  if (err.message.includes('EADDRINUSE')) {
-    console.error(`Port ${PORT} is already in use. Try stopping other SSH servers or use a different port.`);
-  } else if (err.message.includes('EACCES')) {
-    console.error(`Permission denied. Try using a port number above 1024 or run with sudo.`);
+  } catch (error) {
+    console.error('❌ Error in terminal sponsorship:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error'
+    });
   }
 });
 
-// Handle process termination
-process.on('SIGINT', () => {
-  console.log('\nShutting down server...');
-  sshServer.close();
-  process.exit();
+// Payment verification endpoint
+app.post('/verify-payment', async (req, res) => {
+  try {
+    const { reference } = req.body;
+
+    if (!reference) {
+      return res.status(400).json({
+        success: false,
+        error: 'Reference is required'
+      });
+    }
+
+    const response = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
+      headers: {
+        'Authorization': `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+      }
+    });
+
+    const result = await response.json();
+
+    if (result.status && result.data.status === 'success') {
+      const { amount, customer, metadata } = result.data;
+      const sponsorAmount = amount / 100;
+      const sponsorEmail = customer?.email || metadata?.email || 'anonymous@example.com';
+      const sponsorName = customer?.first_name && customer?.last_name
+        ? `${customer.first_name} ${customer.last_name}`
+        : metadata?.name || 'Anonymous';
+
+      // Send sponsorship notification email
+      try {
+        const transporter = getEmailTransporter();
+        const mailOptions = {
+          from: `"${process.env.SENDER_NAME || 'Barack Ouma Portfolio'}" <${process.env.SENDER_EMAIL}>`,
+          to: process.env.RECIPIENT_EMAIL,
+          subject: `🎉 Terminal Sponsorship: ${sponsorAmount} from ${sponsorName}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <div style="background: linear-gradient(135deg, #ec4899, #be185d); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                <h1 style="margin: 0; font-size: 28px;">💻 Terminal Sponsorship!</h1>
+                <p style="margin: 10px 0 0 0; opacity: 0.9;">Someone sponsored via your terminal!</p>
+              </div>
+
+              <div style="border: 2px solid #e5e7eb; border-top: none; padding: 40px; border-radius: 0 0 10px 10px; background: #ffffff;">
+                <h2 style="color: #1f2937; margin-top: 0; font-size: 24px;">Terminal Sponsorship Details</h2>
+
+                <div style="background: #fdf2f8; padding: 25px; border-radius: 8px; margin: 25px 0; border-left: 5px solid #ec4899;">
+                  <div style="display: grid; gap: 15px;">
+                    <p style="margin: 0;"><strong style="color: #374151;">💰 Amount:</strong> <span style="color: #1f2937; font-size: 18px; font-weight: bold;">${sponsorAmount}</span></p>
+                    <p style="margin: 0;"><strong style="color: #374151;">👤 Sponsor:</strong> <span style="color: #1f2937;">${sponsorName}</span></p>
+                    <p style="margin: 0;"><strong style="color: #374151;">📧 Email:</strong> <a href="mailto:${sponsorEmail}" style="color: #ec4899; text-decoration: none;">${sponsorEmail}</a></p>
+                    <p style="margin: 0;"><strong style="color: #374151;">🔗 Reference:</strong> <span style="color: #1f2937; font-family: monospace;">${reference}</span></p>
+                    <p style="margin: 0;"><strong style="color: #374151;">💻 Source:</strong> <span style="color: #1f2937;">Terminal Interface</span></p>
+                  </div>
+                </div>
+
+                <div style="margin-top: 35px; padding: 25px; background: linear-gradient(135deg, #fdf2f8, #fce7f3); border-radius: 8px; text-align: center;">
+                  <h4 style="margin: 0 0 15px 0; color: #be185d;">🎉 Terminal Success!</h4>
+                  <p style="margin: 0 0 15px 0; color: #374151; font-size: 14px;">Your terminal sponsorship feature is working perfectly!</p>
+                  <a href="mailto:${sponsorEmail}?subject=Thank you for your terminal sponsorship!"
+                     style="display: inline-block; background: #ec4899; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+                    Send Thank You Email
+                  </a>
+                </div>
+              </div>
+
+              <div style="text-align: center; padding: 20px; background: #f9fafb; border-radius: 8px; margin-top: 10px;">
+                <p style="margin: 5px 0; color: #6b7280; font-size: 14px;">📍 Nairobi County, Kenya</p>
+                <p style="margin: 5px 0; color: #6b7280; font-size: 14px;">⏰ ${new Date().toLocaleString('en-KE', { timeZone: 'Africa/Nairobi' })}</p>
+                <p style="margin: 5px 0; color: #6b7280; font-size: 12px;">Payment Provider: Paystack | Source: Terminal</p>
+              </div>
+            </div>
+          `,
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log(`✅ Terminal sponsorship notification email sent successfully!`);
+      } catch (emailError) {
+        console.error('❌ Error sending terminal sponsorship notification email:', emailError);
+      }
+
+      res.json({
+        success: true,
+        data: {
+          amount: sponsorAmount,
+          sponsor: sponsorName,
+          email: sponsorEmail,
+          reference: reference,
+          status: 'success'
+        }
+      });
+    } else {
+      res.json({
+        success: false,
+        error: 'Payment verification failed'
+      });
+    }
+
+  } catch (error) {
+    console.error('❌ Error verifying payment:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Payment verification failed'
+    });
+  }
 });
 
-process.on('SIGTERM', () => {
-  console.log('\nReceived SIGTERM, shutting down server...');
-  sshServer.close();
-  process.exit();
+// Contact form endpoint (Contact Page form)
+app.post('/support-email', async (req, res) => {
+  try {
+    const { firstName, lastName, email, subject, message, phone } = req.body;
+
+    // Validate required fields
+    if (!firstName || !lastName || !email || !subject || !message) {
+      return res.status(400).json({
+        success: false,
+        error: 'All fields are required'
+      });
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid email format'
+      });
+    }
+
+    const transporter = getEmailTransporter();
+
+    // Email content for contact form
+    const mailOptions = {
+      from: `"${process.env.SENDER_NAME || 'Barack Ouma Portfolio'}" <${process.env.SENDER_EMAIL}>`,
+      to: process.env.RECIPIENT_EMAIL, // Where you want to receive emails
+      subject: `Portfolio Contact: ${subject}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+            <h1 style="margin: 0; font-size: 28px;">💻 Barack Ouma</h1>
+            <p style="margin: 10px 0 0 0; opacity: 0.9;">New Portfolio Contact</p>
+          </div>
+
+          <div style="border: 2px solid #e5e7eb; border-top: none; padding: 40px; border-radius: 0 0 10px 10px; background: #ffffff;">
+            <h2 style="color: #1f2937; margin-top: 0; font-size: 24px;">Contact Information</h2>
+
+            <div style="background: #f0fdf4; padding: 25px; border-radius: 8px; margin: 25px 0; border-left: 5px solid #10b981;">
+              <div style="display: grid; gap: 15px;">
+                <p style="margin: 0;"><strong style="color: #374151;">👤 Name:</strong> <span style="color: #1f2937;">${firstName} ${lastName}</span></p>
+                <p style="margin: 0;"><strong style="color: #374151;">📧 Email:</strong> <a href="mailto:${email}" style="color: #10b981; text-decoration: none;">${email}</a></p>
+                ${phone ? `<p style="margin: 0;"><strong style="color: #374151;">📱 Phone:</strong> <a href="tel:${phone}" style="color: #10b981; text-decoration: none;">${phone}</a></p>` : ''}
+                <p style="margin: 0;"><strong style="color: #374151;">📋 Subject:</strong> <span style="color: #1f2937;">${subject}</span></p>
+              </div>
+            </div>
+
+            <h3 style="color: #1f2937; margin-bottom: 15px;">💬 Message:</h3>
+            <div style="background: #ffffff; padding: 25px; border: 2px solid #e5e7eb; border-radius: 8px; border-left: 5px solid #f59e0b;">
+              <p style="margin: 0; line-height: 1.7; color: #374151; font-size: 16px;">${message.replace(/\n/g, '<br>')}</p>
+            </div>
+
+            <div style="margin-top: 35px; padding: 25px; background: linear-gradient(135deg, #ecfdf5, #d1fae5); border-radius: 8px; text-align: center;">
+              <h4 style="margin: 0 0 15px 0; color: #059669;">🎯 Portfolio Contact</h4>
+              <p style="margin: 0 0 15px 0; color: #374151; font-size: 14px;">Please respond within 24 hours</p>
+              <a href="mailto:${email}?subject=Re: ${subject}"
+                 style="display: inline-block; background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+                Reply to ${firstName}
+              </a>
+            </div>
+          </div>
+
+          <div style="text-align: center; padding: 20px; background: #f9fafb; border-radius: 8px; margin-top: 10px;">
+            <p style="margin: 5px 0; color: #6b7280; font-size: 14px;">📍 Nairobi County, Kenya</p>
+            <p style="margin: 5px 0; color: #6b7280; font-size: 14px;">⏰ ${new Date().toLocaleString('en-KE', { timeZone: 'Africa/Nairobi' })}</p>
+            <p style="margin: 5px 0; color: #6b7280; font-size: 12px;">Email Provider: ${process.env.EMAIL_PROVIDER || 'Gmail'}</p>
+          </div>
+        </div>
+      `,
+    };
+
+    // Send email
+    await transporter.sendMail(mailOptions);
+
+    console.log(`✅ Contact email sent successfully from: ${email} | Name: ${firstName} ${lastName} | Provider: ${process.env.EMAIL_PROVIDER || 'Gmail'}`);
+
+    res.json({
+      success: true,
+      message: 'Message sent successfully! I\'ll get back to you within 24 hours.'
+    });
+
+  } catch (error) {
+    console.error('❌ Error sending contact email:', error);
+
+    res.status(500).json({
+      success: false,
+      error: 'Failed to send message. Please try again or contact me directly.'
+    });
+  }
 });
 
-// Unhandled promise rejection handler
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Promise Rejection at:', promise, 'reason:', reason);
+// Paystack webhook endpoint
+app.post('/paystack-webhook', async (req, res) => {
+  try {
+    // Verify webhook signature
+    if (!verifyPaystackWebhook(req)) {
+      console.log('❌ Invalid Paystack webhook signature');
+      return res.status(401).json({ error: 'Invalid signature' });
+    }
+
+    const { event, data } = req.body;
+
+    if (event === 'charge.success') {
+      const { amount, customer, reference, metadata } = data;
+      const sponsorAmount = amount / 100; // Convert from kobo to naira
+      const sponsorEmail = customer?.email || metadata?.email || 'anonymous@example.com';
+      const sponsorName = customer?.first_name && customer?.last_name
+        ? `${customer.first_name} ${customer.last_name}`
+        : metadata?.name || 'Anonymous';
+
+      console.log(`🎉 Payment successful! Amount: ${sponsorAmount} | Sponsor: ${sponsorName} | Reference: ${reference}`);
+
+      // Send sponsorship notification email
+      try {
+        const transporter = getEmailTransporter();
+
+        const mailOptions = {
+          from: `"${process.env.SENDER_NAME || 'Barack Ouma Portfolio'}" <${process.env.SENDER_EMAIL}>`,
+          to: process.env.RECIPIENT_EMAIL,
+          subject: `🎉 New Sponsorship: ${sponsorAmount} from ${sponsorName}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <div style="background: linear-gradient(135deg, #ec4899, #be185d); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                <h1 style="margin: 0; font-size: 28px;">💝 New Sponsorship!</h1>
+                <p style="margin: 10px 0 0 0; opacity: 0.9;">Someone just supported your work!</p>
+              </div>
+
+              <div style="border: 2px solid #e5e7eb; border-top: none; padding: 40px; border-radius: 0 0 10px 10px; background: #ffffff;">
+                <h2 style="color: #1f2937; margin-top: 0; font-size: 24px;">Sponsorship Details</h2>
+
+                <div style="background: #fdf2f8; padding: 25px; border-radius: 8px; margin: 25px 0; border-left: 5px solid #ec4899;">
+                  <div style="display: grid; gap: 15px;">
+                    <p style="margin: 0;"><strong style="color: #374151;">💰 Amount:</strong> <span style="color: #1f2937; font-size: 18px; font-weight: bold;">${sponsorAmount}</span></p>
+                    <p style="margin: 0;"><strong style="color: #374151;">👤 Sponsor:</strong> <span style="color: #1f2937;">${sponsorName}</span></p>
+                    <p style="margin: 0;"><strong style="color: #374151;">📧 Email:</strong> <a href="mailto:${sponsorEmail}" style="color: #ec4899; text-decoration: none;">${sponsorEmail}</a></p>
+                    <p style="margin: 0;"><strong style="color: #374151;">🔗 Reference:</strong> <span style="color: #1f2937; font-family: monospace;">${reference}</span></p>
+                  </div>
+                </div>
+
+                <div style="margin-top: 35px; padding: 25px; background: linear-gradient(135deg, #fdf2f8, #fce7f3); border-radius: 8px; text-align: center;">
+                  <h4 style="margin: 0 0 15px 0; color: #be185d;">🎉 Thank You Message</h4>
+                  <p style="margin: 0 0 15px 0; color: #374151; font-size: 14px;">Consider sending a thank you email to your sponsor!</p>
+                  <a href="mailto:${sponsorEmail}?subject=Thank you for your sponsorship!"
+                     style="display: inline-block; background: #ec4899; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+                    Send Thank You Email
+                  </a>
+                </div>
+              </div>
+
+              <div style="text-align: center; padding: 20px; background: #f9fafb; border-radius: 8px; margin-top: 10px;">
+                <p style="margin: 5px 0; color: #6b7280; font-size: 14px;">📍 Nairobi County, Kenya</p>
+                <p style="margin: 5px 0; color: #6b7280; font-size: 14px;">⏰ ${new Date().toLocaleString('en-KE', { timeZone: 'Africa/Nairobi' })}</p>
+                <p style="margin: 5px 0; color: #6b7280; font-size: 12px;">Payment Provider: Paystack</p>
+              </div>
+            </div>
+          `,
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log(`✅ Sponsorship notification email sent successfully!`);
+      } catch (emailError) {
+        console.error('❌ Error sending sponsorship notification email:', emailError);
+      }
+    }
+
+    res.json({ status: 'success' });
+  } catch (error) {
+    console.error('❌ Error processing Paystack webhook:', error);
+    res.status(500).json({ error: 'Webhook processing failed' });
+  }
 });
 
-// Uncaught exception handler
-process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error);
-  process.exit(1);
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({
+    status: '✅ Server running',
+    service: 'Barack Ouma Portfolio Backend',
+    provider: process.env.EMAIL_PROVIDER || 'Gmail',
+    timestamp: new Date().toISOString()
+  });
 });
+
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({
+    message: '💻 Barack Ouma Portfolio Backend',
+    provider: process.env.EMAIL_PROVIDER || 'Gmail',
+    endpoints: {
+      'POST /support-email': 'Send contact form email',
+      'POST /paystack-webhook': 'Paystack webhook verification',
+      'GET /health': 'Health check'
+    }
+  });
+});
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📧 Using email provider: ${process.env.EMAIL_PROVIDER || 'Gmail'}`);
+  console.log(`📬 Emails will be sent to: ${process.env.RECIPIENT_EMAIL}`);
+  console.log(`💳 Paystack webhook enabled: ${process.env.PAYSTACK_SECRET_KEY ? 'Yes' : 'No'}`);
+  console.log(`📋 Available endpoints:`);
+  console.log(`   POST /support-email - Contact form`);
+  console.log(`   POST /paystack-webhook - Paystack webhook`);
+  console.log(`   GET /health - Health check`);
+});
+
+export default app

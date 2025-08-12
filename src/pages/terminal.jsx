@@ -7,8 +7,9 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   X, Mail, Phone, MapPin, Calendar, Award, ExternalLink,
   Send, Download, FileText, Globe, Github, Linkedin,
-  Twitter, Terminal, Cpu, Code, Loader2
+  Twitter, Terminal, Cpu, Code, Loader2, Heart, CreditCard
 } from 'lucide-react';
+import { SponsorModal, SponsorSuccess } from '@/components/ui/sponsor';
 
 const samplePortfolioData = {
   "name": "Barack Ouma",
@@ -277,7 +278,60 @@ const WelcomeBanner = () => (
   </div>
 );
 
-const createCommandProcessor = (data, setDisplayData, switchToGui, mode) => {
+const createCommandProcessor = (data, setDisplayData, switchToGui, mode, setSponsorAmount, setShowSponsorModal) => {
+
+  // Terminal sponsorship handler
+  const handleTerminalSponsorship = async (amount) => {
+    try {
+      // Step 1: Initialize payment
+      console.log(`🔄 Initializing payment for ${amount}...`);
+
+      const response = await fetch('http://localhost:3001/terminal-sponsor', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: amount,
+          email: 'sponsor@example.com',
+          name: 'Terminal Sponsor'
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Step 2: Show payment URL
+        console.log(`✅ Payment URL generated!`);
+        console.log(`🔗 Reference: ${result.reference}`);
+
+        // Step 3: Open payment URL in new tab
+        window.open(result.authorization_url, '_blank');
+
+        // Step 4: Start polling for payment verification
+        return `💝 Terminal Sponsorship Initiated
+===============================
+
+💰 Amount: ${amount}
+🔗 Reference: ${result.reference}
+🌐 Payment URL: ${result.authorization_url}
+
+📋 Instructions:
+1. Payment page opened in new tab
+2. Complete payment on Paystack
+3. Return here to see confirmation
+
+⏳ Checking payment status...
+[Press Enter to check status]`;
+      } else {
+        return `❌ Error: ${result.error}`;
+      }
+    } catch (error) {
+      console.error('Terminal sponsorship error:', error);
+      return `❌ Error: Failed to initialize payment`;
+    }
+  };
+
   const process = async (command) => {
     try {
       const [cmd, ...args] = command.toLowerCase().trim().split(' ');
@@ -407,6 +461,8 @@ Status: 200 OK`;
                   { cmd: 'query about', desc: 'Get about me information' },
                   { cmd: 'schema', desc: 'Show complete GraphQL schema' },
                   { cmd: 'explorer', desc: 'Open Apollo Sandbox Explorer' },
+                  { cmd: 'sponsor', desc: 'Support my work with a donation' },
+                  { cmd: 'check', desc: 'Check payment status with reference' },
                   { cmd: 'mode <type>', desc: 'Switch terminal mode' },
                   { cmd: 'clear', desc: 'Clear terminal' },
                   { cmd: 'exit', desc: 'Exit terminal' }
@@ -436,6 +492,8 @@ Status: 200 OK`;
                   { cmd: 'contact', desc: 'How to contact me' },
                   { cmd: 'neofetch', desc: 'Show system information' },
                   { cmd: 'mode <type>', desc: 'Switch terminal mode (simple/technical/graphql)' },
+                  { cmd: 'sponsor', desc: 'Support my work with a donation' },
+                  { cmd: 'check', desc: 'Check payment status with reference' },
                   { cmd: 'clear', desc: 'Clear the screen' },
                   { cmd: 'exit', desc: 'Exit terminal' }
                 ]
@@ -545,7 +603,7 @@ ${item.github ? 'View on GitHub: ' + item.github : ''}`;
                 github: 'https://github.com/IsoDevMate/comfybase-plp',
                 date: 'July 2025 - Present'
               },
-                {
+              {
                 id: 4,
                 name: 'Groreels.com UGC Automation Platform',
                 description: 'Built an AI-powered platform enabling users to generate and schedule UGC videos, blog posts, and avatars for TikTok, Reels, and YouTube. Engineered key modules including avatar/video generators, content calendar, affiliate system, and auto-posting workflows with integrated analytics and payment handling. Inspired by tools like MakeUGC.ai and Creatify, Groreels helps creators and businesses automate campaigns end-to-end from script to scheduled post.',
@@ -602,7 +660,7 @@ ${tags}${websiteInfo}\n`;
 
       switch (cmd) {
         case 'help':
-        case 'man':
+        case 'man': {
           const commands = [
             { cmd: 'whoami', desc: 'Display current user information' },
             { cmd: 'id', desc: 'Display user and group IDs' },
@@ -632,6 +690,8 @@ ${tags}${websiteInfo}\n`;
             { cmd: 'sudo contact', desc: 'Get contact information with privileges' },
             { cmd: 'vim resume.txt', desc: 'View resume in vim-style' },
             { cmd: 'neofetch', desc: 'Display system information banner' },
+            { cmd: 'sponsor', desc: 'Support my work with a donation' },
+            { cmd: 'check', desc: 'Check payment status with reference' },
             { cmd: 'mode <type>', desc: 'Switch terminal mode' },
             { cmd: 'clear', desc: 'Clear terminal screen' },
             { cmd: 'exit', desc: 'Exit terminal mode' }
@@ -657,6 +717,7 @@ Available commands:
 ${cliOutput}
 
 Type 'man <command>' for detailed help on specific commands.`;
+        }
 
         case 'whoami':
           setDisplayData({
@@ -992,6 +1053,77 @@ Access granted. Contact information unlocked.
           }
           return `sudo: ${args.join(' ')}: command not found`;
 
+        case 'sponsor': {
+          const amount = args[0] ? parseInt(args[0]) : null;
+          if (amount && amount > 0) {
+            // Terminal-based sponsorship flow
+            return await handleTerminalSponsorship(amount);
+          }
+          return `💝 Sponsorship Portal
+==================
+
+Thank you for considering to sponsor my work!
+
+Quick sponsorship options:
+• 1    - Buy me a coffee ☕
+• 5    - Support my content creation
+• 10   - Help with server costs
+• 25   - Sponsor a blog post
+• 50   - Support open source work
+• 100  - Major project sponsor
+
+Or enter any amount you prefer!
+
+Usage: sponsor <amount>
+Example: sponsor 5
+
+Your support helps me create more amazing content and open source projects! ❤️`;
+        }
+
+        case 'check': {
+          const reference = args[0];
+          if (!reference) {
+            return `❌ Error: Please provide a payment reference
+Usage: check <reference>
+Example: check terminal_sponsor_1234567890`;
+          }
+
+          try {
+            const response = await fetch('http://localhost:3001/verify-payment', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ reference }),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+              const { amount, sponsor, email, status } = result.data;
+              return `🎉 Payment Verification Successful!
+=====================================
+
+✅ Status: ${status}
+💰 Amount: ${amount}
+👤 Sponsor: ${sponsor}
+📧 Email: ${email}
+🔗 Reference: ${reference}
+
+💝 Thank you for your sponsorship!
+Your support means the world to me! ❤️
+
+[Payment notification email sent to admin]`;
+            } else {
+              return `❌ Payment verification failed: ${result.error}`;
+            }
+          } catch (error) {
+            return `❌ Error checking payment: ${error.message}`;
+          }
+        }
+
+
+
         case 'vim':
           if (args[0] === 'resume.txt' || args[0] === 'resume') {
             setDisplayData({ type: 'vim-resume', content: data });
@@ -1096,6 +1228,7 @@ ${data.skills?.map(s => `${s.category}: ${s.values.join(', ')}`).join('\n')}
 Did you mean one of these?
   whoami    ls       cat      find     grep
   ps        top      history  env      uname
+  sponsor   clear    exit
 
 Type 'help' or 'man' for a full list of available commands.`;
       }
@@ -1657,6 +1790,9 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
   const [commandHistory, setCommandHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [showWelcome, setShowWelcome] = useState(true);
+  const [showSponsorModal, setShowSponsorModal] = useState(false);
+  const [showSponsorSuccess, setShowSponsorSuccess] = useState(false);
+  const [sponsorAmount, setSponsorAmount] = useState(0);
   const terminalEndRef = useRef(null);
   const inputRef = useRef(null);
   const [displayScrollRef, setDisplayScrollRef] = useState(null);
@@ -1665,7 +1801,9 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
     portfolioData,
     setDisplayData,
     switchToGui || (() => console.log('Switching to GUI mode')),
-    mode
+    mode,
+    setSponsorAmount,
+    setShowSponsorModal
   );
 
   useEffect(() => {
@@ -1863,6 +2001,24 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
           <DisplayPanel displayData={displayData} mode={mode} scrollRef={setDisplayScrollRef} />
         </div>
       </div>
+
+      {/* Sponsorship Modals */}
+      <SponsorModal
+        isOpen={showSponsorModal}
+        onClose={() => setShowSponsorModal(false)}
+        onSponsor={(amount, reference) => {
+          setSponsorAmount(amount);
+          setShowSponsorModal(false);
+          setShowSponsorSuccess(true);
+        }}
+      />
+
+      {showSponsorSuccess && (
+        <SponsorSuccess
+          amount={sponsorAmount}
+          onClose={() => setShowSponsorSuccess(false)}
+        />
+      )}
     </div>
   );
 }

@@ -132,7 +132,7 @@ const ContactForm = ({ contactData }) => {
         setIsLoading(true);
         try {
             // Replace with your actual API endpoint
-            const response = await fetch('https://losh-site.onrender.com/support-email', {
+            const response = await fetch('http://localhost:3001/support-email', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
