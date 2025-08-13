@@ -275,9 +275,9 @@ const TypewriterOutput = ({ text }) => {
       const timeout = setTimeout(() => {
         setDisplayText(prev => prev + text.charAt(index));
         setIndex(prev => prev + 1);
-      }, 20);
+      }, 3); // Much faster - reduced from 20ms to 5ms
       return () => clearTimeout(timeout);
-    }
+    }33
   }, [index, text]);
 
   return <pre className="whitespace-pre-wrap text-gray-300 font-mono text-sm leading-relaxed">{displayText}</pre>;
