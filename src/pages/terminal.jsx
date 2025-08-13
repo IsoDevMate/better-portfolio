@@ -321,9 +321,9 @@ const createCommandProcessor = (data, setDisplayData, switchToGui, mode, setSpon
   const handleTerminalSponsorship = async (amount, email) => {
     try {
       // Step 1: Initialize payment
-      console.log(`🔄 Initializing payment for ${amount}...`);
+      console.log(`🔄 Initializing payment for ${amount} KES with email ${email}...`);
 
-              const response = await fetch('https://better-portfolio.onrender.com/terminal-sponsor', {
+      const response = await fetch('https://better-portfolio.onrender.com/terminal-sponsor', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -336,6 +336,7 @@ const createCommandProcessor = (data, setDisplayData, switchToGui, mode, setSpon
       });
 
       const result = await response.json();
+      console.log('API Response:', result);
 
       if (result.success) {
         // Step 2: Show payment URL
@@ -349,7 +350,8 @@ const createCommandProcessor = (data, setDisplayData, switchToGui, mode, setSpon
         return `💝 Terminal Sponsorship Initiated
 ===============================
 
-💰 Amount: ${amount}
+💰 Amount: ${amount} KES
+📧 Email: ${email}
 🔗 Reference: ${result.reference}
 🌐 Payment URL: ${result.authorization_url}
 
@@ -361,11 +363,23 @@ const createCommandProcessor = (data, setDisplayData, switchToGui, mode, setSpon
 ⏳ Checking payment status...
 [Press Enter to check status]`;
       } else {
-        return `❌ Error: ${result.error}`;
+        return `❌ Error from Live API: ${result.error}
+
+Request to: https://better-portfolio.onrender.com/terminal-sponsor
+Status: ${response.status}
+Amount: ${amount} KES
+Email: ${email}
+
+💡 This error comes from your live API on Render.`;
       }
     } catch (error) {
       console.error('Terminal sponsorship error:', error);
-      return `❌ Error: Failed to initialize payment`;
+      return `❌ Error: Failed to connect to payment API
+
+Request to: https://better-portfolio.onrender.com/terminal-sponsor
+Error: ${error.message}
+
+💡 This error comes from your live API on Render.`;
     }
   };
 
@@ -392,7 +406,7 @@ const createCommandProcessor = (data, setDisplayData, switchToGui, mode, setSpon
             let responseTime = Math.floor(Math.random() * 30) + 20; // Random response time 20-50ms
 
             // Handle payment-related GraphQL operations FIRST
-            if (entity.toLowerCase() === 'payment' || entity.toLowerCase() === 'sponsorship') {
+            if (entity.toLowerCase() === 'payment' || entity.toLowerCase() === 'sponsorship' || entity.toLowerCase() === 'sponshorship') {
               const amount = args[1] ? parseInt(args[1]) : null;
 
               if (cmd === 'mutation' && amount) {
@@ -498,10 +512,25 @@ Status: 200 OK
 1. Complete payment on Paystack
 2. Return here to verify with: query payment ${paymentData.reference}`;
                   } else {
-                    return `❌ GraphQL Error: ${result.data?.createSponsorship?.error || 'Payment initialization failed'}`;
+                    const errorMessage = result.data?.createSponsorship?.error || result.errors?.[0]?.message || 'Payment initialization failed';
+                    return `❌ GraphQL Error: ${errorMessage}
+
+Request to: https://better-portfolio.onrender.com/graphql
+Response Time: 150ms
+Status: 400 Bad Request
+
+💡 This error comes from your live API on Render.`;
                   }
                 } catch (error) {
-                  return `❌ GraphQL Error: Failed to connect to payment API`;
+                  return `❌ GraphQL Error: Failed to connect to payment API
+
+Request to: https://better-portfolio.onrender.com/graphql
+Response Time: N/A
+Status: Connection Failed
+
+Error Details: ${error.message}
+
+💡 This error comes from your live API on Render.`;
                 }
               } else if (cmd === 'query' && args[1]) {
                 // Handle payment verification query
@@ -598,10 +627,25 @@ Status: 200 OK
 💝 Thank you for your sponsorship!
 Your support means the world to me! ❤️`;
                   } else {
-                    return `❌ GraphQL Error: ${result.data?.verifyPayment?.error || 'Payment verification failed'}`;
+                    const errorMessage = result.data?.verifyPayment?.error || result.errors?.[0]?.message || 'Payment verification failed';
+                    return `❌ GraphQL Error: ${errorMessage}
+
+Request to: https://better-portfolio.onrender.com/graphql
+Response Time: 120ms
+Status: 400 Bad Request
+
+💡 This error comes from your live API on Render.`;
                   }
                 } catch (error) {
-                  return `❌ GraphQL Error: Failed to connect to payment API`;
+                  return `❌ GraphQL Error: Failed to connect to payment API
+
+Request to: https://better-portfolio.onrender.com/graphql
+Response Time: N/A
+Status: Connection Failed
+
+Error Details: ${error.message}
+
+💡 This error comes from your live API on Render.`;
                 }
                              } else {
                  return `GraphQL Payment Commands:
@@ -613,8 +657,18 @@ Examples:
 • mutation sponsorship 199 john.doe@gmail.com
 • query payment graphql_sponsor_1234567890
 
-💡 Note: Email address is required for payment processing`;
+💡 Note: Email address is required for payment processing
+
+💡 Test Error Handling:
+• Try: mutation sponsorship 5 user@example.com (should show minimum amount error)
+• Try: mutation sponsorship 49 user@example.com (should work)`;
                }
+            }
+
+            // If we reach here, it's not a payment operation, so handle regular queries
+            if (entity.toLowerCase() === 'payment' || entity.toLowerCase() === 'sponsorship' || entity.toLowerCase() === 'sponshorship') {
+              return `❌ GraphQL Error: Invalid payment operation
+💡 Use: mutation sponsorship <amount> <email> or query payment <reference>`;
             }
 
             // Simulate different response times based on entity
@@ -943,16 +997,35 @@ ${project.description}
             return `Email: ${data.contact.email}\nLocation: ${data.contact.location}\nGitHub: ${data.contact.github}`;
 
           case 'sponsor': {
+            const amount = args[0] ? parseInt(args[0]) : null;
+            const email = args[1] || 'barack.ouma@example.com'; // Default email
+
+            if (amount && amount > 0) {
+              // Validate minimum amount
+              if (amount < 49) {
+                return `❌ Error: Minimum sponsorship amount is 49 KES
+💡 Custom amounts must be at least 29 KES
+
+Try: sponsor 49`;
+              }
+
+              // Validate email
+              if (!email || email === 'sponsor@example.com') {
+                return `❌ Error: Valid email address required
+💡 Usage: sponsor <amount> <email>
+
+Examples:
+• sponsor 99 user@example.com
+• sponsor 199 john.doe@gmail.com`;
+              }
+
+              // Terminal-based sponsorship flow
+              return await handleTerminalSponsorship(amount, email);
+            }
             return `💝 Sponsorship Portal
 ==================
 
-Sponsorship is available in Technical Mode for better experience!
-
-To sponsor my work:
-1. Switch to Technical Mode using the toggle at the top
-2. Type 'sponsor <amount>' to start payment
-3. Complete payment via Paystack
-4. Check payment status with 'check <reference>'
+Thank you for considering to sponsor my work!
 
 Quick sponsorship options:
 • 49   - Buy me a coffee ☕
@@ -964,7 +1037,16 @@ Quick sponsorship options:
 
 💡 Minimum amount: 49 KES | Custom minimum: 29 KES
 
-Switch to Technical Mode and try: sponsor 99
+Or enter any amount you prefer!
+
+Usage: sponsor <amount> <email>
+Example: sponsor 99 user@example.com
+
+💡 Note: Email address is required for payment processing
+
+💡 Test Examples:
+• sponsor 48 user@example.com (should show minimum amount error from live API)
+• sponsor 49 user@example.com (should work and call live API)
 
 Your support helps me create more amazing content and open source projects! ❤️`;
           }
