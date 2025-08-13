@@ -207,7 +207,30 @@ const UserPrompt = ({ mode }) => (
   </div>
 );
 
-const Cursor = () => <span className="bg-lime-400 w-2 h-5 inline-block animate-pulse ml-1" />;
+const Cursor = ({ isTyping = false }) => {
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    if (isTyping) {
+      setIsVisible(true);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setIsVisible(prev => !prev);
+    }, 530); // Slightly faster blink rate
+
+    return () => clearInterval(interval);
+  }, [isTyping]);
+
+  return (
+    <span
+      className={`bg-lime-400 w-2 h-5 inline-block ml-1 transition-all duration-75 ${
+        isVisible ? 'opacity-100' : 'opacity-0'
+      } ${isTyping ? 'animate-pulse shadow-lg shadow-lime-400/50' : ''}`}
+    />
+  );
+};
 
 const ModeSelector = ({ currentMode, setMode }) => (
   <div className="flex justify-center mb-4">
@@ -900,13 +923,13 @@ ${item.github ? 'View on GitHub: ' + item.github : ''}`;
               '================\n\n' +
               featuredProjects.map(project => {
                 const tags = project.techStack ?
-                  project.techStack.map(tag => `\x1b[36m${tag}\x1b[0m`).join(' • ') : '';
-                const dateInfo = project.date ? `\n\x1b[33m${project.date}\x1b[0m` : '';
-                const websiteInfo = project.website ? `\n\x1b[34m${project.website}\x1b[0m` : '';
+                  project.techStack.join(' • ') : '';
+                const dateInfo = project.date ? `\n📅 ${project.date}` : '';
+                const websiteInfo = project.website ? `\n🌐 ${project.website}` : '';
 
-                return `\x1b[1m${project.name}\x1b[0m${dateInfo}
+                return `[${project.id}] 📁 ${project.name}${dateInfo}
 ${project.description}
-${tags}${websiteInfo}\n`;
+🔧 ${tags}${websiteInfo}\n`;
               }).join('\n') +
               '\nUse \'projects <id>\' to view more details about a specific project.';
           }
@@ -1547,15 +1570,104 @@ ${data.skills?.map(s => `${s.category}: ${s.values.join(', ')}`).join('\n')}
 
         case 'projects':
           if (id) {
-            const item = data.projects?.find(p => p.id === id);
+            // Use the same featured projects data as simple mode
+            const featuredProjects = [
+              {
+                id: 1,
+                name: 'ComfyBase Event Management System',
+                description: 'A comprehensive Smart event management platform designed to simplify event organization, enhance attendee engagement, and provide seamless event experiences. Features real-time interactions, live streaming, interactive note-taking, media sharing, and an awards system.',
+                techStack: ['React', 'Node.js', 'MongoDB', 'WebRTC', 'Real-time', 'Event Management', 'Live Streaming'],
+                website: 'https://comfybase-plp-7wum.vercel.app/',
+                github: 'https://github.com/IsoDevMate/comfybase-plp',
+                date: 'July 2025 - Present'
+              },
+              {
+                id: 2,
+                name: 'ComfyBase Mobile App',
+                description: 'Cross-platform mobile application for event management with Flutter. Features interactive note-taking, multimedia support, QR code verification, and seamless cross-platform accessibility for Android, iOS, Web, and Desktop.',
+                techStack: ['Flutter', 'Dart', 'Cross-platform', 'Mobile Development', 'Event Management', 'Real-time'],
+                website: 'https://github.com/IsoDevMate/comfybase-plp',
+                github: 'https://github.com/IsoDevMate/comfybase-plp',
+                date: 'July 2025 - Present'
+              },
+              {
+                id: 4,
+                name: 'Groreels.com UGC Automation Platform',
+                description: 'Built an AI-powered platform enabling users to generate and schedule UGC videos, blog posts, and avatars for TikTok, Reels, and YouTube. Engineered key modules including avatar/video generators, content calendar, affiliate system, and auto-posting workflows with integrated analytics and payment handling. Inspired by tools like MakeUGC.ai and Creatify, Groreels helps creators and businesses automate campaigns end-to-end from script to scheduled post.',
+                techStack: ['AI', 'Video Generation', 'Content Automation', 'React', 'Node.js'],
+                website: 'https://groreels.com',
+                date: 'July 2025 - Present'
+              },
+              {
+                id: 3,
+                name: 'Portfolio Terminal',
+                description: 'Interactive terminal-style portfolio with GUI/CLI modes',
+                techStack: ['React', 'Terminal', 'Animation', 'Portfolio', 'ssh'],
+                website: 'https://better-portfolio-pi.vercel.app',
+                github: 'https://github.com/IsoDevMate/better-portfolio'
+              }
+            ];
+
+            const item = featuredProjects.find(p => p.id === id);
             if (item) {
               setDisplayData({ type: 'project-detail', content: item });
-              return `${item.name}\n${item.description}\n${item.tags.join(', ')}`;
+              return `${item.name}\n${item.description}\n${item.techStack.join(', ')}`;
             }
             return `Project ID ${id} not found.`;
           }
-          setDisplayData({ type: 'projects-list', content: data.projects });
-          return data.projects?.map(p => `${p.id}. ${p.name}`).join('\n') || 'No projects data';
+
+          // Use the same featured projects data as simple mode
+          const featuredProjects = [
+            {
+              id: 1,
+              name: 'ComfyBase Event Management System',
+              description: 'A comprehensive Smart event management platform designed to simplify event organization, enhance attendee engagement, and provide seamless event experiences. Features real-time interactions, live streaming, interactive note-taking, media sharing, and an awards system.',
+              techStack: ['React', 'Node.js', 'MongoDB', 'WebRTC', 'Real-time', 'Event Management', 'Live Streaming'],
+              website: 'https://comfybase-plp-7wum.vercel.app/',
+              github: 'https://github.com/IsoDevMate/comfybase-plp',
+              date: 'July 2025 - Present'
+            },
+            {
+              id: 2,
+              name: 'ComfyBase Mobile App',
+              description: 'Cross-platform mobile application for event management with Flutter. Features interactive note-taking, multimedia support, QR code verification, and seamless cross-platform accessibility for Android, iOS, Web, and Desktop.',
+              techStack: ['Flutter', 'Dart', 'Cross-platform', 'Mobile Development', 'Event Management', 'Real-time'],
+              website: 'https://github.com/IsoDevMate/comfybase-plp',
+              github: 'https://github.com/IsoDevMate/comfybase-plp',
+              date: 'July 2025 - Present'
+            },
+            {
+              id: 4,
+              name: 'Groreels.com UGC Automation Platform',
+              description: 'Built an AI-powered platform enabling users to generate and schedule UGC videos, blog posts, and avatars for TikTok, Reels, and YouTube. Engineered key modules including avatar/video generators, content calendar, affiliate system, and auto-posting workflows with integrated analytics and payment handling. Inspired by tools like MakeUGC.ai and Creatify, Groreels helps creators and businesses automate campaigns end-to-end from script to scheduled post.',
+              techStack: ['AI', 'Video Generation', 'Content Automation', 'React', 'Node.js'],
+              website: 'https://groreels.com',
+              date: 'July 2025 - Present'
+            },
+            {
+              id: 3,
+              name: 'Portfolio Terminal',
+              description: 'Interactive terminal-style portfolio with GUI/CLI modes',
+              techStack: ['React', 'Terminal', 'Animation', 'Portfolio', 'ssh'],
+              website: 'https://better-portfolio-pi.vercel.app',
+              github: 'https://github.com/IsoDevMate/better-portfolio'
+            }
+          ];
+
+          setDisplayData({ type: 'projects-list', content: featuredProjects });
+          return 'Featured Projects\n' +
+            '================\n\n' +
+            featuredProjects.map(project => {
+              const tags = project.techStack ?
+                project.techStack.join(' • ') : '';
+              const dateInfo = project.date ? `\n📅 ${project.date}` : '';
+              const websiteInfo = project.website ? `\n🌐 ${project.website}` : '';
+
+              return `[${project.id}] 📁 ${project.name}${dateInfo}
+${project.description}
+🔧 ${tags}${websiteInfo}\n`;
+            }).join('\n') +
+            '\nUse \'projects <id>\' to view more details about a specific project.';
 
         case 'education':
           setDisplayData({ type: 'education', content: data.education });
@@ -1980,16 +2092,22 @@ ${displayData.content.education?.dates}
                 </div>
                 <p className="text-gray-300 text-sm mb-3 leading-relaxed">{project.description}</p>
                 <div className="flex flex-wrap gap-1 mb-3">
-                  {project.tags.slice(0, 4).map((tag, i) => (
+                  {(project.techStack || project.tags || []).slice(0, 4).map((tag, i) => (
                     <Badge key={i} variant="secondary" className="bg-gray-700 text-gray-300 text-xs font-mono">
                       {tag}
                     </Badge>
                   ))}
                 </div>
-                {project.details_link && (
-                  <a href={project.details_link} className="text-green-400 hover:underline flex items-center gap-1 text-xs font-mono">
+                {(project.github || project.details_link) && (
+                  <a href={project.github || project.details_link} className="text-green-400 hover:underline flex items-center gap-1 text-xs font-mono">
                     <Github className="w-3 h-3" />
                     Source Code
+                  </a>
+                )}
+                {project.website && (
+                  <a href={project.website} className="text-blue-400 hover:underline flex items-center gap-1 text-xs font-mono ml-3">
+                    <ExternalLink className="w-3 h-3" />
+                    Live Demo
                   </a>
                 )}
               </div>
@@ -2004,18 +2122,26 @@ ${displayData.content.education?.dates}
           <h3 className="text-lg font-bold text-white font-mono">{displayData.content.name}</h3>
           <p className="text-gray-300 text-sm leading-relaxed">{displayData.content.description}</p>
           <div className="flex flex-wrap gap-2">
-            {displayData.content.tags.map((tag, i) => (
+            {(displayData.content.techStack || displayData.content.tags || []).map((tag, i) => (
               <Badge key={i} variant="secondary" className="bg-gray-800 text-gray-300 text-xs border border-gray-600 font-mono">
                 {tag}
               </Badge>
             ))}
           </div>
-          {displayData.content.details_link && (
-            <a href={displayData.content.details_link} className="flex items-center gap-2 text-green-400 hover:underline font-mono text-sm">
-              <Github className="w-4 h-4" />
-              View Source Code
-            </a>
-          )}
+          <div className="flex gap-3">
+            {(displayData.content.github || displayData.content.details_link) && (
+              <a href={displayData.content.github || displayData.content.details_link} className="flex items-center gap-2 text-green-400 hover:underline font-mono text-sm">
+                <Github className="w-4 h-4" />
+                View Source Code
+              </a>
+            )}
+            {displayData.content.website && (
+              <a href={displayData.content.website} className="flex items-center gap-2 text-blue-400 hover:underline font-mono text-sm">
+                <ExternalLink className="w-4 h-4" />
+                Live Demo
+              </a>
+            )}
+          </div>
         </div>
       );
 
@@ -2173,9 +2299,12 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
   const [sponsorAmount, setSponsorAmount] = useState(0);
   const [showPaymentCheckPrompt, setShowPaymentCheckPrompt] = useState(false);
   const [lastPaymentReference, setLastPaymentReference] = useState(null);
+  const [isTyping, setIsTyping] = useState(false);
+  const [isInputFocused, setIsInputFocused] = useState(false);
   const terminalEndRef = useRef(null);
   const inputRef = useRef(null);
   const [displayScrollRef, setDisplayScrollRef] = useState(null);
+  const typingTimeoutRef = useRef(null);
 
   const processCommand = createCommandProcessor(
     portfolioData,
@@ -2194,26 +2323,60 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
   }, [history, displayData]);
 
   useEffect(() => {
-    const focusInput = () => inputRef.current?.focus();
+    const focusInput = () => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+        // Ensure cursor is at the end
+        const length = inputRef.current.value.length;
+        inputRef.current.setSelectionRange(length, length);
+      }
+    };
+
     const handleClick = (e) => {
+      // Focus input on any click in the terminal area
       if (e.target.closest('.terminal-panel')) {
         focusInput();
       }
     };
+
+    const handleKeyDown = (e) => {
+      // Focus input on any key press anywhere on the page when terminal is active
+      if (!e.target.matches('input') && !e.target.matches('textarea') && !e.target.matches('select')) {
+        focusInput();
+      }
+    };
+
+    const handleMouseMove = (e) => {
+      // Focus input when mouse moves over terminal area
+      if (e.target.closest('.terminal-panel') && !isInputFocused) {
+        focusInput();
+      }
+    };
+
     window.addEventListener('click', handleClick);
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('mousemove', handleMouseMove);
     focusInput();
-    return () => window.removeEventListener('click', handleClick);
-  }, []);
+
+    return () => {
+      window.removeEventListener('click', handleClick);
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, [isInputFocused]);
 
   useEffect(() => {
     setHistory([
       {
         type: 'output',
         text: mode === 'simple' ?
-          "Welcome! Type 'help' for available commands or 'exit' to quit." :
+          "Welcome! Type 'help' for available commands or 'exit' to quit.\n💡 Tip: Click anywhere in the terminal or press any key to start typing." :
           mode === 'technical' ?
-          "Terminal ready. Type 'help' for commands, 'gui' to switch modes." :
-          "GraphQL Gateway active. Type 'help' for GraphQL commands."
+          "Terminal ready. Type 'help' for commands, 'gui' to switch modes.\n💡 Tip: Click anywhere in the terminal or press any key to start typing." :
+          "GraphQL Gateway active. Type 'help' for GraphQL commands.\n💡 Tip: Click anywhere in the terminal or press any key to start typing."
       }
     ]);
     setDisplayData(null);
@@ -2337,13 +2500,51 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
           <Card className="bg-[#0a0a0a] border-gray-800 h-full">
             <CardHeader className="pb-2 border-b border-gray-800">
               <CardTitle className="text-green-400 font-mono text-sm flex items-center gap-2">
-                <span>●</span> barack@portfolio-terminal
+                <span className={isInputFocused ? 'animate-pulse' : ''}>●</span> barack@portfolio-terminal
                 <span className="ml-auto text-xs text-gray-500">
                   {mode} mode
                 </span>
+                {isInputFocused && (
+                  <span className="text-xs text-green-400 ml-2">ready</span>
+                )}
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-4 h-full overflow-y-auto font-mono text-sm">
+            <CardContent className={`p-4 h-full overflow-y-auto font-mono text-sm transition-colors duration-200 relative ${
+              isInputFocused ? 'bg-[#0a0a0a]' : 'bg-[#0a0a0a]'
+            } ${isInputFocused ? 'ring-1 ring-green-400/20' : ''}`}>
+              {/* Invisible input field covering the entire terminal area */}
+              <input
+                ref={inputRef}
+                type="text"
+                value={input}
+                onChange={(e) => {
+                  setInput(e.target.value);
+                  setIsTyping(e.target.value.length > 0);
+
+                  // Clear previous timeout
+                  if (typingTimeoutRef.current) {
+                    clearTimeout(typingTimeoutRef.current);
+                  }
+
+                  // Set new timeout to stop typing indicator after 1 second of no input
+                  if (e.target.value.length > 0) {
+                    typingTimeoutRef.current = setTimeout(() => {
+                      setIsTyping(false);
+                    }, 1000);
+                  } else {
+                    setIsTyping(false);
+                  }
+                }}
+                onKeyDown={handleKeyDown}
+                onFocus={() => setIsInputFocused(true)}
+                onBlur={() => setIsInputFocused(false)}
+                className="absolute inset-0 w-full h-full bg-transparent border-none outline-none text-transparent cursor-text z-10 hover:cursor-text"
+                disabled={isProcessing}
+                spellCheck="false"
+                autoComplete="off"
+                autoCapitalize="off"
+                style={{ caretColor: 'transparent' }}
+              />
               <div className="pb-20">
                 {history.map((item, index) => (
                   <div key={index} className="mb-2">
@@ -2368,19 +2569,8 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
                 <div className="flex items-center gap-2">
                   <UserPrompt mode={mode} />
                   <div className="flex-1 flex items-center">
-                    <input
-                      ref={inputRef}
-                      type="text"
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      onKeyDown={handleKeyDown}
-                      className="bg-transparent border-none outline-none text-white flex-1 font-mono"
-                      disabled={isProcessing}
-                      spellCheck="false"
-                      autoComplete="off"
-                      autoCapitalize="off"
-                    />
-                    {!isProcessing && <Cursor />}
+                    <span className="text-white font-mono">{input}</span>
+                    {!isProcessing && <Cursor isTyping={isTyping || isInputFocused} />}
                   </div>
                 </div>
               </div>
