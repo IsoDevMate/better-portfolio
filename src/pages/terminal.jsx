@@ -420,7 +420,7 @@ Error: ${error.message}
             // Validate entity names for GraphQL
             const validEntities = ['experience', 'projects', 'skills', 'about', 'portfolio', 'payment', 'sponsorship'];
             const validEntity = validEntities.find(e => e.toLowerCase() === entity.toLowerCase());
-            
+
             if (!validEntity) {
               return `❌ GraphQL Error: Invalid entity "${entity}"
 💡 Valid entities: ${validEntities.join(', ')}
@@ -1435,7 +1435,7 @@ Opening GitHub profile...`;
           }
           return `ssh: connection failed`;
 
-        case 'ping':
+        case 'ping': {
           const service = args[0];
           if (service === 'github.com') {
             return `PING github.com (140.82.112.3): 56 data bytes
@@ -1445,6 +1445,7 @@ Opening GitHub profile...`;
 2 packets transmitted, 2 packets received, 0.0% packet loss`;
           }
           return `ping: ${service}: Name or service not known`;
+        }
 
         case 'df':
           if (flag === '-h') {
@@ -1647,7 +1648,7 @@ ${data.skills?.map(s => `${s.category}: ${s.values.join(', ')}`).join('\n')}
           }
           return `vim: ${args[0]}: No such file or directory`;
 
-        case 'neofetch':
+        case 'neofetch': {
           const neofetchOutput = `
       ___           ${data.name}
      (.. |          OS: Portfolio Terminal v2.1.0
@@ -1666,6 +1667,7 @@ ${data.skills?.map(s => `${s.category}: ${s.values.join(', ')}`).join('\n')}
             content: { ascii: neofetchOutput, data }
           });
           return neofetchOutput;
+        }
 
         case 'experience':
           if (id) {
@@ -1679,7 +1681,7 @@ ${data.skills?.map(s => `${s.category}: ${s.values.join(', ')}`).join('\n')}
           setDisplayData({ type: 'experience-list', content: data.experience });
           return data.experience?.map(e => `${e.id}. ${e.title} @ ${e.company}`).join('\n') || 'No experience data';
 
-        case 'projects':
+        case 'projects': {
           if (id) {
             // Use the same featured projects data as simple mode
             const featuredProjects = [
@@ -1779,6 +1781,7 @@ ${project.description}
 🔧 ${tags}${websiteInfo}\n`;
             }).join('\n') +
             '\nUse \'projects <id>\' to view more details about a specific project.';
+        }
 
         case 'education':
           setDisplayData({ type: 'education', content: data.education });
@@ -1874,24 +1877,26 @@ const DisplayPanel = ({ displayData, mode, scrollRef }) => {
 
     case 'neofetch':
       return (
-        <div className="space-y-4" ref={scrollRef}>
-          <h3 className="text-lg font-bold text-white font-mono">System Information</h3>
-          <div className="bg-gray-800 p-4 rounded border border-gray-700">
-            <pre className="text-green-400 font-mono text-xs whitespace-pre-wrap">
-              {displayData.content.ascii}
-            </pre>
-            <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
-              <div className="bg-gray-700 p-2 rounded">
-                <span className="text-blue-400 font-mono">GitHub:</span>
-                <a href={displayData.content.data.contact.github} className="text-green-400 ml-2 hover:underline">
-                  IsoDevMate
-                </a>
-              </div>
-              <div className="bg-gray-700 p-2 rounded">
-                <span className="text-blue-400 font-mono">LinkedIn:</span>
-                <a href={displayData.content.data.contact.linkedin} className="text-green-400 ml-2 hover:underline">
-                  Profile
-                </a>
+        <div className="h-full flex flex-col">
+          <h3 className="text-lg font-bold text-white font-mono mb-4">System Information</h3>
+          <div className="flex-1 overflow-y-auto pr-2" ref={scrollRef}>
+            <div className="bg-gray-800 p-4 rounded border border-gray-700">
+              <pre className="text-green-400 font-mono text-xs whitespace-pre-wrap">
+                {displayData.content.ascii}
+              </pre>
+              <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
+                <div className="bg-gray-700 p-2 rounded">
+                  <span className="text-blue-400 font-mono">GitHub:</span>
+                  <a href={displayData.content.data.contact.github} className="text-green-400 ml-2 hover:underline">
+                    IsoDevMate
+                  </a>
+                </div>
+                <div className="bg-gray-700 p-2 rounded">
+                  <span className="text-blue-400 font-mono">LinkedIn:</span>
+                  <a href={displayData.content.data.contact.linkedin} className="text-green-400 ml-2 hover:underline">
+                    Profile
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -1900,25 +1905,27 @@ const DisplayPanel = ({ displayData, mode, scrollRef }) => {
 
     case 'tree':
       return (
-        <div className="space-y-4" ref={scrollRef}>
-          <h3 className="text-lg font-bold text-white font-mono">Portfolio Structure</h3>
-          <div className="bg-gray-800 p-4 rounded border border-gray-700">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <h4 className="text-blue-400 font-bold text-sm font-mono">📁 experience/</h4>
-                {displayData.content.experience?.map((exp, i) => (
-                  <div key={i} className="pl-4 text-gray-300 text-xs font-mono">
-                    ├── {exp.company.toLowerCase().replace(/\s+/g, '-')}/
-                  </div>
-                ))}
-              </div>
-              <div className="space-y-2">
-                <h4 className="text-blue-400 font-bold text-sm font-mono">📁 projects/</h4>
-                {displayData.content.projects?.map((proj, i) => (
-                  <div key={i} className="pl-4 text-gray-300 text-xs font-mono">
-                    ├── {proj.name.toLowerCase().replace(/\s+/g, '-')}/
-                  </div>
-                ))}
+        <div className="h-full flex flex-col">
+          <h3 className="text-lg font-bold text-white font-mono mb-4">Portfolio Structure</h3>
+          <div className="flex-1 overflow-y-auto pr-2" ref={scrollRef}>
+            <div className="bg-gray-800 p-4 rounded border border-gray-700">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <h4 className="text-blue-400 font-bold text-sm font-mono">📁 experience/</h4>
+                  {displayData.content.experience?.map((exp, i) => (
+                    <div key={i} className="pl-4 text-gray-300 text-xs font-mono">
+                      ├── {exp.company.toLowerCase().replace(/\s+/g, '-')}/
+                    </div>
+                  ))}
+                </div>
+                <div className="space-y-2">
+                  <h4 className="text-blue-400 font-bold text-sm font-mono">📁 projects/</h4>
+                  {displayData.content.projects?.map((proj, i) => (
+                    <div key={i} className="pl-4 text-gray-300 text-xs font-mono">
+                      ├── {proj.name.toLowerCase().replace(/\s+/g, '-')}/
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1927,13 +1934,14 @@ const DisplayPanel = ({ displayData, mode, scrollRef }) => {
 
     case 'vim-resume':
       return (
-        <div className="space-y-4" ref={scrollRef}>
-          <h3 className="text-lg font-bold text-white font-mono">VIM - Resume Editor</h3>
-          <div className="bg-black border border-green-400 rounded p-4">
-            <div className="text-green-400 font-mono text-xs mb-2">
-              -- INSERT MODE -- | :wq to save and quit | :q! to quit without saving
-            </div>
-            <pre className="text-green-200 font-mono text-xs whitespace-pre-wrap">
+        <div className="h-full flex flex-col">
+          <h3 className="text-lg font-bold text-white font-mono mb-4">VIM - Resume Editor</h3>
+          <div className="flex-1 overflow-y-auto pr-2" ref={scrollRef}>
+            <div className="bg-black border border-green-400 rounded p-4">
+              <div className="text-green-400 font-mono text-xs mb-2">
+                -- INSERT MODE -- | :wq to save and quit | :q! to quit without saving
+              </div>
+              <pre className="text-green-200 font-mono text-xs whitespace-pre-wrap">
 {`=== BARACK OUMA - RESUME ===
 
 CONTACT:
@@ -1958,22 +1966,25 @@ ${displayData.content.education?.degree}
 ${displayData.content.education?.university}
 ${displayData.content.education?.dates}
 `}
-            </pre>
+              </pre>
+            </div>
           </div>
         </div>
       );
 
     case 'profile':
       return (
-        <div className="space-y-4" ref={scrollRef}>
-          <div className="text-center">
-            <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl font-bold text-black">
-              {displayData.content.name.split(' ').map(n => n[0]).join('')}
+        <div className="h-full flex flex-col">
+          <div className="flex-1 overflow-y-auto pr-2" ref={scrollRef}>
+            <div className="text-center">
+              <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl font-bold text-black">
+                {displayData.content.name.split(' ').map(n => n[0]).join('')}
+              </div>
+              <h3 className="text-xl font-bold text-white font-mono">{displayData.content.name}</h3>
+              <p className="text-green-400 text-sm font-mono">{displayData.content.title}</p>
             </div>
-            <h3 className="text-xl font-bold text-white font-mono">{displayData.content.name}</h3>
-            <p className="text-green-400 text-sm font-mono">{displayData.content.title}</p>
+            <p className="text-gray-300 text-sm text-center leading-relaxed mt-4">{displayData.content.bio}</p>
           </div>
-          <p className="text-gray-300 text-sm text-center leading-relaxed">{displayData.content.bio}</p>
         </div>
       );
 
@@ -2080,45 +2091,49 @@ ${displayData.content.education?.dates}
 
     case 'skills':
       return (
-        <div className="space-y-4" ref={scrollRef}>
-          <h3 className="text-lg font-bold text-white font-mono">Technical Skills</h3>
-          {displayData.content.map((skill, index) => (
-            <div key={index} className="space-y-2">
-              <h4 className="text-green-400 font-bold text-sm font-mono">{skill.category}</h4>
-              <div className="flex flex-wrap gap-2">
-                {skill.values.map((value, i) => (
-                  <Badge key={i} variant="secondary" className="bg-gray-800 text-gray-300 text-xs border border-gray-600 hover:border-green-400 transition-colors font-mono">
-                    {value}
-                  </Badge>
-                ))}
+        <div className="h-full flex flex-col">
+          <h3 className="text-lg font-bold text-white font-mono mb-4">Technical Skills</h3>
+          <div className="flex-1 overflow-y-auto pr-2" ref={scrollRef}>
+            {displayData.content.map((skill, index) => (
+              <div key={index} className="space-y-2 mb-4">
+                <h4 className="text-green-400 font-bold text-sm font-mono">{skill.category}</h4>
+                <div className="flex flex-wrap gap-2">
+                  {skill.values.map((value, i) => (
+                    <Badge key={i} variant="secondary" className="bg-gray-800 text-gray-300 text-xs border border-gray-600 hover:border-green-400 transition-colors font-mono">
+                      {value}
+                    </Badge>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       );
 
     case 'ls-detailed':
     case 'ls-simple':
       return (
-        <div className="space-y-4" ref={scrollRef}>
-          <h3 className="text-lg font-bold text-white font-mono">Directory Contents</h3>
-          <div className="space-y-2 font-mono text-sm">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-800 p-3 rounded border border-gray-700">
-                <h4 className="text-blue-400 font-bold mb-2">📁 experience/</h4>
-                <p className="text-gray-400 text-xs">{displayData.content.experience?.length || 0} positions</p>
-              </div>
-              <div className="bg-gray-800 p-3 rounded border border-gray-700">
-                <h4 className="text-blue-400 font-bold mb-2">📁 projects/</h4>
-                <p className="text-gray-400 text-xs">{displayData.content.projects?.length || 0} repositories</p>
-              </div>
-              <div className="bg-gray-800 p-3 rounded border border-gray-700">
-                <h4 className="text-green-400 font-bold mb-2">📄 about.txt</h4>
-                <p className="text-gray-400 text-xs">About me</p>
-              </div>
-              <div className="bg-gray-800 p-3 rounded border border-gray-700">
-                <h4 className="text-green-400 font-bold mb-2">📄 contact.info</h4>
-                <p className="text-gray-400 text-xs">Contact details</p>
+        <div className="h-full flex flex-col">
+          <h3 className="text-lg font-bold text-white font-mono mb-4">Directory Contents</h3>
+          <div className="flex-1 overflow-y-auto pr-2" ref={scrollRef}>
+            <div className="space-y-2 font-mono text-sm">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gray-800 p-3 rounded border border-gray-700">
+                  <h4 className="text-blue-400 font-bold mb-2">📁 experience/</h4>
+                  <p className="text-gray-400 text-xs">{displayData.content.experience?.length || 0} positions</p>
+                </div>
+                <div className="bg-gray-800 p-3 rounded border border-gray-700">
+                  <h4 className="text-blue-400 font-bold mb-2">📁 projects/</h4>
+                  <p className="text-gray-400 text-xs">{displayData.content.projects?.length || 0} repositories</p>
+                </div>
+                <div className="bg-gray-800 p-3 rounded border border-gray-700">
+                  <h4 className="text-green-400 font-bold mb-2">📄 about.txt</h4>
+                  <p className="text-gray-400 text-xs">About me</p>
+                </div>
+                <div className="bg-gray-800 p-3 rounded border border-gray-700">
+                  <h4 className="text-green-400 font-bold mb-2">📄 contact.info</h4>
+                  <p className="text-gray-400 text-xs">Contact details</p>
+                </div>
               </div>
             </div>
           </div>
@@ -2127,152 +2142,65 @@ ${displayData.content.education?.dates}
 
     case 'experience-list':
       return (
-        <div className="space-y-4" ref={scrollRef}>
-          <h3 className="text-lg font-bold text-white font-mono">Work Experience</h3>
-          <div className="space-y-3">
-            {displayData.content.map((exp) => (
-              <div key={exp.id} className="border border-gray-700 rounded-lg p-4 hover:border-green-400 transition-colors bg-gray-800">
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <h4 className="font-bold text-white font-mono">{exp.title}</h4>
-                    <p className="text-green-400 text-sm font-mono">{exp.company}</p>
-                  </div>
-                  <Badge variant="outline" className="border-gray-600 text-gray-400 text-xs font-mono">
-                    ID: {exp.id}
-                  </Badge>
-                </div>
-                <p className="text-gray-400 text-xs font-mono mb-3 flex items-center gap-1">
-                  <Calendar className="w-3 h-3" />
-                  {exp.dates}
-                </p>
-                <div className="flex flex-wrap gap-1">
-                  {exp.tags.slice(0, 4).map((tag, i) => (
-                    <Badge key={i} variant="secondary" className="bg-gray-700 text-gray-300 text-xs font-mono">
-                      {tag}
+        <div className="h-full flex flex-col">
+          <h3 className="text-lg font-bold text-white font-mono mb-4">Work Experience</h3>
+          <div className="flex-1 overflow-y-auto pr-2" ref={scrollRef}>
+            <div className="space-y-3">
+              {displayData.content.map((exp) => (
+                <div key={exp.id} className="border border-gray-700 rounded-lg p-4 hover:border-green-400 transition-colors bg-gray-800">
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <h4 className="font-bold text-white font-mono">{exp.title}</h4>
+                      <p className="text-green-400 text-sm font-mono">{exp.company}</p>
+                    </div>
+                    <Badge variant="outline" className="border-gray-600 text-gray-400 text-xs font-mono">
+                      ID: {exp.id}
                     </Badge>
-                  ))}
+                  </div>
+                  <p className="text-gray-400 text-xs font-mono mb-3 flex items-center gap-1">
+                    <Calendar className="w-3 h-3" />
+                    {exp.dates}
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {exp.tags.slice(0, 4).map((tag, i) => (
+                      <Badge key={i} variant="secondary" className="bg-gray-700 text-gray-300 text-xs font-mono">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       );
 
     case 'experience-detail':
       return (
-        <div className="space-y-4" ref={scrollRef}>
-          <div>
-            <h3 className="text-lg font-bold text-white font-mono">{displayData.content.title}</h3>
-            <p className="text-green-400 text-sm font-mono">{displayData.content.company}</p>
-            <p className="text-gray-400 text-xs flex items-center gap-1 mt-1 font-mono">
-              <Calendar className="w-3 h-3" />
-              {displayData.content.dates}
-            </p>
-          </div>
-          <div>
-            <h4 className="text-white font-bold mb-3 text-sm font-mono">Responsibilities:</h4>
-            <ul className="space-y-2">
-              {displayData.content.description_points.map((point, i) => (
-                <li key={i} className="text-gray-300 text-sm flex items-start gap-2">
-                  <span className="text-green-400 mt-1 font-mono">▸</span>
-                  <span className="leading-relaxed">{point}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {displayData.content.tags.map((tag, i) => (
-              <Badge key={i} variant="secondary" className="bg-gray-800 text-gray-300 text-xs border border-gray-600 font-mono">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        </div>
-      );
-
-    case 'projects-list':
-      return (
-        <div className="space-y-4" ref={scrollRef}>
-          <h3 className="text-lg font-bold text-white font-mono">Projects</h3>
-          <div className="space-y-3">
-            {displayData.content.map((project) => (
-              <div key={project.id} className="border border-gray-700 rounded-lg p-4 hover:border-green-400 transition-colors bg-gray-800">
-                <div className="flex items-start justify-between mb-2">
-                  <h4 className="font-bold text-white font-mono">{project.name}</h4>
-                  <Badge variant="outline" className="border-gray-600 text-gray-400 text-xs font-mono">
-                    PID: {project.id}
-                  </Badge>
-                </div>
-                <p className="text-gray-300 text-sm mb-3 leading-relaxed">{project.description}</p>
-                <div className="flex flex-wrap gap-1 mb-3">
-                  {(project.techStack || project.tags || []).slice(0, 4).map((tag, i) => (
-                    <Badge key={i} variant="secondary" className="bg-gray-700 text-gray-300 text-xs font-mono">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-                {(project.github || project.details_link) && (
-                  <a href={project.github || project.details_link} className="text-green-400 hover:underline flex items-center gap-1 text-xs font-mono">
-                    <Github className="w-3 h-3" />
-                    Source Code
-                  </a>
-                )}
-                {project.website && (
-                  <a href={project.website} className="text-blue-400 hover:underline flex items-center gap-1 text-xs font-mono ml-3">
-                    <ExternalLink className="w-3 h-3" />
-                    Live Demo
-                  </a>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-
-    case 'project-detail':
-      return (
-        <div className="space-y-4" ref={scrollRef}>
-          <h3 className="text-lg font-bold text-white font-mono">{displayData.content.name}</h3>
-          <p className="text-gray-300 text-sm leading-relaxed">{displayData.content.description}</p>
-          <div className="flex flex-wrap gap-2">
-            {(displayData.content.techStack || displayData.content.tags || []).map((tag, i) => (
-              <Badge key={i} variant="secondary" className="bg-gray-800 text-gray-300 text-xs border border-gray-600 font-mono">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-          <div className="flex gap-3">
-            {(displayData.content.github || displayData.content.details_link) && (
-              <a href={displayData.content.github || displayData.content.details_link} className="flex items-center gap-2 text-green-400 hover:underline font-mono text-sm">
-                <Github className="w-4 h-4" />
-                View Source Code
-              </a>
-            )}
-            {displayData.content.website && (
-              <a href={displayData.content.website} className="flex items-center gap-2 text-blue-400 hover:underline font-mono text-sm">
-                <ExternalLink className="w-4 h-4" />
-                Live Demo
-              </a>
-            )}
-          </div>
-        </div>
-      );
-
-    case 'education':
-      return (
-        <div className="space-y-4" ref={scrollRef}>
-          <h3 className="text-lg font-bold text-white font-mono">Education</h3>
-          <div className="border border-gray-700 rounded-lg p-4 bg-gray-800">
-            <h4 className="font-bold text-white font-mono">{displayData.content.degree}</h4>
-            <p className="text-green-400 text-sm font-mono">{displayData.content.university}</p>
-            <p className="text-gray-400 text-xs flex items-center gap-1 mt-1 font-mono">
-              <Calendar className="w-3 h-3" />
-              {displayData.content.dates}
-            </p>
-            <p className="text-gray-300 text-sm mt-3 leading-relaxed">{displayData.content.description}</p>
-            <div className="flex flex-wrap gap-2 mt-3">
+        <div className="h-full flex flex-col">
+          <div className="flex-1 overflow-y-auto pr-2" ref={scrollRef}>
+            <div>
+              <h3 className="text-lg font-bold text-white font-mono">{displayData.content.title}</h3>
+              <p className="text-green-400 text-sm font-mono">{displayData.content.company}</p>
+              <p className="text-gray-400 text-xs flex items-center gap-1 mt-1 font-mono">
+                <Calendar className="w-3 h-3" />
+                {displayData.content.dates}
+              </p>
+            </div>
+            <div className="mt-4">
+              <h4 className="text-white font-bold mb-3 text-sm font-mono">Responsibilities:</h4>
+              <ul className="space-y-2">
+                {displayData.content.description_points.map((point, i) => (
+                  <li key={i} className="text-gray-300 text-sm flex items-start gap-2">
+                    <span className="text-green-400 mt-1 font-mono">▸</span>
+                    <span className="leading-relaxed">{point}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="flex flex-wrap gap-2 mt-4">
               {displayData.content.tags.map((tag, i) => (
-                <Badge key={i} variant="secondary" className="bg-gray-700 text-gray-300 text-xs font-mono">
+                <Badge key={i} variant="secondary" className="bg-gray-800 text-gray-300 text-xs border border-gray-600 font-mono">
                   {tag}
                 </Badge>
               ))}
@@ -2281,118 +2209,232 @@ ${displayData.content.education?.dates}
         </div>
       );
 
-    case 'contact':
+    case 'projects-list':
       return (
-        <div className="space-y-4" ref={scrollRef}>
-          <h3 className="text-lg font-bold text-white font-mono">Contact</h3>
-          <div className="space-y-3">
-            <div className="flex items-center gap-3 p-3 bg-gray-800 rounded border border-gray-700">
-              <Mail className="w-5 h-5 text-green-400" />
-              <span className="text-gray-300 font-mono">{displayData.content.email}</span>
+        <div className="h-full flex flex-col">
+          <h3 className="text-lg font-bold text-white font-mono mb-4">Projects</h3>
+          <div className="flex-1 overflow-y-auto pr-2" ref={scrollRef}>
+            <div className="space-y-3">
+              {displayData.content.map((project) => (
+                <div key={project.id} className="border border-gray-700 rounded-lg p-4 hover:border-green-400 transition-colors bg-gray-800">
+                  <div className="flex items-start justify-between mb-2">
+                    <h4 className="font-bold text-white font-mono">{project.name}</h4>
+                    <Badge variant="outline" className="border-gray-600 text-gray-400 text-xs font-mono">
+                      PID: {project.id}
+                    </Badge>
+                  </div>
+                  <p className="text-gray-300 text-sm mb-3 leading-relaxed">{project.description}</p>
+                  <div className="flex flex-wrap gap-1 mb-3">
+                    {(project.techStack || project.tags || []).slice(0, 4).map((tag, i) => (
+                      <Badge key={i} variant="secondary" className="bg-gray-700 text-gray-300 text-xs font-mono">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                  {(project.github || project.details_link) && (
+                    <a href={project.github || project.details_link} className="text-green-400 hover:underline flex items-center gap-1 text-xs font-mono">
+                      <Github className="w-3 h-3" />
+                      Source Code
+                    </a>
+                  )}
+                  {project.website && (
+                    <a href={project.website} className="text-blue-400 hover:underline flex items-center gap-1 text-xs font-mono ml-3">
+                      <ExternalLink className="w-3 h-3" />
+                      Live Demo
+                    </a>
+                  )}
+                </div>
+              ))}
             </div>
-            <div className="flex items-center gap-3 p-3 bg-gray-800 rounded border border-gray-700">
-              <Phone className="w-5 h-5 text-green-400" />
-              <span className="text-gray-300 font-mono">{displayData.content.phone}</span>
+          </div>
+        </div>
+      );
+
+    case 'project-detail':
+      return (
+        <div className="h-full flex flex-col">
+          <div className="flex-1 overflow-y-auto pr-2" ref={scrollRef}>
+            <h3 className="text-lg font-bold text-white font-mono mb-4">{displayData.content.name}</h3>
+            <p className="text-gray-300 text-sm leading-relaxed mb-4">{displayData.content.description}</p>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {(displayData.content.techStack || displayData.content.tags || []).map((tag, i) => (
+                <Badge key={i} variant="secondary" className="bg-gray-800 text-gray-300 text-xs border border-gray-600 font-mono">
+                  {tag}
+                </Badge>
+              ))}
             </div>
-            <div className="flex items-center gap-3 p-3 bg-gray-800 rounded border border-gray-700">
-              <MapPin className="w-5 h-5 text-green-400" />
-              <span className="text-gray-300 font-mono">{displayData.content.location}</span>
-            </div>
-            <div className="grid grid-cols-1 gap-2">
-              <a href={displayData.content.github} className="flex items-center gap-3 p-3 bg-gray-800 rounded border border-gray-700 hover:border-green-400 transition-colors">
-                <Github className="w-5 h-5 text-green-400" />
-                <span className="text-gray-300 font-mono">GitHub</span>
-              </a>
-              <a href={displayData.content.linkedin} className="flex items-center gap-3 p-3 bg-gray-800 rounded border border-gray-700 hover:border-green-400 transition-colors">
-                <Linkedin className="w-5 h-5 text-green-400" />
-                <span className="text-gray-300 font-mono">LinkedIn</span>
-              </a>
+            <div className="flex gap-3">
+              {(displayData.content.github || displayData.content.details_link) && (
+                <a href={displayData.content.github || displayData.content.details_link} className="flex items-center gap-2 text-green-400 hover:underline font-mono text-sm">
+                  <Github className="w-4 h-4" />
+                  View Source Code
+                </a>
+              )}
               {displayData.content.website && (
-                <a href={displayData.content.website} className="flex items-center gap-3 p-3 bg-gray-800 rounded border border-gray-700 hover:border-green-400 transition-colors">
-                  <Globe className="w-5 h-5 text-green-400" />
-                  <span className="text-gray-300 font-mono">Website</span>
+                <a href={displayData.content.website} className="flex items-center gap-2 text-blue-400 hover:underline font-mono text-sm">
+                  <ExternalLink className="w-4 h-4" />
+                  Live Demo
                 </a>
               )}
             </div>
           </div>
-          <ContactForm contactData={displayData.content} />
+        </div>
+      );
+
+    case 'education':
+      return (
+        <div className="h-full flex flex-col">
+          <h3 className="text-lg font-bold text-white font-mono mb-4">Education</h3>
+          <div className="flex-1 overflow-y-auto pr-2" ref={scrollRef}>
+            <div className="border border-gray-700 rounded-lg p-4 bg-gray-800">
+              <h4 className="font-bold text-white font-mono">{displayData.content.degree}</h4>
+              <p className="text-green-400 text-sm font-mono">{displayData.content.university}</p>
+              <p className="text-gray-400 text-xs flex items-center gap-1 mt-1 font-mono">
+                <Calendar className="w-3 h-3" />
+                {displayData.content.dates}
+              </p>
+              <p className="text-gray-300 text-sm mt-3 leading-relaxed">{displayData.content.description}</p>
+              <div className="flex flex-wrap gap-2 mt-3">
+                {displayData.content.tags.map((tag, i) => (
+                  <Badge key={i} variant="secondary" className="bg-gray-700 text-gray-300 text-xs font-mono">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+
+    case 'contact':
+      return (
+        <div className="h-full flex flex-col">
+          <h3 className="text-lg font-bold text-white font-mono mb-4">Contact</h3>
+          <div className="flex-1 overflow-y-auto pr-2" ref={scrollRef}>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 p-3 bg-gray-800 rounded border border-gray-700">
+                <Mail className="w-5 h-5 text-green-400" />
+                <span className="text-gray-300 font-mono">{displayData.content.email}</span>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-gray-800 rounded border border-gray-700">
+                <Phone className="w-5 h-5 text-green-400" />
+                <span className="text-gray-300 font-mono">{displayData.content.phone}</span>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-gray-800 rounded border border-gray-700">
+                <MapPin className="w-5 h-5 text-green-400" />
+                <span className="text-gray-300 font-mono">{displayData.content.location}</span>
+              </div>
+              <div className="grid grid-cols-1 gap-2">
+                <a href={displayData.content.github} className="flex items-center gap-3 p-3 bg-gray-800 rounded border border-gray-700 hover:border-green-400 transition-colors">
+                  <Github className="w-5 h-5 text-green-400" />
+                  <span className="text-gray-300 font-mono">GitHub</span>
+                </a>
+                <a href={displayData.content.linkedin} className="flex items-center gap-3 p-3 bg-gray-800 rounded border border-gray-700 hover:border-green-400 transition-colors">
+                  <Linkedin className="w-5 h-5 text-green-400" />
+                  <span className="text-gray-300 font-mono">LinkedIn</span>
+                </a>
+                {displayData.content.website && (
+                  <a href={displayData.content.website} className="flex items-center gap-3 p-3 bg-gray-800 rounded border border-gray-700 hover:border-green-400 transition-colors">
+                    <Globe className="w-5 h-5 text-green-400" />
+                    <span className="text-gray-300 font-mono">Website</span>
+                  </a>
+                )}
+              </div>
+            </div>
+            <ContactForm contactData={displayData.content} />
+          </div>
         </div>
       );
 
     case 'about':
       return (
-        <div className="space-y-4" ref={scrollRef}>
-          <h3 className="text-lg font-bold text-white font-mono">About Me</h3>
-          <div className="bg-gray-800 p-4 rounded border border-gray-700">
-            <p className="text-gray-300 text-sm leading-relaxed">{displayData.content.text}</p>
+        <div className="h-full flex flex-col">
+          <h3 className="text-lg font-bold text-white font-mono mb-4">About Me</h3>
+          <div className="flex-1 overflow-y-auto pr-2" ref={scrollRef}>
+            <div className="bg-gray-800 p-4 rounded border border-gray-700">
+              <p className="text-gray-300 text-sm leading-relaxed">{displayData.content.text}</p>
+            </div>
           </div>
         </div>
       );
 
     case 'certifications-list':
       return (
-        <div className="space-y-4" ref={scrollRef}>
-          <h3 className="text-lg font-bold text-white font-mono">Certifications</h3>
-          <div className="space-y-3">
-            {displayData.content.map((cert) => (
-              <div key={cert.id} className="border border-gray-700 rounded-lg p-4 hover:border-green-400 transition-colors bg-gray-800">
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <h4 className="font-bold text-white font-mono">{cert.name}</h4>
-                    <p className="text-green-400 text-sm font-mono">{cert.issuer}</p>
+        <div className="h-full flex flex-col">
+          <h3 className="text-lg font-bold text-white font-mono mb-4">Certifications</h3>
+          <div className="flex-1 overflow-y-auto pr-2" ref={scrollRef}>
+            <div className="space-y-3">
+              {displayData.content.map((cert) => (
+                <div key={cert.id} className="border border-gray-700 rounded-lg p-4 hover:border-green-400 transition-colors bg-gray-800">
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <h4 className="font-bold text-white font-mono">{cert.name}</h4>
+                      <p className="text-green-400 text-sm font-mono">{cert.issuer}</p>
+                    </div>
+                    <Badge variant="outline" className="border-gray-600 text-gray-400 text-xs font-mono">
+                      {cert.date}
+                    </Badge>
                   </div>
-                  <Badge variant="outline" className="border-gray-600 text-gray-400 text-xs font-mono">
-                    {cert.date}
-                  </Badge>
+                  {cert.skills && (
+                    <div className="flex flex-wrap gap-1">
+                      {cert.skills.map((skill, i) => (
+                        <Badge key={i} variant="secondary" className="bg-gray-700 text-gray-300 text-xs font-mono">
+                          {skill}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                {cert.skills && (
-                  <div className="flex flex-wrap gap-1">
-                    {cert.skills.map((skill, i) => (
-                      <Badge key={i} variant="secondary" className="bg-gray-700 text-gray-300 text-xs font-mono">
-                        {skill}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       );
 
     case 'cat-all':
       return (
-        <div className="space-y-6" ref={scrollRef}>
-          {displayData.content.map((content, i) => (
-            <div key={i} className="bg-gray-800 p-4 rounded border border-gray-700">
-              <pre className="text-gray-300 font-mono text-sm whitespace-pre-wrap">{content}</pre>
+        <div className="h-full flex flex-col">
+          <h3 className="text-lg font-bold text-white font-mono mb-4">All Files Content</h3>
+          <div className="flex-1 overflow-y-auto pr-2" ref={scrollRef}>
+            <div className="space-y-6">
+              {displayData.content.map((content, i) => (
+                <div key={i} className="bg-gray-800 p-4 rounded border border-gray-700">
+                  <pre className="text-gray-300 font-mono text-sm whitespace-pre-wrap">{content}</pre>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       );
 
     case 'find-results':
       return (
-        <div className="space-y-4" ref={scrollRef}>
-          <h3 className="text-lg font-bold text-white font-mono">
+        <div className="h-full flex flex-col">
+          <h3 className="text-lg font-bold text-white font-mono mb-4">
             Search Results for: <span className="text-green-400">"{displayData.content.term}"</span>
           </h3>
-          <div className="bg-gray-800 p-4 rounded border border-gray-700">
-            <ul className="space-y-2">
-              {displayData.content.results.map((result, i) => (
-                <li key={i} className="text-gray-300 font-mono text-sm">
-                  <span className="text-green-400">▸</span> {result}
-                </li>
-              ))}
-            </ul>
+          <div className="flex-1 overflow-y-auto pr-2" ref={scrollRef}>
+            <div className="bg-gray-800 p-4 rounded border border-gray-700">
+              <ul className="space-y-2">
+                {displayData.content.results.map((result, i) => (
+                  <li key={i} className="text-gray-300 font-mono text-sm">
+                    <span className="text-green-400">▸</span> {result}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       );
 
     default:
       return (
-        <div className="text-center text-gray-400" ref={scrollRef}>
-          <p className="text-sm font-mono">Unknown command output</p>
+        <div className="h-full flex flex-col">
+          <div className="flex-1 overflow-y-auto pr-2" ref={scrollRef}>
+            <div className="text-center text-gray-400">
+              <p className="text-sm font-mono">Unknown command output</p>
+            </div>
+          </div>
         </div>
       );
   }
@@ -2711,7 +2753,7 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
       <SponsorModal
         isOpen={showSponsorModal}
         onClose={() => setShowSponsorModal(false)}
-        onSponsor={(amount, reference) => {
+        onSponsor={(amount) => {
           setSponsorAmount(amount);
           setShowSponsorModal(false);
           setShowSponsorSuccess(true);
