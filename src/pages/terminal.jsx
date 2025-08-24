@@ -2656,10 +2656,10 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
 
       </div>
 
-      <div className="flex-1 flex p-4 pt-0">
-        <div className="w-1/2 pr-2 terminal-panel">
-          <Card className="bg-[#0a0a0a] border-gray-800 h-full">
-            <CardHeader className="pb-2 border-b border-gray-800">
+      <div className="flex-1 flex p-4 pt-0 overflow-hidden">
+        <div className="w-1/2 pr-2 terminal-panel h-full flex flex-col">
+          <Card className="bg-[#0a0a0a] border-gray-800 h-full flex flex-col">
+            <CardHeader className="pb-2 border-b border-gray-800 flex-shrink-0">
               <CardTitle className="text-green-400 font-mono text-sm flex items-center gap-2">
                 <span className={isInputFocused ? 'animate-pulse' : ''}>●</span> barack@portfolio-terminal
                 <span className="ml-auto text-xs text-gray-500">
@@ -2670,7 +2670,7 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
                 )}
               </CardTitle>
             </CardHeader>
-            <CardContent className={`p-4 h-full overflow-y-auto font-mono text-sm transition-colors duration-200 relative ${
+            <CardContent className={`p-4 flex-1 overflow-y-auto font-mono text-sm transition-colors duration-200 relative ${
               isInputFocused ? 'bg-[#0a0a0a]' : 'bg-[#0a0a0a]'
             } ${isInputFocused ? 'ring-1 ring-green-400/20' : ''}`}>
               {/* Invisible input field covering the entire terminal area */}
@@ -2740,9 +2740,9 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
           </Card>
         </div>
 
-        <div className="w-1/2 pl-2">
-          <Card className="bg-gray-900 border-gray-700 h-full">
-            <CardContent className="p-4 h-full overflow-hidden">
+        <div className="w-1/2 pl-2 h-full flex flex-col">
+          <Card className="bg-gray-900 border-gray-700 h-full flex flex-col">
+            <CardContent className="p-4 flex-1 overflow-hidden">
               <DisplayPanel displayData={displayData} mode={mode} scrollRef={setDisplayScrollRef} />
             </CardContent>
           </Card>
