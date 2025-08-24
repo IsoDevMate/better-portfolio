@@ -236,7 +236,11 @@ const ModeSelector = ({ currentMode, setMode }) => (
   <div className="flex justify-center mb-4">
     <div className="flex gap-2 bg-gray-800 p-2 rounded-lg border border-gray-700">
       <Button
-        onClick={() => setMode('simple')}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setMode('simple');
+        }}
         variant={currentMode === 'simple' ? 'default' : 'outline'}
         className="text-xs h-8"
         size="sm"
@@ -245,7 +249,11 @@ const ModeSelector = ({ currentMode, setMode }) => (
         Simple
       </Button>
       <Button
-        onClick={() => setMode('technical')}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setMode('technical');
+        }}
         variant={currentMode === 'technical' ? 'default' : 'outline'}
         className="text-xs h-8"
         size="sm"
@@ -254,7 +262,11 @@ const ModeSelector = ({ currentMode, setMode }) => (
         Technical
       </Button>
       <Button
-        onClick={() => setMode('graphql')}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setMode('graphql');
+        }}
         variant={currentMode === 'graphql' ? 'default' : 'outline'}
         className="text-xs h-8"
         size="sm"
@@ -405,8 +417,24 @@ Error: ${error.message}
             let responseData = {};
             let responseTime = Math.floor(Math.random() * 30) + 20; // Random response time 20-50ms
 
+            // Validate entity names for GraphQL
+            const validEntities = ['experience', 'projects', 'skills', 'about', 'portfolio', 'payment', 'sponsorship'];
+            const validEntity = validEntities.find(e => e.toLowerCase() === entity.toLowerCase());
+            
+            if (!validEntity) {
+              return `❌ GraphQL Error: Invalid entity "${entity}"
+💡 Valid entities: ${validEntities.join(', ')}
+
+Examples:
+• query experience
+• query projects
+• query skills
+• query about
+• mutation sponsorship 99 user@example.com`;
+            }
+
             // Handle payment-related GraphQL operations FIRST
-            if (entity.toLowerCase() === 'payment' || entity.toLowerCase() === 'sponsorship' || entity.toLowerCase() === 'sponshorship') {
+            if (validEntity === 'payment' || validEntity === 'sponsorship') {
               const amount = args[1] ? parseInt(args[1]) : null;
 
               if (cmd === 'mutation' && amount) {
@@ -647,8 +675,8 @@ Error Details: ${error.message}
 
 💡 This error comes from your live API on Render.`;
                 }
-                             } else {
-                 return `GraphQL Payment Commands:
+              } else {
+                return `GraphQL Payment Commands:
 • mutation sponsorship <amount> <email> - Create sponsorship payment
 • query payment <reference> - Verify payment status
 
@@ -662,17 +690,12 @@ Examples:
 💡 Test Error Handling:
 • Try: mutation sponsorship 5 user@example.com (should show minimum amount error)
 • Try: mutation sponsorship 49 user@example.com (should work)`;
-               }
+              }
             }
 
             // If we reach here, it's not a payment operation, so handle regular queries
-            if (entity.toLowerCase() === 'payment' || entity.toLowerCase() === 'sponsorship' || entity.toLowerCase() === 'sponshorship') {
-              return `❌ GraphQL Error: Invalid payment operation
-💡 Use: mutation sponsorship <amount> <email> or query payment <reference>`;
-            }
-
             // Simulate different response times based on entity
-            switch(entity.toLowerCase()) {
+            switch(validEntity) {
               case 'experience':
                 responseData = { experience: data.experience };
                 responseTime = Math.floor(Math.random() * 40) + 30;
@@ -702,25 +725,25 @@ Examples:
             }
 
             // Format the GraphQL query that would have been sent
-            const query = `query Get${entity.charAt(0).toUpperCase() + entity.slice(1)} {
-  ${entity} {
-    ${entity === 'experience' ? `
+            const query = `query Get${validEntity.charAt(0).toUpperCase() + validEntity.slice(1)} {
+  ${validEntity} {
+    ${validEntity === 'experience' ? `
       id
       title
       company
       dates
       description_points
       tags
-    ` : entity === 'projects' ? `
+    ` : validEntity === 'projects' ? `
       id
       name
       description
       tags
       details_link
-    ` : entity === 'skills' ? `
+    ` : validEntity === 'skills' ? `
       category
       values
-    ` : entity === 'about' ? `
+    ` : validEntity === 'about' ? `
       text
     ` : `
       name
@@ -736,7 +759,7 @@ Examples:
               type: 'graphql-response',
               content: {
                 operation: 'QUERY',
-                entity,
+                entity: validEntity,
                 query,
                 responseTime,
                 data: responseData,
@@ -1207,7 +1230,7 @@ contact.info    experience/           projects/
 skills/`;
           }
 
-        case 'cat':
+        case 'cat': {
           const section = args[0];
           if (section === 'skills') {
             setDisplayData({ type: 'skills', content: data.skills });
@@ -1227,8 +1250,9 @@ Website: ${data.contact.website}`;
             return JSON.stringify(data.certifications, null, 2);
           }
           return `cat: ${section}: No such file or directory`;
+        }
 
-        case 'catit':
+        case 'catit': {
           const allContent = [];
           if (data.about_me) {
             allContent.push('=== about.txt ===\n' + data.about_me);
@@ -1248,8 +1272,9 @@ Website: ${data.contact.website}`;
 
           setDisplayData({ type: 'cat-all', content: allContent });
           return allContent.join('\n\n');
+        }
 
-        case 'find':
+        case 'find': {
           const query = args.join(' ');
           if (!query) return `find: missing argument`;
 
@@ -1296,8 +1321,9 @@ Website: ${data.contact.website}`;
           });
 
           return results.length > 0 ? results.join('\n') : `find: no matches for '${query}'`;
+        }
 
-        case 'grep':
+        case 'grep': {
           const term = args.join(' ');
           if (!term) return `grep: missing search term`;
 
@@ -1313,6 +1339,7 @@ Website: ${data.contact.website}`;
             });
           });
           return matches.length > 0 ? matches.slice(0, 5).join('\n') : `grep: no matches for '${term}'`;
+        }
 
         case 'ps':
           setDisplayData({ type: 'projects-list', content: data.projects });
@@ -1359,7 +1386,7 @@ GITHUB_USERNAME=IsoDevMate`;
 Professional experience: 3+ years in software development
 Active coding streak: 847 days`;
 
-        case 'which':
+        case 'which': {
           const skill = args[0];
           if (!skill) return `which: missing argument`;
 
@@ -1367,8 +1394,9 @@ Active coding streak: 847 days`;
             s.values.some(v => v.toLowerCase().includes(skill))
           );
           return found ? `/usr/local/bin/${skill}` : `which: no ${skill} in PATH`;
+        }
 
-        case 'wget':
+        case 'wget': {
           const wgetSection = args[0];
           if (wgetSection === 'resume' || wgetSection === 'cv') {
             return `--2025-08-03 10:30:42--  https://portfolio.barack-ouma.com/resume.pdf
@@ -1383,6 +1411,7 @@ barack_ouma_resume.pdf    100%[===================>] 240.00K  1.20MB/s    in 0.2
 2025-08-03 10:30:43 (1.20 MB/s) - 'barack_ouma_resume.pdf' saved [245760/245760]`;
           }
           return `wget: missing URL`;
+        }
 
         case 'curl':
           if (args[0] === '-X' && args[1] === 'GET') {
@@ -1804,7 +1833,7 @@ const DisplayPanel = ({ displayData, mode, scrollRef }) => {
   if (!displayData) {
     return (
       <Card className="bg-gray-900 border-gray-700 h-full w-full">
-        <CardContent className="p-6 flex items-center justify-center h-full" ref={scrollRef}>
+        <CardContent className="p-6 flex items-center justify-center h-full">
           <div className="text-center text-gray-400">
             <div className="text-4xl mb-3">💻</div>
             <h3 className="text-lg font-medium mb-2 text-gray-200">
@@ -1828,15 +1857,17 @@ const DisplayPanel = ({ displayData, mode, scrollRef }) => {
   switch (displayData.type) {
     case 'help':
       return (
-        <div className="space-y-4" ref={scrollRef}>
-          <h3 className="text-lg font-bold text-white font-mono">{displayData.content.title}</h3>
-          <div className="grid grid-cols-1 gap-2 max-h-96 overflow-y-auto">
-            {displayData.content.commands.map((cmd, index) => (
-              <div key={index} className="border-l-2 border-green-400 pl-3 py-1 bg-gray-800 rounded-r">
-                <code className="text-green-400 font-mono text-sm font-bold">{cmd.cmd}</code>
-                <p className="text-gray-300 text-xs mt-1">{cmd.desc}</p>
-              </div>
-            ))}
+        <div className="h-full flex flex-col">
+          <h3 className="text-lg font-bold text-white font-mono mb-4">{displayData.content.title}</h3>
+          <div className="flex-1 overflow-y-auto pr-2" ref={scrollRef}>
+            <div className="grid grid-cols-1 gap-2">
+              {displayData.content.commands.map((cmd, index) => (
+                <div key={index} className="border-l-2 border-green-400 pl-3 py-1 bg-gray-800 rounded-r">
+                  <code className="text-green-400 font-mono text-sm font-bold">{cmd.cmd}</code>
+                  <p className="text-gray-300 text-xs mt-1">{cmd.desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       );
@@ -2562,7 +2593,13 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
   return (
     <div className="h-screen bg-[#0a0a0a] flex flex-col relative">
       <Button
-        onClick={switchToGui || (() => console.log('Exit clicked'))}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (switchToGui) {
+            switchToGui();
+          }
+        }}
         className="absolute top-4 right-4 z-10 bg-red-600 hover:bg-red-700 text-white font-mono"
         size="sm"
       >
@@ -2662,7 +2699,11 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
         </div>
 
         <div className="w-1/2 pl-2">
-          <DisplayPanel displayData={displayData} mode={mode} scrollRef={setDisplayScrollRef} />
+          <Card className="bg-gray-900 border-gray-700 h-full">
+            <CardContent className="p-4 h-full overflow-hidden">
+              <DisplayPanel displayData={displayData} mode={mode} scrollRef={setDisplayScrollRef} />
+            </CardContent>
+          </Card>
         </div>
       </div>
 
