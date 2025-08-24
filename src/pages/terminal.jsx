@@ -2670,73 +2670,82 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
                 )}
               </CardTitle>
             </CardHeader>
-            <CardContent className={`p-4 flex-1 overflow-y-auto font-mono text-sm transition-colors duration-200 relative ${
-              isInputFocused ? 'bg-[#0a0a0a]' : 'bg-[#0a0a0a]'
-            } ${isInputFocused ? 'ring-1 ring-green-400/20' : ''}`}>
-              {/* Invisible input field covering the entire terminal area */}
-              <input
-                ref={inputRef}
-                type="text"
-                value={input}
-                onChange={(e) => {
-                  setInput(e.target.value);
-                  setIsTyping(e.target.value.length > 0);
+            {/* Scrollable output area */}
+            <div className="flex-1 overflow-y-auto">
+              <CardContent className={`p-4 font-mono text-sm relative min-h-0 transition-colors duration-200 ${
+                isInputFocused ? 'bg-[#0a0a0a]' : 'bg-[#0a0a0a]'
+              } ${isInputFocused ? 'ring-1 ring-green-400/20' : ''}`}>
+                {/* Invisible input field covering the entire terminal area */}
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={input}
+                  onChange={(e) => {
+                    setInput(e.target.value);
+                    setIsTyping(e.target.value.length > 0);
 
-                  // Clear previous timeout
-                  if (typingTimeoutRef.current) {
-                    clearTimeout(typingTimeoutRef.current);
-                  }
+                    // Clear previous timeout
+                    if (typingTimeoutRef.current) {
+                      clearTimeout(typingTimeoutRef.current);
+                    }
 
-                  // Set new timeout to stop typing indicator after 1 second of no input
-                  if (e.target.value.length > 0) {
-                    typingTimeoutRef.current = setTimeout(() => {
+                    // Set new timeout to stop typing indicator after 1 second of no input
+                    if (e.target.value.length > 0) {
+                      typingTimeoutRef.current = setTimeout(() => {
+                        setIsTyping(false);
+                      }, 1000);
+                    } else {
                       setIsTyping(false);
-                    }, 1000);
-                  } else {
-                    setIsTyping(false);
-                  }
-                }}
-                onKeyDown={handleKeyDown}
-                onFocus={() => setIsInputFocused(true)}
-                onBlur={() => setIsInputFocused(false)}
-                className="absolute inset-0 w-full h-full bg-transparent border-none outline-none text-transparent cursor-text z-10 hover:cursor-text"
-                disabled={isProcessing}
-                spellCheck="false"
-                autoComplete="off"
-                autoCapitalize="off"
-                style={{ caretColor: 'transparent' }}
-              />
-              <div className="pb-20">
-                {history.map((item, index) => (
-                  <div key={index} className="mb-2">
-                    {item.type === 'input' ? (
-                      <div className="flex items-center gap-2">
-                        <UserPrompt mode={mode} />
-                        <span className="text-white font-mono">{item.text}</span>
-                      </div>
-                    ) : (
-                      <div className="ml-0">
-                        {renderOutput(item)}
-                      </div>
-                    )}
-                  </div>
-                ))}
-                {isProcessing && (
-                  <div className="flex items-center gap-2 text-gray-400">
-                    <span className="animate-spin">⠋</span>
-                    <span className="font-mono text-sm">Processing...</span>
-                  </div>
-                )}
-                <div className="flex items-center gap-2">
-                  <UserPrompt mode={mode} />
-                  <div className="flex-1 flex items-center">
-                    <span className="text-white font-mono">{input}</span>
-                    {!isProcessing && <Cursor isTyping={isTyping || isInputFocused} />}
-                  </div>
+                    }
+                  }}
+                  onKeyDown={handleKeyDown}
+                  onFocus={() => setIsInputFocused(true)}
+                  onBlur={() => setIsInputFocused(false)}
+                  className="absolute inset-0 w-full h-full bg-transparent border-none outline-none text-transparent cursor-text z-10 hover:cursor-text"
+                  disabled={isProcessing}
+                  spellCheck="false"
+                  autoComplete="off"
+                  autoCapitalize="off"
+                  style={{ caretColor: 'transparent' }}
+                />
+
+                {/* Terminal output content */}
+                <div className="pb-16"> {/* Reduced padding to make room for input */}
+                  {history.map((item, index) => (
+                    <div key={index} className="mb-2">
+                      {item.type === 'input' ? (
+                        <div className="flex items-center gap-2">
+                          <UserPrompt mode={mode} />
+                          <span className="text-white font-mono">{item.text}</span>
+                        </div>
+                      ) : (
+                        <div className="ml-0">
+                          {renderOutput(item)}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  {isProcessing && (
+                    <div className="flex items-center gap-2 text-gray-400">
+                      <span className="animate-spin">⠋</span>
+                      <span className="font-mono text-sm">Processing...</span>
+                    </div>
+                  )}
+                </div>
+                <div ref={terminalEndRef} />
+              </CardContent>
+            </div>
+
+            {/* Fixed input area at the bottom */}
+            <div className="border-t border-gray-800 p-4 bg-[#0a0a0a] flex-shrink-0">
+              <div className="flex items-center gap-2">
+                <UserPrompt mode={mode} />
+                <div className="flex-1 flex items-center">
+                  <span className="text-white font-mono">{input}</span>
+                  {!isProcessing && <Cursor isTyping={isTyping || isInputFocused} />}
                 </div>
               </div>
-              <div ref={terminalEndRef} />
-            </CardContent>
+            </div>
           </Card>
         </div>
 
