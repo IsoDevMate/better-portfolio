@@ -233,8 +233,8 @@ const Cursor = ({ isTyping = false }) => {
 };
 
 const ModeSelector = ({ currentMode, setMode }) => (
-  <div className="flex justify-center mb-4">
-    <div className="flex gap-2 bg-gray-800 p-2 rounded-lg border border-gray-700">
+  <div className="w-full flex justify-center sm:justify-start mb-4 sm:mb-0">
+    <div className="flex flex-wrap gap-2 bg-gray-800 p-2 rounded-lg border border-gray-700">
       <Button
         onClick={(e) => {
           e.preventDefault();
@@ -2634,26 +2634,27 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
 
   return (
     <div className="min-h-[100dvh] bg-[#0a0a0a] flex flex-col relative">
-      <Button
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          if (switchToGui) {
-            switchToGui();
-          }
-        }}
-        className="absolute top-4 right-4 z-10 bg-red-600 hover:bg-red-700 text-white font-mono"
-        size="sm"
-      >
-        <X className="w-4 h-4 mr-1" />
-        Exit
-      </Button>
-
-      <div className="p-4">
-        <ModeSelector currentMode={mode} setMode={setMode} />
+      <div className="p-4 pb-2">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="sm:flex-1">
+            <ModeSelector currentMode={mode} setMode={setMode} />
+          </div>
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (switchToGui) {
+                switchToGui();
+              }
+            }}
+            className="w-full sm:w-auto justify-center h-10 bg-red-600 hover:bg-red-700 text-white font-mono text-sm sm:text-base"
+            size="sm"
+          >
+            <X className="w-4 h-4 mr-1" />
+            Exit
+          </Button>
+        </div>
         {showWelcome && <WelcomeBanner />}
-
-
       </div>
 
       <div className="flex-1 flex flex-col lg:flex-row gap-4 p-4 pt-0 overflow-visible lg:overflow-hidden">
@@ -2701,7 +2702,7 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
                   onKeyDown={handleKeyDown}
                   onFocus={() => setIsInputFocused(true)}
                   onBlur={() => setIsInputFocused(false)}
-                  className="absolute inset-0 w-full h-full bg-transparent border-none outline-none text-transparent cursor-text z-10 hover:cursor-text"
+                  className="absolute inset-0 w-full h-full bg-transparent border-none outline-none text-transparent cursor-text z-10 hover:cursor-text pointer-events-none"
                   disabled={isProcessing}
                   spellCheck="false"
                   autoComplete="off"
