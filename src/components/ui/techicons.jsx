@@ -108,7 +108,7 @@ const icons = [
 
 const TechIcons = () => {
   return (
-    <div className="absolute inset-0 overflow-hidden z-0">
+    <div className="absolute inset-0 overflow-hidden z-10 pointer-events-none sm:pointer-events-auto">
       {icons.map((icon, index) => {
         return (
           <motion.div

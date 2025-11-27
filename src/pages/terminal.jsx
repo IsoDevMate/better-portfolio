@@ -2633,7 +2633,7 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
   };
 
   return (
-    <div className="h-screen bg-[#0a0a0a] flex flex-col relative">
+    <div className="min-h-[100dvh] bg-[#0a0a0a] flex flex-col relative">
       <Button
         onClick={(e) => {
           e.preventDefault();
@@ -2656,9 +2656,9 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
 
       </div>
 
-      <div className="flex-1 flex p-4 pt-0 overflow-hidden">
-        <div className="w-1/2 pr-2 terminal-panel h-full flex flex-col">
-          <Card className="bg-[#0a0a0a] border-gray-800 h-full flex flex-col">
+      <div className="flex-1 flex flex-col lg:flex-row gap-4 p-4 pt-0 overflow-visible lg:overflow-hidden">
+        <div className="w-full lg:w-1/2 lg:pr-2 terminal-panel flex flex-col min-h-[60vh] lg:min-h-0">
+          <Card className="bg-[#0a0a0a] border-gray-800 flex flex-col flex-1">
             <CardHeader className="pb-2 border-b border-gray-800 flex-shrink-0">
               <CardTitle className="text-green-400 font-mono text-sm flex items-center gap-2">
                 <span className={isInputFocused ? 'animate-pulse' : ''}>●</span> barack@portfolio-terminal
@@ -2749,8 +2749,8 @@ export default function EnhancedTerminal({ portfolioData = samplePortfolioData, 
           </Card>
         </div>
 
-        <div className="w-1/2 pl-2 h-full flex flex-col">
-          <Card className="bg-gray-900 border-gray-700 h-full flex flex-col">
+        <div className="w-full lg:w-1/2 lg:pl-2 flex flex-col min-h-[50vh] lg:min-h-0">
+          <Card className="bg-gray-900 border-gray-700 flex flex-col flex-1">
             <CardContent className="p-4 flex-1 overflow-hidden">
               <DisplayPanel displayData={displayData} mode={mode} scrollRef={setDisplayScrollRef} />
             </CardContent>
