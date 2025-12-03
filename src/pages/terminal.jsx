@@ -28,6 +28,42 @@ const samplePortfolioData = {
   },
   "experience": [
     {
+      "id": 4,
+      "title": "Software Engineer I",
+      "company": "Groreels",
+      "dates": "Dec 2024 - Nov 2025 · 1 yr",
+      "location": "Remote",
+      "description_points": [
+        "Researched and benchmarked AI video tooling (HeyGen, Pika, Stable Diffusion, Arcads, MakeUGC.ai) to cut UGC generation costs by 60%",
+        "Built an AI UGC video generator integrating HeyGen influencer avatars for personalized, auto-generated campaign assets",
+        "Implemented OAuth-based auth flows for TikTok, Instagram, and YouTube APIs with secure token storage and renewal",
+        "Developed auto-posting, cross-platform scheduling, and real-time performance tracking for social campaigns",
+        "Shipped a drag-and-drop content calendar powering multi-platform campaign orchestration",
+        "Created a super-admin portal with role-based access control, tenant-level analytics, and feature flags",
+        "Integrated Paystack with tiered subscription plans and recurring billing for the SaaS platform",
+        "Implemented an affiliate program with referral tracking, commission computation, and partner performance dashboards"
+      ],
+      "tags": ["AI", "Video Generation", "Next.js", "NestJS", "TikTok API", "Instagram API", "YouTube API", "Paystack", "SaaS", "OAuth"]
+    },
+    {
+      "id": 3,
+      "title": "Full Stack Engineer",
+      "company": "Organic Bloom (Contract)",
+      "dates": "Oct 2025 - Dec 2025 · 3 mos",
+      "location": "Nairobi County, Kenya · Remote",
+      "description_points": [
+        "Designed and deployed a production-grade e-commerce platform with a Next.js storefront backed by a NestJS API layer",
+        "Engineered a warehouse-grade inventory management engine with automated stock reconciliation and low-stock alerts",
+        "Integrated PCI-compliant payment flows, tokenized card storage, and fraud protections for seamless checkout",
+        "Built role-aware admin dashboards that surface order health, fulfillment SLAs, and actionable analytics",
+        "Optimized Core Web Vitals through lazy loading, route-level code splitting, and fine-grained state hydration",
+        "Drove a 120% lift in online sales in the first month by blending UX audits with performance tuning",
+        "Implemented account authentication, multi-role authorization, and secure session management across devices",
+        "Productionized CI/CD pipelines with automated tests, blue/green releases, and observability hooks on AWS"
+      ],
+      "tags": ["Next.js", "NestJS", "PostgreSQL", "Redis", "Payment Integration", "PCI DSS", "AWS", "CI/CD"]
+    },
+    {
       "id": 1,
       "title": "FullStack Engineer",
       "company": "Redolesence Ltd",
@@ -1468,9 +1504,11 @@ Creativity:    ∞           High        ∞         ∞`;
 
         case 'jobs':
           setDisplayData({ type: 'experience-list', content: data.experience });
-          return `[1]+  Running    FullStack Engineer at Redolesence Ltd
-[2]   Running    FullStack Engineer at Yafreeka Entertainment Ltd
-[3]   Stopped    Software Engineering Trainee at Power Learn Project`;
+          return `[1]+  Running    Software Engineer I at Groreels
+[2]   Running    Full Stack Engineer at Organic Bloom (Contract)
+[3]   Running    FullStack Engineer at Redolesence Ltd
+[4]   Running    FullStack Engineer at Yafreeka Entertainment Ltd
+[5]   Stopped    Software Engineering Trainee at Power Learn Project`;
 
         case 'crontab':
           if (flag === '-l') {
@@ -1499,6 +1537,7 @@ alias skills='cat ~/skills.txt'`;
           setDisplayData({ type: 'tree', content: data });
           return `/home/barack.ouma/portfolio
 ├── experience/
+│   ├── organic-bloom/
 │   ├── redolesence/
 │   └── yafreeka/
 ├── projects/

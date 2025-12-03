@@ -128,6 +128,42 @@ const mockPortfolioData = {
   ],
   "experience": [
     {
+      "id": 6,
+      "title": "Software Engineer I",
+      "company": "Groreels",
+      "dates": "Dec 2024 - Nov 2025 · 1 yr",
+      "location": "Remote",
+      "description_points": [
+        "Researched and evaluated AI video tools (HeyGen, Pika, Stable Diffusion, Arcads, MakeUGC.ai), reducing UGC generation costs by 60%",
+        "Built an AI UGC video generator integrating HeyGen influencer avatars for automated, personalized video content",
+        "Implemented secure OAuth authentication for TikTok, Instagram, and YouTube APIs with robust token lifecycle management",
+        "Developed auto-posting workflows, cross-platform scheduling, and real-time analytics dashboards for campaign performance",
+        "Designed a drag-and-drop content calendar for multi-platform campaign orchestration",
+        "Created a super-user portal with tenant-aware user management, platform-wide analytics, and role-based access control",
+        "Integrated Paystack with tiered subscription plans (Starter, Growth, Scale) and automated billing",
+        "Built an affiliate system with referral tracking, commission management, and partner performance reporting"
+      ],
+      "tags": ["AI", "Video Generation", "Next.js", "NestJS", "TikTok API", "Instagram API", "YouTube API", "Paystack", "SaaS", "OAuth"]
+    },
+    {
+      "id": 5,
+      "title": "Full Stack Engineer",
+      "company": "Organic Bloom (Contract)",
+      "dates": "Oct 2025 - Dec 2025 · 3 mos",
+      "location": "Nairobi County, Kenya · Remote",
+      "description_points": [
+        "Designed and deployed the Organic Bloom online store with a Next.js storefront and NestJS services powering product discovery, checkout, and fulfillment",
+        "Implemented a resilient inventory engine with background jobs for stock reconciliation, SKU analytics, and automated restock alerts",
+        "Integrated secure payment flows (PCI DSS aligned) with tokenized cards, fraud rules, and instant transaction webhooks",
+        "Built an executive-ready admin dashboard for order management, live analytics, and merchandising workflows",
+        "Drove a 120% lift in online sales in the first month by pairing UX experiments with aggressive performance tuning",
+        "Applied performance budgets, route-level code splitting, and lazy resource loading to keep Core Web Vitals in the green",
+        "Built authentication, session hardening, and granular authorization for shoppers, support, and admin personas",
+        "Set up GitHub Actions-powered CI/CD, blue/green deployments, and observability pipelines for the production stack"
+      ],
+      "tags": ["Next.js", "NestJS", "PostgreSQL", "Redis", "Payment Integration", "PCI DSS", "CI/CD", "AWS"]
+    },
+    {
       "id": 1,
       "title": "Technical Writer",
       "company": "Kodaschool",
