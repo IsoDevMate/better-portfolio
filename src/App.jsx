@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 
 const mockPortfolioData = {
   "name": "Barack Ouma",
-  "title": "Software Engineer | Backend | AWS Certified",
+  "title": "Software Engineer  | 2x AWS Certified",
   "profile_picture_url": "",
   "bio": "Passionate full-stack developer with expertise in modern web technologies",
   "about_me": "I'm a dedicated developer who loves creating efficient, scalable solutions and learning new technologies.",
