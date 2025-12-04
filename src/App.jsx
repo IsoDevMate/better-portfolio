@@ -413,7 +413,7 @@ const AnimatedHeader = ({ portfolioData, mode, onModeToggle }) => {
           className="flex items-center gap-3"
         >
           <a
-            href="https://drive.google.com/uc?export=download&id=1oV6w5w6oPMtN3zaqCidjTDXQfMhjIhv8"
+            href="https://drive.google.com/file/d/1pzuJbW_BxSLOjVmZ_6UUDm85nx1H0Kxw/view?usp=sharing"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg border border-emerald-300/20 hover:bg-emerald-300/10 text-emerald-300 hover:text-white transition-colors duration-200"
