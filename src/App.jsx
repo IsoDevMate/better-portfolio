@@ -424,7 +424,7 @@ const AnimatedHeader = ({ portfolioData, mode, onModeToggle }) => {
 
           <Button
             variant="outline"
-            className="bg-transparent border-gray-600 hover:bg-gray-800 hover:text-white transition-all duration-300"
+            className="hidden lg:flex bg-transparent border-gray-600 hover:bg-gray-800 hover:text-white transition-all duration-300"
             onClick={onModeToggle}
           >
             <motion.div
@@ -483,7 +483,7 @@ const AnimatedHeader = ({ portfolioData, mode, onModeToggle }) => {
               </MobileNavLink>
 
               <a
-                href="https://drive.google.com/uc?export=download&id=1oV6w5w6oPMtN3zaqCidjTDXQfMhjIhv8"
+                href="https://drive.google.com/file/d/1pzuJbW_BxSLOjVmZ_6UUDm85nx1H0Kxw/view?usp=sharing"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center w-full px-4 py-3 text-left text-gray-300 hover:bg-gray-800 rounded-lg transition-colors duration-200"
